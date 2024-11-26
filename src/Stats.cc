@@ -1,10 +1,10 @@
 /*
  Stats.cc -- store stats of the ROM set
  Copyright (C) 2018 Dieter Baron and Thomas Klausner
- 
+
  This file is part of ckmame, a program to check rom sets for MAME.
  The authors can be contacted at <ckmame@nih.at>
- 
+
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
@@ -17,7 +17,7 @@
  3. The name of the author may not be used to endorse or promote
  products derived from this software without specific prior
  written permission.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
  OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,45 +35,35 @@
 
 #include <cinttypes>
 
-#include "util.h"
 #include "globals.h"
+#include "util.h"
 
 void Stats::add_game(GameStatus status) {
-    switch (status) {
-        case GS_OLD:
-        case GS_CORRECT:
-        case GS_CORRECT_MIA:
-        case GS_FIXABLE:
-            games_good++;
-            break;
-            
-        case GS_PARTIAL:
-            games_partial++;
-            break;
-            
-        case GS_MISSING:
-        case GS_MISSING_MIA:
-            break;
+    if (!GS_HAS_MISSING(status)) {
+        games_good++;
     }
-    
+    else if (GS_IS_PARTIAL(status)) {
+        games_partial++;
+    }
+
     games_total++;
 }
 
 
-void Stats::add_rom(enum filetype type, const FileData *rom, Match::Quality status) {
+void Stats::add_rom(enum filetype type, const FileData* rom, Match::Quality status) {
     // TODO: only own ROMs? (what does dumpgame /stats count?)
-    
+
     add_file(type, rom->hashes.size, status);
 }
 
 
-void Stats::print(FILE *f, bool total_only) {
-    static const char *ft_name[] = {"ROMs: ", "Disks:"};
+void Stats::print(FILE* f, bool total_only) {
+    static const char* ft_name[] = {"ROMs: ", "Disks:"};
 
     std::string message = "Games: ";
     if (!total_only) {
         if (games_good > 0 || games_partial == 0) {
-	    message += std::to_string(games_good);
+            message += std::to_string(games_good);
         }
         if (games_partial > 0) {
             if (games_good > 0) {
@@ -81,7 +71,7 @@ void Stats::print(FILE *f, bool total_only) {
             }
             message += std::to_string(games_partial) + " partial";
         }
-	message += " / ";
+        message += " / ";
     }
     message += std::to_string(games_total);
 
@@ -89,21 +79,21 @@ void Stats::print(FILE *f, bool total_only) {
 
     for (int type = 0; type < TYPE_MAX; type++) {
         if (files[type].files_total > 0) {
-	    message = ft_name[type];
-	    message += " ";
+            message = ft_name[type];
+            message += " ";
             if (!total_only) {
-		message += std::to_string(files[type].files_good) + " / ";
+                message += std::to_string(files[type].files_good) + " / ";
             }
-	    message += std::to_string(files[type].files_total);
+            message += std::to_string(files[type].files_total);
 
             if (files[type].bytes_total > 0) {
                 message += " (";
                 if (!total_only) {
-		    message += human_number(files[type].bytes_good) + " / ";
+                    message += human_number(files[type].bytes_good) + " / ";
                 }
-		message += human_number(files[type].bytes_total) + ")";
+                message += human_number(files[type].bytes_total) + ")";
             }
-	    output.message(message);
+            output.message(message);
         }
     }
 }
@@ -116,7 +106,7 @@ void Stats::add_file(enum filetype type, uint64_t size, Match::Quality status) {
         }
         files[type].files_good++;
     }
-    
+
     if (size != Hashes::SIZE_UNKNOWN) {
         files[type].bytes_total += size;
     }

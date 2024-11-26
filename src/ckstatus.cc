@@ -111,7 +111,7 @@ bool CkStatus::execute(const std::vector<std::string>& arguments) {
     for (auto key : specials) {
         switch (key) {
         case ALL_MISSING:
-            list_games(GS_MISSING, GS_MISSING_MIA);
+            list_games(GS_MISSING, GS_MISSING_BEST);
             break;
 
         case CHANGES:
@@ -200,41 +200,35 @@ void CkStatus::list_summary() {
     auto counts = status_db->get_run_status_counts(get_run_id());
 
     uint64_t total = 0;
-    uint64_t complete = 0;
-    uint64_t mia = 0;
+    uint64_t missing = 0;
+    uint64_t can_improve = 0;
 
     for (const auto [status, count] : counts) {
         total += count;
-        switch (status) {
-        case GS_MISSING:
-        case GS_PARTIAL:
-            break;
-        case GS_CORRECT:
-        case GS_CORRECT_MIA:
-        case GS_OLD:
-        case GS_FIXABLE:
-            complete += count;
-            break;
-        case GS_MISSING_MIA:
-            mia += count;
-            break;
+
+        if (GS_HAS_MISSING(status)) {
+            missing += count;
+        }
+
+        if (GS_CAN_IMPROVE(status)) {
+            can_improve += count;
         }
     }
 
+    // best = total - missing_mia
+    // best = missing + can_improve
+
     auto status = std::string{};
     auto best = std::string{};
-    if (mia > 0) {
-        best = " (best: " + std::to_string(mia) + ")";
+    if (can_improve > 0) {
+        best = " (best: " + std::to_string(missing - can_improve) + ")";
     }
 
-    if (complete == total) {
+    if (missing == 0) {
         status = "complete";
     }
-    else if (complete == 0) {
-        status = "all missing";
-    }
     else {
-        status = std::to_string(total - complete) + " / " + std::to_string(total) + " missing";
+        status = std::to_string(missing) + " / " + std::to_string(total) + " missing";
     }
     output.message(status + best);
 }

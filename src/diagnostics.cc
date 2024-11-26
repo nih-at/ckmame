@@ -174,7 +174,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 }
                 return;
 
-            case GS_MISSING_MIA:
+            case GS_MISSING_BEST:
                 if (ft == TYPE_ROM && configuration.report_missing_mia) {
                     warn_game(ft, game, "not a single file found (all mia)");
                 }

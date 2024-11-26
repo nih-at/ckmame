@@ -42,13 +42,26 @@
 
 enum GameStatus {
     GS_MISSING, /* not a single own ROM found */
-    GS_MISSING_MIA, /* not a single own ROM found, all own ROMs marked as mia in ROM database */
+    GS_MISSING_BEST, /* not a single own ROM found, all own ROMs marked as mia in ROM database */
     GS_CORRECT, /* all ROMs correct */
     GS_CORRECT_MIA, /* all ROMs correct, at least one marked mia in ROM database */
     GS_FIXABLE, /* only fixable errors */
-    GS_PARTIAL, /* some ROMs missing */
+    GS_PARTIAL, /* some non-MIA ROMs missing */
+    GS_PARTIAL_BEST, /* only MIA ROMs are missing */
+    GS_PARTIAL_MIA, /* some non-MIA ROMs missing, have at least one MIA ROM */
+    GS_PARTIAL_BEST_MIA, /* only MIA ROMs are missing, have at least one MIA ROM */
     GS_OLD      /* all ROMs in old */
 };
+
+#define GS_IS_CORRECT(gs) ((gs) == GS_CORRECT || (gs) == GS_CORRECT_MIA)
+#define GS_IS_MISSING(gs) ((gs) == GS_MISSING || (gs) == GS_MISSING_BEST)
+#define GS_IS_PARTIAL(gs) ((gs) == GS_PARTIAL || (gs) == GS_PARTIAL_BEST || (gs) == GS_PARTIAL_MIA || (gs) == GS_PARTIAL_BEST_MIA)
+
+#define GS_IS_BEST(gs) (!GS_HAS_MISSING(gs) || (gs) == GS_MISSING_BEST || (gs) == GS_PARTIAL_BEST || (gs) == GS_PARTIAL_BEST_MIA)
+#define GS_HAS_MISSING(gs) (GS_IS_MISSING(gs) || GS_IS_PARTIAL(gs))
+//#define GS_HAS_MIA(gs) ((gs) == GS_CORRECT_MIA || (gs) == GS_PARTIAL_MIA || (gs) == GS_PARTIAL_BEST_MIA)
+//#define GS_HAS_MISSING_MIA(gs) ((gs) == GS_MISSING_BEST || (gs) == GS_PARTIAL_BEST || (gs) == GS_PARTIAL_BEST_MIA)
+#define GS_CAN_IMPROVE(gs) ((gs) == GS_MISSING || (gs) == GS_PARTIAL || (gs) == GS_PARTIAL_MIA)
 
 enum FileStatus {
     FS_MISSING,     /* file does not exist (only used for disks) */

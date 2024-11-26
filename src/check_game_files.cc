@@ -296,7 +296,7 @@ void update_game_status(const Game *game, Result *result) {
     }
     else if (all_dead || (has_own && all_own_dead)) {
         if (all_missing_mia) {
-            result->game = GS_MISSING_MIA;
+            result->game = GS_MISSING_BEST;
         }
         else {
             result->game = GS_MISSING;
