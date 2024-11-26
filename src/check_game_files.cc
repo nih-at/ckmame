@@ -254,7 +254,6 @@ void update_game_status(const Game* game, Result* result) {
     all_own_dead = all_dead = all_correct = all_fixable = true;
     auto all_missing_mia = true;
     auto has_own = false;
-    auto has_mia = false;
     auto have_mia = false;
 
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
@@ -266,9 +265,6 @@ void update_game_status(const Game* game, Result* result) {
 
             if (rom.where == FILE_INGAME) {
                 has_own = true;
-            }
-            if (rom.mia) {
-                has_mia = true;
             }
             if (match->quality == Match::MISSING) {
                 all_fixable = false;
