@@ -306,6 +306,21 @@ void update_game_status(const Game *game, Result *result) {
 	result->game = GS_FIXABLE;
     }
     else {
-	result->game = GS_PARTIAL;
+        if (all_missing_mia) {
+            if (has_mia) {
+                result->game = GS_PARTIAL_BEST_MIA;
+            }
+            else {
+                result->game = GS_PARTIAL_BEST;
+            }
+        }
+        else {
+            if (has_mia) {
+                result->game = GS_PARTIAL_MIA;
+            }
+            else {
+                result->game = GS_PARTIAL;
+            }
+        }
     }
 }
