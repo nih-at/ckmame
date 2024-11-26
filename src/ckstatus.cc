@@ -221,19 +221,22 @@ void CkStatus::list_summary() {
         }
     }
 
-    auto missing = std::string{};
+    auto status = std::string{};
     auto best = std::string{};
     if (mia > 0) {
         best = " (best: " + std::to_string(mia) + ")";
     }
 
-    if (complete == 0) {
-        missing = "all";
+    if (complete == total) {
+        status = "complete";
+    }
+    else if (complete == 0) {
+        status = "all missing";
     }
     else {
-        missing = std::to_string(total - complete) + " / " + std::to_string(total);
+        status = std::to_string(total - complete) + " / " + std::to_string(total) + " missing";
     }
-    output.message(missing + " missing" + best);
+    output.message(status + best);
 }
 
 
