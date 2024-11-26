@@ -34,12 +34,12 @@
 
 #include "check.h"
 
+#include "CkmameCache.h"
+#include "RomDB.h"
 #include "check_util.h"
 #include "find.h"
 #include "globals.h"
-#include "RomDB.h"
 #include "warn.h"
-#include "CkmameCache.h"
 
 enum test { TEST_NAME_SIZE_CHECKSUM, TEST_MERGENAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG };
 
@@ -49,30 +49,27 @@ enum test_result { TEST_NOTFOUND, TEST_UNUSABLE, TEST_USABLE };
 
 typedef enum test_result test_result_t;
 
-static test_result_t match_files(const ArchivePtr&, test_t, const Game *game, const Rom *, Match *);
+static test_result_t match_files(const ArchivePtr&, test_t, const Game* game, const Rom*, Match*);
 
 
-void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, Result *res) {
-    static std::vector<test_t> tests = {
-        TEST_NAME_SIZE_CHECKSUM,
-        TEST_SIZE_CHECKSUM,
-        TEST_LONG
-    };
-    
+void check_game_files(Game* game, filetype_t filetype, GameArchives* archives, Result* res) {
+    static std::vector<test_t> tests = {TEST_NAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG};
+
     test_result_t result;
-    
-    size_t detector_id = filetype == TYPE_ROM ?  db->get_detector_id_for_dat(game->dat_no) : 0;
+
+    size_t detector_id = filetype == TYPE_ROM ? db->get_detector_id_for_dat(game->dat_no) : 0;
 
     auto missing_roms = false;
-    
+
     for (size_t i = 0; i < game->files[filetype].size(); i++) {
-        auto &rom = game->files[filetype][i];
-        Match *match = &res->game_files[filetype][i];
+        auto& rom = game->files[filetype][i];
+        Match* match = &res->game_files[filetype][i];
         auto expected_archive = archives[rom.where].archive[filetype];
-        
+
         if (match->quality == Match::OLD) {
             Match ingame_match;
-            if (rom.where == FILE_INGAME && match_files(archives[0].archive[filetype], TEST_NAME_SIZE_CHECKSUM, game, &rom, &ingame_match) == TEST_USABLE) {
+            if (rom.where == FILE_INGAME && match_files(archives[0].archive[filetype], TEST_NAME_SIZE_CHECKSUM, game,
+                                                        &rom, &ingame_match) == TEST_USABLE) {
                 if (ingame_match.quality == Match::OK) {
                     match->quality = Match::OK_AND_OLD;
                     res->game = GameStatus::GS_FIXABLE;
@@ -80,20 +77,22 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             }
             continue;
         }
-        
+
         match->quality = Match::MISSING;
-        
+
         /* check if it's in ancestor */
-        if (rom.where != FILE_INGAME && expected_archive && (result = match_files(expected_archive, TEST_MERGENAME_SIZE_CHECKSUM, game, &rom, match)) != TEST_NOTFOUND) {
+        if (rom.where != FILE_INGAME && expected_archive &&
+            (result = match_files(expected_archive, TEST_MERGENAME_SIZE_CHECKSUM, game, &rom, match)) !=
+                TEST_NOTFOUND) {
             match->where = rom.where;
             if (result == TEST_USABLE) {
                 continue;
             }
         }
-        
+
         /* search for matching file in game's zip */
         if (archives[0].archive[filetype]) {
-            for (const auto &test : tests) {
+            for (const auto& test : tests) {
                 if ((result = match_files(archives[0].archive[filetype], test, game, &rom, match)) != TEST_NOTFOUND) {
                     match->where = FILE_INGAME;
                     if (rom.where != FILE_INGAME && match->quality == Match::OK) {
@@ -106,7 +105,8 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             }
         }
 
-        if (rom.where == FILE_INGAME && match->quality == Match::MISSING && rom.hashes.size > 0 && !rom.hashes.empty() && rom.status != Rom::NO_DUMP) {
+        if (rom.where == FILE_INGAME && match->quality == Match::MISSING && rom.hashes.size > 0 &&
+            !rom.hashes.empty() && rom.status != Rom::NO_DUMP) {
             if (configuration.complete_games_only) {
                 match->quality = Match::UNCHECKED;
                 if (missing_roms) {
@@ -116,7 +116,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
 
             /* search in needed, superfluous and update sets */
             ckmame_cache->ensure_needed_maps();
-	    ckmame_cache->ensure_extra_maps();
+            ckmame_cache->ensure_extra_maps();
 
             match->candidates = find_candidates_in_archives(filetype, detector_id, &rom, false);
             if (match->candidates.empty()) {
@@ -140,22 +140,22 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             }
         }
     }
-    
-    Archive *archive = archives[0][filetype];
+
+    Archive* archive = archives[0][filetype];
     if (archive && !archive->files.empty()) {
         uint64_t user[archive->files.size()];
         for (size_t i = 0; i < archive->files.size(); i++) {
             user[i] = std::numeric_limits<uint64_t>::max();
         }
-        
+
         for (size_t i = 0; i < game->files[filetype].size(); i++) {
-            Match *match = &res->game_files[filetype][i];
+            Match* match = &res->game_files[filetype][i];
             if (match->where == FILE_INGAME) {
                 size_t j = match->index;
                 if (res->archive_files[filetype][j] != FS_USED) {
                     res->archive_files[filetype][j] = match->quality == Match::LONG ? FS_PARTUSED : FS_USED;
                 }
-                
+
                 if (match->quality != Match::LONG && match->quality != Match::IN_ZIP) {
                     if (user[j] == std::numeric_limits<uint64_t>::max()) {
                         user[j] = i;
@@ -176,7 +176,8 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
 }
 
 
-static test_result_t match_files(const ArchivePtr& archive, test_t test, const Game *game, const Rom *rom, Match *match) {
+static test_result_t match_files(const ArchivePtr& archive, test_t test, const Game* game, const Rom* rom,
+                                 Match* match) {
     test_result_t result;
 
     match->offset = 0;
@@ -184,62 +185,62 @@ static test_result_t match_files(const ArchivePtr& archive, test_t test, const G
     result = TEST_NOTFOUND;
 
     for (size_t i = 0; result != TEST_USABLE && i < archive->files.size(); i++) {
-        auto &file = archive->files[i];
+        auto& file = archive->files[i];
 
-	if (file.broken) {
-	    continue;
-	}
+        if (file.broken) {
+            continue;
+        }
 
         switch (test) {
-            case TEST_NAME_SIZE_CHECKSUM:
-            case TEST_MERGENAME_SIZE_CHECKSUM: {
-                if ((test == TEST_NAME_SIZE_CHECKSUM ? rom->compare_name(file) : rom->compare_merged(file))) {
-                    // TODO: no detectors for disks
-                    size_t detector_id = db->get_detector_id_for_dat(game->dat_no);
-                    if (archive->compare_size_hashes(i, detector_id, rom)) {
-                        match->quality = Match::OK;
-                        result = TEST_USABLE;
-                        match->archive = archive;
-                        match->index = i;
-                    }
-                }
-                break;
-            }
-                
-            case TEST_SIZE_CHECKSUM: {
-                /* roms without hashes are only matched with correct name */
-                if (rom->hashes.empty()) {
-                    break;
-                }
-                
+        case TEST_NAME_SIZE_CHECKSUM:
+        case TEST_MERGENAME_SIZE_CHECKSUM: {
+            if ((test == TEST_NAME_SIZE_CHECKSUM ? rom->compare_name(file) : rom->compare_merged(file))) {
                 // TODO: no detectors for disks
                 size_t detector_id = db->get_detector_id_for_dat(game->dat_no);
                 if (archive->compare_size_hashes(i, detector_id, rom)) {
-                    match->quality = Match::NAME_ERROR;
+                    match->quality = Match::OK;
                     result = TEST_USABLE;
                     match->archive = archive;
                     match->index = i;
                 }
+            }
+            break;
+        }
+
+        case TEST_SIZE_CHECKSUM: {
+            /* roms without hashes are only matched with correct name */
+            if (rom->hashes.empty()) {
                 break;
             }
-                
-            case TEST_LONG:
-                /* roms without hashes are only matched with correct name */
-                if (rom->hashes.empty() || rom->hashes.size == 0) {
-                    break;
-                }
-                
-                if (rom->compare_name(file) && file.hashes.size > rom->hashes.size) {
-                    auto offset = archive->file_find_offset(i, rom->hashes.size, &rom->hashes);
-                    if (offset.has_value()) {
-                        match->offset = offset.value();
-                        match->archive = archive;
-                        match->index = i;
-                        match->quality = Match::LONG;
-                        return TEST_USABLE;
-                    }
-                }
+
+            // TODO: no detectors for disks
+            size_t detector_id = db->get_detector_id_for_dat(game->dat_no);
+            if (archive->compare_size_hashes(i, detector_id, rom)) {
+                match->quality = Match::NAME_ERROR;
+                result = TEST_USABLE;
+                match->archive = archive;
+                match->index = i;
+            }
+            break;
+        }
+
+        case TEST_LONG:
+            /* roms without hashes are only matched with correct name */
+            if (rom->hashes.empty() || rom->hashes.size == 0) {
                 break;
+            }
+
+            if (rom->compare_name(file) && file.hashes.size > rom->hashes.size) {
+                auto offset = archive->file_find_offset(i, rom->hashes.size, &rom->hashes);
+                if (offset.has_value()) {
+                    match->offset = offset.value();
+                    match->archive = archive;
+                    match->index = i;
+                    match->quality = Match::LONG;
+                    return TEST_USABLE;
+                }
+            }
+            break;
         }
     }
 
@@ -247,20 +248,21 @@ static test_result_t match_files(const ArchivePtr& archive, test_t test, const G
 }
 
 
-void update_game_status(const Game *game, Result *result) {
+void update_game_status(const Game* game, Result* result) {
     bool all_dead, all_own_dead, all_correct, all_fixable;
 
     all_own_dead = all_dead = all_correct = all_fixable = true;
     auto all_missing_mia = true;
     auto has_own = false;
     auto has_mia = false;
+    auto have_mia = false;
 
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         auto filetype = static_cast<filetype_t>(ft);
 
         for (size_t i = 0; i < game->files[filetype].size(); i++) {
             auto match = &result->game_files[filetype][i];
-            auto &rom = game->files[filetype][i];
+            auto& rom = game->files[filetype][i];
 
             if (rom.where == FILE_INGAME) {
                 has_own = true;
@@ -280,14 +282,19 @@ void update_game_status(const Game *game, Result *result) {
                     all_own_dead = false;
                 }
             }
-	    if (match->quality != Match::OK && (rom.status == Rom::OK || configuration.report_no_good_dump)) {
+            if (match->quality != Match::OK && (rom.status == Rom::OK || configuration.report_no_good_dump)) {
                 all_correct = false;
+            }
+            else {
+                if (rom.mia) {
+                    have_mia = true;
+                }
             }
         }
     }
-        
+
     if (all_correct) {
-        if (has_mia) {
+        if (have_mia) {
             result->game = GS_CORRECT_MIA;
         }
         else {
@@ -303,11 +310,11 @@ void update_game_status(const Game *game, Result *result) {
         }
     }
     else if (all_fixable) {
-	result->game = GS_FIXABLE;
+        result->game = GS_FIXABLE;
     }
     else {
         if (all_missing_mia) {
-            if (has_mia) {
+            if (have_mia) {
                 result->game = GS_PARTIAL_BEST_MIA;
             }
             else {
@@ -315,7 +322,7 @@ void update_game_status(const Game *game, Result *result) {
             }
         }
         else {
-            if (has_mia) {
+            if (have_mia) {
                 result->game = GS_PARTIAL_MIA;
             }
             else {
