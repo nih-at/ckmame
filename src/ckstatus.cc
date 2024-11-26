@@ -220,7 +220,7 @@ void CkStatus::list_summary() {
 
     auto status = std::string{};
     auto best = std::string{};
-    if (can_improve > 0) {
+    if (missing - can_improve > 0) {
         best = " (best: " + std::to_string(missing - can_improve) + ")";
     }
 
