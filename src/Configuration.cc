@@ -514,11 +514,14 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         else if (option.name == "report-missing-mia") {
             report_missing_mia = true;
         }
+        else if (option.name == "report-no-good-dump") {
+            report_no_good_dump = true;
+        }
         else if (option.name == "report-status") {
             report_status = true;
         }
-        else if (option.name == "report-no-good-dump") {
-            report_no_good_dump = true;
+        else if (option.name == "report-summary") {
+          report_summary = true;
         }
         else if (option.name == "rom-db") {
             rom_db = option.argument;
