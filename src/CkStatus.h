@@ -67,7 +67,7 @@ class CkStatus : public Command {
         ALL_MISSING,
         CHANGES,
         CORRECT,
-        CORRECT_MIA,
+        LIST_MIA,
         MISSING,
         RUNS,
         SUMMARY
