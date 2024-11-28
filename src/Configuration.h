@@ -111,6 +111,7 @@ public:
     bool report_missing; /* report missing ROMs with good dumps that are not marked as mia in ROM db, one line per game if no own ROM found */
     bool report_missing_mia; /* report missing ROMs that are marked as mia in ROM db. */
     bool report_no_good_dump; /* report ROMs that are not correct and can not be fixed */
+    bool report_status; /* report status of set in ckstatus --all-sets */
     bool report_summary; /* print statistics about ROM set at end of run */
     std::string rom_db;
     std::string rom_directory;

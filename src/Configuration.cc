@@ -113,6 +113,7 @@ TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table({
     { "report-missing",  TomlSchema::boolean() },
     { "report-missing-mia",  TomlSchema::boolean() },
     { "report-no-good-dump",  TomlSchema::boolean() },
+    { "report-status",  TomlSchema::boolean() },
     { "report-summary",  TomlSchema::boolean() },
     { "rom-directory", TomlSchema::string() },
     { "rom-db", TomlSchema::string() },
@@ -208,6 +209,7 @@ std::unordered_map<std::string, std::string> Configuration::option_to_variable =
     { "no-report-fixable", "report_fixable" },
     { "no-report-missing", "report_missing" },
     { "no-report-missing-mia", "report_missing_mia" },
+    { "no-report-status", "report_status" },
     { "no-report-summary", "report_summary" },
     { "no-report-no-good-dump", "report_no_good_dump" },
     { "no-update-database", "update_database" },
@@ -276,6 +278,7 @@ void Configuration::reset() {
     report_missing = true;
     report_missing_mia = false;
     report_no_good_dump = false;
+    report_status = true;
     report_summary = false;
     rom_db = RomDB::default_name();
     rom_directory = "roms";
@@ -511,8 +514,8 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         else if (option.name == "report-missing-mia") {
             report_missing_mia = true;
         }
-        else if (option.name == "report-summary") {
-            report_summary = true;
+        else if (option.name == "report-status") {
+            report_status = true;
         }
         else if (option.name == "report-no-good-dump") {
             report_no_good_dump = true;
@@ -628,6 +631,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     set_bool(table, "report-fixable", report_fixable);
     set_bool(table, "report-missing", report_missing);
     set_bool(table, "report-missing-mia", report_missing_mia);
+    set_bool(table, "report-status", report_status);
     set_bool(table, "report-summary", report_summary);
     set_bool(table, "report-no-good-dump", report_no_good_dump);
     set_string(table, "rom-directory", rom_directory);

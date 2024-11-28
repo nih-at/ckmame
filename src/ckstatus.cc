@@ -55,7 +55,7 @@ std::vector<Commandline::Option> ckstatus_options = {
     Commandline::Option("runs", "list runs"), Commandline::Option("summary", "print summary")};
 
 
-std::unordered_set<std::string> ckstatus_used_variables = {"status_db"};
+std::unordered_set<std::string> ckstatus_used_variables = {"status_db", "report_status"};
 
 int main(int argc, char** argv) {
     auto command = CkStatus();
@@ -99,6 +99,11 @@ void CkStatus::global_setup(const ParsedCommandline& commandline) {
 bool CkStatus::execute(const std::vector<std::string>& arguments) {
     if (configuration.status_db == "none") {
         throw Exception("No status database configured.");
+    }
+
+    if (configuration.report_status == false) {
+      /* this set should be ignored according by the config */
+      return true;
     }
 
     try {
