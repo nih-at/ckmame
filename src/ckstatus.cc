@@ -111,7 +111,7 @@ bool CkStatus::execute(const std::vector<std::string>& arguments) {
     for (auto key : specials) {
         switch (key) {
         case ALL_MISSING:
-            list_games(GS_MISSING, GS_MISSING_BEST);
+            list_games(GS_MISSING, GS_MISSING_BEST, GS_PARTIAL, GS_PARTIAL_BEST);
             break;
 
         case CHANGES:
@@ -119,15 +119,15 @@ bool CkStatus::execute(const std::vector<std::string>& arguments) {
             break;
 
         case CORRECT:
-            list_games(GS_CORRECT, GS_CORRECT_MIA);
+            list_games(GS_CORRECT, GS_CORRECT_MIA, GS_PARTIAL_MIA, GS_PARTIAL_BEST_MIA);
             break;
 
         case CORRECT_MIA:
-            list_games(GS_CORRECT_MIA);
+            list_games(GS_CORRECT_MIA, GS_PARTIAL_MIA);
             break;
 
         case MISSING:
-            list_games(GS_MISSING);
+            list_games(GS_MISSING, GS_PARTIAL);
             break;
 
         case RUNS:
@@ -177,6 +177,10 @@ void CkStatus::list_games(GameStatus status) { list_games(status_db->get_games_b
 
 void CkStatus::list_games(GameStatus status1, GameStatus status2) {
     list_games(status_db->get_games_by_status(get_run_id(), status1, status2));
+}
+
+void CkStatus::list_games(GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4) {
+  list_games(status_db->get_games_by_status(get_run_id(), status1, status2, status3, status4));
 }
 
 void CkStatus::list_games(const std::vector<std::string>& games) {
