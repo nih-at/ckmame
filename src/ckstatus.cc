@@ -49,7 +49,7 @@
 std::vector<Commandline::Option> ckstatus_options = {
     Commandline::Option("all-missing", "list missing games"),
     Commandline::Option("changes", "list changes between runs"), Commandline::Option("correct", "list correct games"),
-    Commandline::Option("list-mia", "list games containing files marked MIA"),
+    Commandline::Option("mia-have", "list games containing files marked MIA"),
     Commandline::Option("missing", "list missing games not marked MIA"),
     //  Commandline::Option("run", "RUN", "use information from run RUN (default: latest)"),
     Commandline::Option("runs", "list runs"), Commandline::Option("summary", "print summary")};
@@ -77,7 +77,7 @@ void CkStatus::global_setup(const ParsedCommandline& commandline) {
         else if (option.name == "correct") {
             specials.insert(CORRECT);
         }
-        else if (option.name == "list-mia") {
+        else if (option.name == "mia-have") {
             specials.insert(LIST_MIA);
         }
         else if (option.name == "missing") {
