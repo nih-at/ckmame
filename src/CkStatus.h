@@ -111,7 +111,9 @@ class CkStatus : public Command {
     int get_run_id2();
     void list_games(GameStatus status);
     void list_games(GameStatus status1, GameStatus status2);
+    void list_games(GameStatus status1, GameStatus status2, GameStatus status3);
     void list_games(GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4);
+    void list_games(GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4, GameStatus status5, GameStatus status6);
     void list_games(const std::vector<std::string> &games);
     void list_runs();
     void list_summary();

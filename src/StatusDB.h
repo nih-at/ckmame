@@ -56,7 +56,9 @@ class StatusDB: public DB {
         QUERY_GAME,
         QUERY_GAME_BY_STATUS,
         QUERY_GAME_BY_STATUS2,
+        QUERY_GAME_BY_STATUS3,
         QUERY_GAME_BY_STATUS4,
+        QUERY_GAME_BY_STATUS6,
         QUERY_GAME_STATI,
         QUERY_RUN_STATUS_COUNTS
     };
@@ -88,7 +90,9 @@ class StatusDB: public DB {
     [[nodiscard]] std::vector<GameInfo> get_games(int64_t run_id);
     [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status);
     [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2);
-  [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4);
+  [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2, GameStatus status3);
+    [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4);
+    [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4, GameStatus status5, GameStatus status6);
     [[nodiscard]] std::unordered_map<GameStatus, std::vector<std::string>> get_run_status_names(int64_t run_id);
     [[nodiscard]] std::unordered_map<GameStatus, uint64_t> get_run_status_counts(int64_t run_id);
     [[nodiscard]] int64_t find_dat(const DatEntry& dat);
