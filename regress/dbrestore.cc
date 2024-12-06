@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
             catch (Exception &e) {
                 sqlite3_close(db);
                 std::filesystem::remove(db_fname);
-                throw e;
+                throw;
             }
             
             if (restore_db(db, f.get()) < 0) {

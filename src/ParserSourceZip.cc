@@ -90,7 +90,7 @@ ParserSourcePtr ParserSourceZip::open(const std::string &name) {
         if (errno == ENOENT) {
             return static_cast<ParserSourcePtr>(std::make_shared<ParserSourceFile>(std::filesystem::path(archive_name).parent_path() / name));
         }
-        throw e;
+        throw;
     }
 }
 

@@ -217,7 +217,7 @@ void Tree::process(GameArchives *archives) {
     }
     catch (std::exception &ex) {
 	warn_unset_info();
-	throw ex;
+	throw;
     }
 }
 

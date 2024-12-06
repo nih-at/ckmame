@@ -648,7 +648,7 @@ void RomDB::write_game(Game *game) {
     }
     catch (Exception &e) {
         delete_game(game);
-        throw e;
+        throw;
     }
 }
 
