@@ -33,8 +33,6 @@
 
 #include "zip_util.h"
 
-#include <filesystem>
-
 #include "Exception.h"
 
 ZipSource::~ZipSource() {
@@ -62,7 +60,7 @@ uint64_t ZipSource::read(void *data, uint64_t length) const {
     if (n < 0) {
         throw Exception(error());
     }
-    
+
     return static_cast<uint64_t>(n);
 }
 
