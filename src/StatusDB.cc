@@ -164,7 +164,6 @@ std::optional<int> StatusDB::latest_run_id(bool second) {
 }
 
 
-
 std::vector<StatusDB::Run> StatusDB::list_runs() {
     auto stmt = get_statement(LIST_RUNS);
 
@@ -367,24 +366,29 @@ int64_t StatusDB::insert_run(time_t date) {
 }
 
 void StatusDB::compute_combined_checksum(const Game& game, std::vector<uint8_t>& checksum) {
-    if (game.files[TYPE_ROM].size() == 1 && game.files[TYPE_DISK].empty()) {
-        checksum = game.files[TYPE_ROM][0].hashes.get_best();
-    }
-    else if (game.files[TYPE_ROM].empty() && game.files[TYPE_DISK].size() == 1) {
-        checksum = game.files[TYPE_DISK][0].hashes.get_best();
-    }
-    else {
-        checksum.clear();
+    checksum.clear();
 
-        for (int type = TYPE_ROM; type < TYPE_MAX; type += 1) {
-            for (const auto& file : game.files[type]) {
-                auto file_checksum = file.hashes.get_best();
-                if (checksum.size() < file_checksum.size()) {
-                    checksum.resize(file_checksum.size());
+    for (int type = TYPE_ROM; type < TYPE_MAX; type += 1) {
+        for (const auto& file : game.files[type]) {
+            auto file_checksum = file.hashes.get_best();
+            if (file_checksum.empty()) {
+                // If a file has no checksums, use name and size.
+                auto size_name_hashes = Hashes();
+                size_name_hashes.add_types(Hashes::TYPE_MD5);
+                auto update = Hashes::Update(&size_name_hashes);
+                update.update(file.name.data(), file.name.size());
+                for (auto shift = 0; shift < 64; shift += 8) {
+                    uint8_t byte = (file.hashes.size >> shift) & 0xff;
+                    update.update(&byte, 1);
                 }
-                for (size_t i = 0; i < file_checksum.size(); i++) {
-                    checksum[i] = checksum[i] ^ file_checksum[i];
-                }
+                update.end();
+                file_checksum = size_name_hashes.get_best();
+            }
+            if (checksum.size() < file_checksum.size()) {
+                checksum.resize(file_checksum.size());
+            }
+            for (size_t i = 0; i < file_checksum.size(); i++) {
+                checksum[i] = checksum[i] ^ file_checksum[i];
             }
         }
     }
