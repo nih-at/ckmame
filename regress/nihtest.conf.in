@@ -22,6 +22,7 @@ db.ckmamedb-dump = dbrestore -t ckmamedb
 # our-unzip ../1-4-ok.zip roms/1-4
 
 [comparator-preprocessors]
+db.statusdb-dump = dbdump --ignore run.date
 db.dump = dbdump
 db.ckmamedb-dump = dbdump
 dat.fixdat = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/fixdat-reset-version

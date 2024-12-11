@@ -377,9 +377,11 @@ void StatusDB::compute_combined_checksum(const Game& game, std::vector<uint8_t>&
                 size_name_hashes.add_types(Hashes::TYPE_MD5);
                 auto update = Hashes::Update(&size_name_hashes);
                 update.update(file.name.data(), file.name.size());
-                for (auto shift = 0; shift < 64; shift += 8) {
-                    uint8_t byte = (file.hashes.size >> shift) & 0xff;
-                    update.update(&byte, 1);
+                if (file.is_size_known()) {
+                    for (auto shift = 0; shift < 64; shift += 8) {
+                        uint8_t byte = (file.hashes.size >> shift) & 0xff;
+                        update.update(&byte, 1);
+                    }
                 }
                 update.end();
                 file_checksum = size_name_hashes.get_best();
@@ -391,5 +393,15 @@ void StatusDB::compute_combined_checksum(const Game& game, std::vector<uint8_t>&
                 checksum[i] = checksum[i] ^ file_checksum[i];
             }
         }
+    }
+
+    if (checksum.empty()) {
+        // If a game has no ROMs or disks, use name.
+        auto name_hashes = Hashes();
+        name_hashes.add_types(Hashes::TYPE_MD5);
+        auto update = Hashes::Update(&name_hashes);
+        update.update(game.name.data(), game.name.size());
+        update.end();
+        checksum = name_hashes.get_best();
     }
 }

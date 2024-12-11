@@ -1,9 +1,17 @@
 description test single-rom game with no data at all
 return 0
-arguments -cFv -e extra -D ../mamedb-no-data.db nodata
+arguments -cFv -e extra -D ../mamedb-no-data.db
 file extra/nodata.zip 1-4-ok.zip
 file extra/.ckmame.db {} <inline.ckmamedb>
 hashes nodata.zip * cheap
+end-of-inline-data
+file .ckmame-status.db {} <inline.statusdb-dump>
+>>> table dat (dat_id, name, version)
+1|ckmame test db|1
+>>> table game (run_id, dat_id, name, checksum, status)
+1|1|nodata|<185d096e591a3158606b2fa6862a8753>|0
+>>> table run (run_id, date)
+1|<ignore>
 end-of-inline-data
 stdout
 In game nodata:
