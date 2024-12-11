@@ -99,7 +99,7 @@ std::string CkmameCache::get_directory_name_for_archive(const std::string &name)
 const CkmameCache::CacheDirectory* CkmameCache::get_directory_for_archive(const std::string &name) {
     for (auto &directory : cache_directories) {
 	if (name.compare(0, directory.name.length(), directory.name) == 0 && (name.length() == directory.name.length() || name[directory.name.length()] == '/')) {
-            directory.initialize();
+            directory.initialize(true);
             if (directory.db) {
                 return &directory;
             }
@@ -112,20 +112,22 @@ const CkmameCache::CacheDirectory* CkmameCache::get_directory_for_archive(const 
     return nullptr;
 }
 
-void CkmameCache::CacheDirectory::initialize() {
-    if (initialized) {
+void CkmameCache::CacheDirectory::initialize(bool create) {
+    if (initialized && (directory_exists || !create)) {
         return;
     }
     initialized = true;
-    if (!configuration.fix_romset || where == FILE_EXTRA) {
+    if (!create) {
         std::error_code ec;
         if (!std::filesystem::exists(name, ec)) {
-            return; /* we won't create any files here, so DB would remain empty */
+            directory_exists = false;
+            return;
         }
     }
-    if (!ensure_dir(name, false)) {
-        return;
+    else {
+        ensure_dir(name, false);
     }
+    directory_exists = true;
 
     try {
         db = std::make_shared<CkmameDB>(name, where);
@@ -177,7 +179,7 @@ void CkmameCache::ensure_extra_maps() {
 
     // TODO: this is a hack, to be replaced when we rework the delete lists.
     // Get superfluous files in ROM directory into ckmamedb.
-    cache_directories[0].initialize();
+    cache_directories[0].initialize(false);
     if (cache_directories[0].db) {
         cache_directories[0].db->refresh();
     }
@@ -390,7 +392,7 @@ std::vector<CkmameDB::FindResult> CkmameCache::find_file(filetype_t filetype, si
     auto results = std::vector<CkmameDB::FindResult>();
 
     for (auto& cache_directory: cache_directories) {
-        cache_directory.initialize();
+        cache_directory.initialize(false);
         if (cache_directory.db) {
             cache_directory.db->find_file(filetype, detector_id, rom, results);
         }

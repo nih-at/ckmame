@@ -72,10 +72,11 @@ class CkmameCache {
         where_t where;
 	std::shared_ptr<CkmameDB> db;
 	bool initialized = false;
+        bool directory_exists = false;
 
 	explicit CacheDirectory(std::string name_, where_t where): name(std::move(name_)), where(where) { }
 
-        void initialize();
+        void initialize(bool create);
     };
 
     bool close_all();
