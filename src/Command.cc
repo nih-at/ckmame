@@ -159,7 +159,11 @@ bool Command::do_for(const std::string& set, const ParsedCommandline& arguments,
     }
     catch (std::exception& ex) {
         cleanup();
-        fprintf(stderr, "%s: %s\n", ProgramName::get().c_str(), ex.what());
+        fprintf(stderr, "%s: ", ProgramName::get().c_str());
+        if (multi_set_invocation) {
+            fprintf(stderr, "%s: ", set.c_str());
+        }
+        fprintf(stderr, "%s\n", ex.what());
         return false;
     }
 }
