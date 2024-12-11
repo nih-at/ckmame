@@ -117,10 +117,10 @@ void CkmameCache::CacheDirectory::initialize() {
         return;
     }
     initialized = true;
-    if (!configuration.fix_romset) {
+    if (!configuration.fix_romset || where == FILE_EXTRA) {
         std::error_code ec;
         if (!std::filesystem::exists(name, ec)) {
-            return; /* we won't write any files, so DB would remain empty */
+            return; /* we won't create any files here, so DB would remain empty */
         }
     }
     if (!ensure_dir(name, false)) {
