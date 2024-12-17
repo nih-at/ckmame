@@ -5,6 +5,7 @@ preload fwrite.so
 environment-set RENAME_FAILS roms/108-5.chd
 arguments --no-status-db -Fvj -D ../mamedb-disk.db -e extradir
 file extradir/1234.chd 108-5.chd {}
+directory extradir <> <>
 file roms/disk/108-5.chd {} 108-5.chd
 file roms/.ckmame.db {} <empty.ckmamedb>
 stdout

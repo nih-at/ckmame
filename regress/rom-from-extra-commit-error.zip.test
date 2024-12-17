@@ -6,6 +6,7 @@ environment-set RENAME_FAILS roms/1-4.zip
 arguments --no-status-db -Fvje extra -D ../mamedb-small.db
 file mame.db mame.db
 file roms/1-4-wrong-name.zip 1-4-ok.zip {}
+directory roms <> <>
 file saved/d87f7e0c-000.zip {} 1-4-ok.zip
 file saved/.ckmame.db {} <empty.ckmamedb>
 stdout
