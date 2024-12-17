@@ -14,7 +14,7 @@ file .ckmamerc <inline>
 "search" = { "move-from-extra" = false }
 "extra" = { "move-from-extra" = true }
 end-of-inline-data
-directory extra <> <>
+directory extra <>
 stdout
 In game 2-48:
 rom  04.rom        size       4  crc d87f7e0c: is in 'search/1-4.zip/04.rom'

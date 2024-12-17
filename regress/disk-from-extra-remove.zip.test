@@ -5,7 +5,7 @@ arguments --no-status-db -Fvj -D ../mamedb-disk.db -e extradir
 file extradir/1234.chd 108-5.chd {}
 file roms/disk/108-5.chd {} 108-5.chd
 file roms/.ckmame.db {} <empty.ckmamedb>
-directory extradir <> <>
+directory extradir <>
 stdout
 In game disk:
 rom  08.rom        size       8  crc 3656897d: missing

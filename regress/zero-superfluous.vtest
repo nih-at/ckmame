@@ -3,7 +3,7 @@ return 0
 arguments -Fvc 1-4
 file mame.db mame.db
 file roms/1-4.zip zero-ok.zip {}
-directory roms <> <>
+directory roms <>
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

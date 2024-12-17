@@ -8,7 +8,7 @@ file saved/07e0c072-000.zip {} 1-c-header.zip
 file saved/.ckmame.db {} <inline.ckmamedb>
 detector-hashes skip-some-bytes 20070429 07e0c072-000.zip *
 end-of-inline-data
-directory roms <> <>
+directory roms <>
 stdout
 In game skipped:
 game skipped                                 : not a single file found

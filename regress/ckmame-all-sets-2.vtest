@@ -8,8 +8,8 @@ file extra/1-4.zip 1-4-ok.zip {}
 file extra2/1-8.zip 1-8-ok.zip {}
 file roms1/.ckmame.db {} <empty.ckmamedb>
 file roms2/.ckmame.db {} <empty.ckmamedb>
-directory extra <> <>
-directory extra2 <> <>
+directory extra <>
+directory extra2 <>
 file .ckmamerc <inline>
 [global]
 report-correct = true

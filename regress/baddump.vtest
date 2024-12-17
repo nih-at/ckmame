@@ -6,7 +6,7 @@ file extra/baddump.zip baddump.zip {}
 file roms/.ckmame.db {} <inline.ckmamedb>
 hashes baddump.zip bad.rom cheap
 end-of-inline-data
-directory extra <> <>
+directory extra <>
 stdout
 In game baddump:
 game baddump                                 : correct

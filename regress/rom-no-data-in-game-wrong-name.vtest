@@ -6,7 +6,7 @@ file unknown/nodata.zip {} 1-8-ok.zip
 file unknown/.ckmame.db {} <inline.ckmamedb>
 hashes nodata.zip * cheap
 end-of-inline-data
-directory roms <> <>
+directory roms <>
 stdout
 In game nodata:
 game nodata                                  : not a single file found
