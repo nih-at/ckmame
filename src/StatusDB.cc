@@ -255,8 +255,8 @@ std::vector<std::string> StatusDB::get_games_by_status(int64_t run_id, GameStatu
     stmt->set_int("status2", status2);
     stmt->set_int("status3", status3);
     stmt->set_int("status4", status4);
-    stmt->set_int("status4", status5);
-    stmt->set_int("status4", status6);
+    stmt->set_int("status5", status5);
+    stmt->set_int("status6", status6);
 
     std::vector<std::string> games;
 
