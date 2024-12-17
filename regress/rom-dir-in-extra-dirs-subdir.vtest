@@ -3,6 +3,8 @@ return 1
 arguments -R extra/foo -e extra
 file mame.db mame.db
 file extra/foo.zip 1-4-foo.zip
+<zip>directory extra <>
+<zip>directory extra/foo <>
 stderr
 current ROM directory 'extra/foo' is in extra directory 'extra'
 end-of-inline-data
