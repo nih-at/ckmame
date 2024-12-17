@@ -1,4 +1,4 @@
-description test single-rom game (no parent), extra dir does not exist - TODO: nihtest does not complain about created directory 'search'
+description test single-rom game (no parent), extra dir does not exist
 return 0
 arguments -Fvcj -e search 1-4
 file mame.db mame.db
