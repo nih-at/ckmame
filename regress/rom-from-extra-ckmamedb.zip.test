@@ -7,6 +7,7 @@ file extradir/2-48.zip 2-48-ok.zip {}
 file roms/2-48.zip 1-4-ok.zip 2-48-ok.zip
 file roms/.ckmame.db 1-4-as-2-48.ckmamedb-dump <empty.ckmamedb>
 set-modification-time roms/2-48.zip 1422359238
+directory extradir <> <>
 stdout
 In game 2-48:
 rom  04.rom        size       4  crc d87f7e0c: correct

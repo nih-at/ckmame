@@ -11,6 +11,7 @@ dat-directories = [ "dats" ]
 dats = [ "ckmame test db" ]
 rom-db = "output.db"
 end-of-inline-data
+directory roms {} <>
 stdout
 ckmame test db (1 -> 2)
 In game 1-4:

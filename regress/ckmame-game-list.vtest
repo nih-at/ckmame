@@ -5,6 +5,7 @@ file mame.db mame.db
 file gamelist <inline>
 1-4
 end-of-inline-data
+directory roms {} <>
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

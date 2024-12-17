@@ -4,3 +4,4 @@ arguments -Fv 1-mia
 file mame.db mamedb-mia.db
 stdout
 end-of-inline-data
+directory roms {} <>

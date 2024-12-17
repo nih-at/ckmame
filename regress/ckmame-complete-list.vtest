@@ -7,3 +7,4 @@ baddump
 nogood
 norom
 end-of-inline-data
+directory roms {} <>

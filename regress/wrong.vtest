@@ -7,6 +7,7 @@ file unknown/1-4.zip {} garbage.zip
 file unknown/.ckmame.db {} <inline.ckmamedb>
 hashes 1-4.zip garbage cheap
 end-of-inline-data
+directory roms <> <>
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

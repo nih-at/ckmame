@@ -5,6 +5,7 @@ file .ckmamerc <inline>
 [global]
 create-fixdat = false
 end-of-inline-data
+directory roms {} <>
 stdout
 In game grandparent:
 game grandparent                             : not a single file found

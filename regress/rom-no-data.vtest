@@ -13,6 +13,7 @@ file .ckmame-status.db {} <inline.statusdb-dump>
 >>> table run (run_id, date)
 1|<ignore>
 end-of-inline-data
+directory roms {} <>
 stdout
 In game nodata:
 game nodata                                  : not a single file found

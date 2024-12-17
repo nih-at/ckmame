@@ -9,6 +9,7 @@ file .ckmamerc <inline>
 [global]
 move-from-extra = true
 end-of-inline-data
+directory search <> <>
 stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'search/14.zip/04.rom'

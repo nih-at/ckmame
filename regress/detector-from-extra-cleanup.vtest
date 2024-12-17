@@ -9,6 +9,7 @@ hashes 1-8.zip * cheap
 detector-hashes skip-some-bytes 20070429 1-8.zip *
 end-of-inline-data
 arguments -D mame-detector.db -Fvc -je extra 1-8
+directory extra <> <>
 stdout
 In game 1-8:
 game 1-8                                     : correct

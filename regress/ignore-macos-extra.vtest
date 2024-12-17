@@ -3,6 +3,7 @@ return 0
 arguments --no-status-db -D ../mamedb-lost-parent-ok.db -vFj -e extra
 file extra/._clone-8.zip CMakeLists.txt
 file extra/.DS_Store CMakeLists.txt
+directory roms {} <>
 stdout
 In game clone-8:
 game clone-8                                 : not a single file found

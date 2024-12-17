@@ -5,6 +5,7 @@ file .ckmamerc <inline>
 [global]
 rom-db = "../mamedb-merge-parent.db"
 end-of-inline-data
+directory roms {} <>
 stdout
 In game grandparent:
 game grandparent                             : not a single file found

@@ -2,6 +2,7 @@ description testing non-existing game
 return 0
 arguments -Fvc nosuchgame
 file mame.db mame.db
+directory roms {} <>
 stderr
 game 'nosuchgame' unknown
 end-of-inline-data

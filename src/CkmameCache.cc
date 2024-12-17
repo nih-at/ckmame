@@ -166,7 +166,7 @@ void CkmameCache::register_directory(const std::string &directory_name, where_t 
 	}
     }
 
-    // TODO: check that same directory isn't registerd with different where.
+    // TODO: check that same directory isn't registered with different where.
 
     cache_directories.emplace_back(name, where);
 }

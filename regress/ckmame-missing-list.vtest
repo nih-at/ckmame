@@ -3,3 +3,4 @@ return 0
 arguments --missing-list missing-list --no-report-missing
 file mame.db mame.db
 file missing-list missing-list.txt
+directory roms {} <>

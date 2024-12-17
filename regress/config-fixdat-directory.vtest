@@ -12,6 +12,7 @@ file .ckmamerc <>
 create-fixdat = true
 fixdat-directory = "home"
 end-of-inline-data
+directory roms {} <>
 stdout
 In game grandparent:
 game grandparent                             : not a single file found

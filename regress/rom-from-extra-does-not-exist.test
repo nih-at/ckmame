@@ -2,6 +2,7 @@ description test single-rom game (no parent), extra dir does not exist - TODO: n
 return 0
 arguments -Fvcj -e search 1-4
 file mame.db mame.db
+directory roms {} <>
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

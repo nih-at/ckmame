@@ -3,6 +3,7 @@ features HAVE_LIBXML2
 return 0
 arguments --no-status-db -Fvc -D ../mamedb-merge-parent.db --create-fixdat
 file "fixdat_ckmame test db (1).dat" {} fixdat-missing-all.fixdat
+directory roms {} <>
 stdout
 In game grandparent:
 game grandparent                             : not a single file found

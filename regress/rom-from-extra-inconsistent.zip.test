@@ -6,6 +6,7 @@ file mame.db mame.db
 file extradir/1-4-super.zip 1-4-inconsistent.zip {}
 file roms/1-4.zip {} 1-4-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
+directory extradir <> <>
 stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'extradir/1-4-super.zip/04.rom'

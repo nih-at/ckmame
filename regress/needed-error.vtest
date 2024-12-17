@@ -5,7 +5,7 @@ file mame.db mame.db
 file roms/1-4.zip 1-8-ok.zip 2-48-ok.zip
 file roms/2-48.zip 1-4-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
-mkdir saved
+directory saved <> {}
 read-only saved
 stdout
 In game 1-4:

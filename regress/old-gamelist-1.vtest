@@ -2,6 +2,7 @@ description test 2 rom game (no parent), zip is correct, one game is in old, do 
 return 0
 arguments -O ../mamedb-lost-parent-ok.db -Fvc --missing-list missing-list 1-4
 file mame.db mame.db
+directory roms {} <>
 stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in old 'clone-8'

@@ -15,6 +15,7 @@ file extra3/.ckmame.db {} <empty.ckmamedb-unzipped>
 file roms1/.ckmame.db {} <empty.ckmamedb>
 file roms3/.ckmame.db {} <empty.ckmamedb>
 file roms4/.ckmame.db {} <empty.ckmamedb-unzipped>
+directory roms2 {} <>
 file .ckmamerc <inline>
 [global]
 report-correct = true

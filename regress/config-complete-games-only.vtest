@@ -9,6 +9,7 @@ file .ckmamerc <inline>
 [global]
 complete-games-only = true
 end-of-inline-data
+directory roms {} <>
 stdout
 In game 2-48:
 game 2-48                                    : incomplete

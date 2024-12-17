@@ -5,6 +5,7 @@ file mame.db mame.db
 file roms/deadbeef.zip deadpork.zip {}
 file unknown/deadbeef.zip {} deadpork.zip
 file unknown/.ckmame.db {} <empty.ckmamedb>
+directory roms <> <>
 stdout
 In game deadbeef:
 game deadbeef                                : not a single file found

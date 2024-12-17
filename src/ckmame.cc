@@ -178,7 +178,6 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
         return false;
     }
 
-    ensure_dir(configuration.rom_directory, false);
     std::error_code ec;
     rom_dir_normalized = std::filesystem::relative(configuration.rom_directory, "/", ec);
     if (ec || rom_dir_normalized.empty()) {

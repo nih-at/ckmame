@@ -3,6 +3,7 @@ features HAVE_LIBXML2
 return 0
 arguments --no-status-db -Fvc -D ../mamedb-xml-quoting.db --create-fixdat
 file "fixdat_ckmame test db <&> (1).dat" {} fixdat-xml-quoting.fixdat
+directory roms {} <>
 stdout
 In game 2&4c<>;:
 game 2&4c<>;                                 : not a single file found

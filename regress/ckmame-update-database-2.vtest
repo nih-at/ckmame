@@ -11,6 +11,7 @@ dat-directories = [ "dats" ]
 dats = [ "ckmame test db" ]
 rom-db = "output.db"
 end-of-inline-data
+directory roms {} <>
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

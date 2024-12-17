@@ -2,6 +2,7 @@ description test no-rom game
 return 0
 arguments -Fvc norom
 file mame.db mame.db
+directory roms {} <>
 stdout
 In game norom:
 game norom                                   : correct
