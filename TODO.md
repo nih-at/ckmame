@@ -2,6 +2,8 @@
 
 ## StatusDB
 
+- select run
+- delete run
 - document
 - test
 
