@@ -67,6 +67,7 @@ class CkStatus : public Command {
         ALL_MISSING,
         CHANGES,
         CORRECT,
+        DELETE_RUN,
         LIST_MIA,
         MISSING,
         RUNS,
@@ -75,7 +76,7 @@ class CkStatus : public Command {
 
     class RunDiff {
       public:
-        RunDiff(int run_id1, int run_id2): run_id1(run_id1), run_id2(run_id2) {}
+        RunDiff(int run_from, int run_to): run_from(run_from), run_to(run_to) {}
 
         void compute();
 
@@ -97,23 +98,22 @@ class CkStatus : public Command {
         static bool is_complete(GameStatus status) {return status == GS_CORRECT || status == GS_CORRECT_MIA;}
         void insert_run(bool old);
 
-        int run_id1;
-        int run_id2;
+        int run_from;
+        int run_to;
         std::vector<GameChecksum> games;
         std::unordered_map<std::vector<uint8_t>, GameDiff> diffs;
     };
 
     std::set<Special> specials;
     std::optional<int> run_id;
-    std::optional<int> run_id2;
+    std::optional<int> run_from;
+    std::optional<int> run_to;
 
     int get_run_id();
-    int get_run_id2();
-    void list_games(GameStatus status);
-    void list_games(GameStatus status1, GameStatus status2);
-    void list_games(GameStatus status1, GameStatus status2, GameStatus status3);
-    void list_games(GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4);
-    void list_games(GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4, GameStatus status5, GameStatus status6);
+    int get_run_from();
+    int get_run_to();
+    void delete_run();
+    void list_games(const std::unordered_set<GameStatus>& status);
     void list_games(const std::vector<std::string> &games);
     void list_runs();
     void list_summary();

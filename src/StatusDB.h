@@ -44,6 +44,7 @@ class StatusDB: public DB {
     enum Statement {
         CLEANUP_DAT,
         CLEANUP_GAME,
+        DELETE_RUN,
         DELETE_RUN_BOTH,
         DELETE_RUN_COUNT,
         DELETE_RUN_DATE,
@@ -54,12 +55,13 @@ class StatusDB: public DB {
         LIST_RUNS,
         LATEST_RUN_ID,
         QUERY_GAME,
-        QUERY_GAME_BY_STATUS,
+        QUERY_GAME_BY_STATUS1,
         QUERY_GAME_BY_STATUS2,
         QUERY_GAME_BY_STATUS3,
         QUERY_GAME_BY_STATUS4,
+        QUERY_GAME_BY_STATUS5,
         QUERY_GAME_BY_STATUS6,
-        QUERY_GAME_STATI,
+        QUERY_GAME_STATUS,
         QUERY_RUN_STATUS_COUNTS
     };
 
@@ -85,14 +87,11 @@ class StatusDB: public DB {
     ~StatusDB() override = default;
 
     std::optional<int> latest_run_id(bool second = false);
+    void delete_run(int64_t run_id);
     void delete_runs(std::optional<int> keep_days, std::optional<int> keep_runs);
     [[nodiscard]] std::vector<Run> list_runs();
     [[nodiscard]] std::vector<GameInfo> get_games(int64_t run_id);
-    [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status);
-    [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2);
-  [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2, GameStatus status3);
-    [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4);
-    [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4, GameStatus status5, GameStatus status6);
+    [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, const std::unordered_set<GameStatus>& status);
     [[nodiscard]] std::unordered_map<GameStatus, std::vector<std::string>> get_run_status_names(int64_t run_id);
     [[nodiscard]] std::unordered_map<GameStatus, uint64_t> get_run_status_counts(int64_t run_id);
     [[nodiscard]] int64_t find_dat(const DatEntry& dat);
@@ -116,6 +115,7 @@ class StatusDB: public DB {
 
     DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
 
+    void delete_runs_execute(DBStatement* stmt);
     static void compute_combined_checksum(const Game& game, std::vector<uint8_t>& checksum);
 
 };

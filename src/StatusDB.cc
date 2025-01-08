@@ -60,6 +60,7 @@ create table game (\n\
 std::unordered_map<int, std::string> StatusDB::queries = {
     {CLEANUP_DAT, "delete from dat where dat_id not in (select distinct(dat_id) from game)"},
     {CLEANUP_GAME, "delete from game where run_id not in (select run_id from run)"},
+    {DELETE_RUN, "delete from run where run_id = :run_id"},
     {DELETE_RUN_BOTH, "delete from run where date < :date and run_id not in (select run_id from run order by date "
                       "desc limit :count)"},
     {DELETE_RUN_COUNT,
@@ -73,12 +74,13 @@ std::unordered_map<int, std::string> StatusDB::queries = {
     {LATEST_RUN_ID, "select run_id from run order by date desc limit 2"},
     {LIST_RUNS, "select run_id, date from run order by date asc"},
     {QUERY_GAME, "select dat_id, name, checksum, status from game where run_id = :run_id"},
-    {QUERY_GAME_BY_STATUS, "select name from game where run_id = :run_id and status = :status order by name"},
+    {QUERY_GAME_BY_STATUS1, "select name from game where run_id = :run_id and status = :status order by name"},
     {QUERY_GAME_BY_STATUS2, "select name from game where run_id = :run_id and status in (:status1, :status2) order by name"},
     {QUERY_GAME_BY_STATUS3, "select name from game where run_id = :run_id and status in (:status1, :status2, :status3) order by name"},
     {QUERY_GAME_BY_STATUS4, "select name from game where run_id = :run_id and status in (:status1, :status2, :status3, :status4) order by name"},
+    {QUERY_GAME_BY_STATUS5, "select name from game where run_id = :run_id and status in (:status1, :status2, :status3, :status4, :status5) order by name"},
     {QUERY_GAME_BY_STATUS6, "select name from game where run_id = :run_id and status in (:status1, :status2, :status3, :status4, :status5, :status6) order by name"},
-    {QUERY_GAME_STATI, "select name, status from game where run_id = :run order by name"},
+    {QUERY_GAME_STATUS, "select name, status from game where run_id = :run order by name"},
     {QUERY_RUN_STATUS_COUNTS,
      "select status, count(*) as status_count from game where run_id = :run_id group by status"},
 };
@@ -94,6 +96,14 @@ std::string StatusDB::get_query(int name, bool parameterized) const {
         }
         return it->second;
     }
+}
+
+void StatusDB::delete_run(int64_t run_id) {
+    DBStatement* stmt = get_statement(DELETE_RUN);
+
+    stmt->set_int64("run_id", run_id);
+
+    delete_runs_execute(stmt);
 }
 
 void StatusDB::delete_runs(std::optional<int> days, std::optional<int> count) {
@@ -120,6 +130,11 @@ void StatusDB::delete_runs(std::optional<int> days, std::optional<int> count) {
         stmt->set_int("count", *count);
     }
 
+    delete_runs_execute(stmt);
+}
+
+
+void StatusDB::delete_runs_execute(DBStatement* stmt) {
     stmt->execute();
 
     stmt = get_statement(CLEANUP_GAME);
@@ -181,82 +196,24 @@ std::vector<StatusDB::Run> StatusDB::list_runs() {
     return runs;
 }
 
-std::vector<std::string> StatusDB::get_games_by_status(int64_t run_id, GameStatus status) {
-    auto stmt = get_statement(QUERY_GAME_BY_STATUS);
 
-    stmt->set_int64("run_id", run_id);
-    stmt->set_int("status", status);
-
-    std::vector<std::string> games;
-
-    while (stmt->step()) {
-        games.push_back(stmt->get_string("name"));
+std::vector<std::string> StatusDB::get_games_by_status(int64_t run_id, const std::unordered_set<GameStatus>& status) {
+    if (status.empty()) {
+        return {};
+    }
+    if (status.size() > 6) {
+        throw Exception("more than 6 status not supported");
     }
 
-    return games;
-}
-
-std::vector<std::string> StatusDB::get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2) {
-    auto stmt = get_statement(QUERY_GAME_BY_STATUS2);
+    auto stmt = get_statement(static_cast<Statement>(static_cast<int>(QUERY_GAME_BY_STATUS1) + status.size() - 1));
 
     stmt->set_int64("run_id", run_id);
-    stmt->set_int("status1", status1);
-    stmt->set_int("status2", status2);
 
-    std::vector<std::string> games;
-
-    while (stmt->step()) {
-        games.push_back(stmt->get_string("name"));
+    int index = 1;
+    for (auto one_status : status) {
+        stmt->set_int("status" + std::to_string(index), one_status);
+        index += 1;
     }
-
-    return games;
-}
-
-std::vector<std::string> StatusDB::get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2, GameStatus status3) {
-    auto stmt = get_statement(QUERY_GAME_BY_STATUS4);
-
-    stmt->set_int64("run_id", run_id);
-    stmt->set_int("status1", status1);
-    stmt->set_int("status2", status2);
-    stmt->set_int("status3", status3);
-
-    std::vector<std::string> games;
-
-    while (stmt->step()) {
-        games.push_back(stmt->get_string("name"));
-    }
-
-    return games;
-}
-
-std::vector<std::string> StatusDB::get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4) {
-    auto stmt = get_statement(QUERY_GAME_BY_STATUS4);
-
-    stmt->set_int64("run_id", run_id);
-    stmt->set_int("status1", status1);
-    stmt->set_int("status2", status2);
-    stmt->set_int("status3", status3);
-    stmt->set_int("status4", status4);
-
-    std::vector<std::string> games;
-
-    while (stmt->step()) {
-        games.push_back(stmt->get_string("name"));
-    }
-
-    return games;
-}
-
-std::vector<std::string> StatusDB::get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4, GameStatus status5, GameStatus status6) {
-    auto stmt = get_statement(QUERY_GAME_BY_STATUS6);
-
-    stmt->set_int64("run_id", run_id);
-    stmt->set_int("status1", status1);
-    stmt->set_int("status2", status2);
-    stmt->set_int("status3", status3);
-    stmt->set_int("status4", status4);
-    stmt->set_int("status5", status5);
-    stmt->set_int("status6", status6);
 
     std::vector<std::string> games;
 
@@ -268,7 +225,7 @@ std::vector<std::string> StatusDB::get_games_by_status(int64_t run_id, GameStatu
 }
 
 std::unordered_map<GameStatus, std::vector<std::string>> StatusDB::get_run_status_names(int64_t run_id) {
-    auto stmt = get_statement(QUERY_GAME_STATI);
+    auto stmt = get_statement(QUERY_GAME_STATUS);
 
     stmt->set_int64("run_id", run_id);
 

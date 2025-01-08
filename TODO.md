@@ -2,10 +2,7 @@
 
 ## StatusDB
 
-- select run
-- delete run
-- document
-- test
+- update ckstatus man page (--delete, --from, --to)
 
 ## Other
 
@@ -24,6 +21,7 @@
 
 # Later
 
+- StatusDB tests
 - use CkmameDB as old db
 - `mkmamedb`: analyze speed, make it faster
 - clean up archives in `.ckmame.db` for manually removed dirs/zips

@@ -36,9 +36,11 @@
 #include <algorithm>
 #include <cerrno>
 #include <cstring>
+#include <string>
 
 #include "compat.h"
 
+#include "ArchiveDir.h"
 #include "Commandline.h"
 #include "Exception.h"
 #include "RomDB.h"
@@ -48,11 +50,16 @@
 
 std::vector<Commandline::Option> ckstatus_options = {
     Commandline::Option("all-missing", "list missing games"),
-    Commandline::Option("changes", "list changes between runs"), Commandline::Option("correct", "list correct games"),
+    Commandline::Option("changes", "list changes between runs"),
+    Commandline::Option("correct", "list correct games"),
+    Commandline::Option("delete", "delete specific run"),
+    Commandline::Option("from", "RUN", "first run to compare with --changes"),
     Commandline::Option("mia-have", "list games containing files marked MIA"),
     Commandline::Option("missing", "list missing games not marked MIA"),
-    //  Commandline::Option("run", "RUN", "use information from run RUN (default: latest)"),
-    Commandline::Option("runs", "list runs"), Commandline::Option("summary", "print summary")};
+    Commandline::Option("run", "RUN", "use information from run RUN (default: latest)"),
+    Commandline::Option("runs", "list runs"),
+    Commandline::Option("summary", "print summary"),
+    Commandline::Option("to", "RUN", "second run to compare with --changes")};
 
 
 std::unordered_set<std::string> ckstatus_used_variables = {"status_db", "report_status"};
@@ -77,17 +84,29 @@ void CkStatus::global_setup(const ParsedCommandline& commandline) {
         else if (option.name == "correct") {
             specials.insert(CORRECT);
         }
+        else if (option.name == "delete") {
+            specials.insert(DELETE_RUN);
+        }
+        else if (option.name == "from") {
+            run_from = std::stoll(option.argument);
+        }
         else if (option.name == "mia-have") {
             specials.insert(LIST_MIA);
         }
         else if (option.name == "missing") {
             specials.insert(MISSING);
         }
+        else if (option.name == "run") {
+            run_id = std::stoll(option.argument);
+        }
         else if (option.name == "runs") {
             specials.insert(RUNS);
         }
         else if (option.name == "summary") {
             specials.insert(SUMMARY);
+        }
+        else if (option.name == "to") {
+            run_to = std::stoll(option.argument);
         }
     }
 
@@ -102,8 +121,8 @@ bool CkStatus::execute(const std::vector<std::string>& arguments) {
     }
 
     if (configuration.report_status == false) {
-      /* this set should be ignored according by the config */
-      return true;
+        /* this set should be ignored according by the config */
+        return true;
     }
 
     try {
@@ -116,7 +135,7 @@ bool CkStatus::execute(const std::vector<std::string>& arguments) {
     for (auto key : specials) {
         switch (key) {
         case ALL_MISSING:
-            list_games(GS_MISSING, GS_MISSING_BEST, GS_PARTIAL, GS_PARTIAL_BEST, GS_PARTIAL_MIA, GS_PARTIAL_BEST_MIA);
+            list_games({GS_MISSING, GS_MISSING_BEST, GS_PARTIAL, GS_PARTIAL_BEST, GS_PARTIAL_MIA, GS_PARTIAL_BEST_MIA});
             break;
 
         case CHANGES:
@@ -124,15 +143,18 @@ bool CkStatus::execute(const std::vector<std::string>& arguments) {
             break;
 
         case CORRECT:
-            list_games(GS_CORRECT, GS_CORRECT_MIA);
+            list_games({GS_CORRECT, GS_CORRECT_MIA});
             break;
 
+        case DELETE_RUN:
+            delete_run();
+
         case LIST_MIA:
-            list_games(GS_CORRECT_MIA, GS_PARTIAL_MIA);
+            list_games({GS_CORRECT_MIA, GS_PARTIAL_MIA});
             break;
 
         case MISSING:
-            list_games(GS_MISSING, GS_PARTIAL, GS_PARTIAL_MIA);
+            list_games({GS_MISSING, GS_PARTIAL, GS_PARTIAL_MIA});
             break;
 
         case RUNS:
@@ -164,40 +186,43 @@ int CkStatus::get_run_id() {
     return *actual_run_id;
 }
 
-
-int CkStatus::get_run_id2() {
-    if (run_id2) {
-        return *run_id2;
+int CkStatus::get_run_to() {
+    if (run_to) {
+        return *run_to;
     }
 
-    auto actual_run_id2 = status_db->latest_run_id(true);
-    if (!actual_run_id2) {
+    auto actual_run_to = status_db->latest_run_id(false);
+    if (!actual_run_to) {
+        throw Exception("No runs.");
+    }
+    return *actual_run_to;
+}
+
+
+int CkStatus::get_run_from() {
+    if (run_from) {
+        return *run_from;
+    }
+
+    auto actual_run_from = status_db->latest_run_id(true);
+    if (!actual_run_from) {
         throw Exception("Only one run.");
     }
-    return *actual_run_id2;
+    return *actual_run_from;
 }
 
 
-void CkStatus::list_games(GameStatus status) { list_games(status_db->get_games_by_status(get_run_id(), status)); }
+void CkStatus::delete_run() {
+    if (!run_id) {
+        throw Exception("--run option must be specified for --delete");
+    }
 
-void CkStatus::list_games(GameStatus status1, GameStatus status2) {
-    list_games(status_db->get_games_by_status(get_run_id(), status1, status2));
+    status_db->delete_run(*run_id);
 }
 
-void CkStatus::list_games(GameStatus status1, GameStatus status2, GameStatus status3) {
-  list_games(status_db->get_games_by_status(get_run_id(), status1, status2, status3));
-}
 
-void CkStatus::list_games(GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4) {
-  list_games(status_db->get_games_by_status(get_run_id(), status1, status2, status3, status4));
-}
-
-void CkStatus::list_games(GameStatus status1, GameStatus status2, GameStatus status3, GameStatus status4, GameStatus status5, GameStatus status6) {
-  list_games(status_db->get_games_by_status(get_run_id(), status1, status2, status3, status4, status5, status6));
-}
-
-void CkStatus::list_games(const std::vector<std::string>& games) {
-    for (const auto& game : games) {
+void CkStatus::list_games(const std::unordered_set<GameStatus>& status) {
+    for (const auto& game : status_db->get_games_by_status(get_run_id(), status)) {
         output.message(game);
     }
 }
@@ -252,7 +277,7 @@ void CkStatus::list_summary() {
 
 
 void CkStatus::print_changes() {
-    auto diffs = RunDiff(get_run_id(), get_run_id2());
+    auto diffs = RunDiff(get_run_from(), get_run_to());
 
     diffs.compute();
 }
@@ -265,24 +290,22 @@ void CkStatus::RunDiff::compute() {
 
     for (const auto& game : games) {
         auto diff = diffs.at(game.checksum);
-        if (diff.new_info) {
+        if (diff.new_info && is_complete(diff.new_info->status)) {
             if (is_complete(diff.new_info->status)) {
                 if (!diff.old_info || !is_complete(diff.old_info->status)) {
                     output.message("+ %s", game.name.c_str());
                 }
             }
         }
-        else {
-            if (is_complete(diff.old_info->status)) {
-                output.message("- %s", game.name.c_str());
-            }
+        else if (diff.old_info && is_complete(diff.old_info->status)) {
+            output.message("- %s", game.name.c_str());
         }
     }
 }
 
 
 void CkStatus::RunDiff::insert_run(bool old) {
-    auto infos = status_db->get_games(old ? run_id2 : run_id1);
+    auto infos = status_db->get_games(old ? run_from : run_to);
 
     for (const auto& info : infos) {
         auto it = diffs.find(info.checksum);
