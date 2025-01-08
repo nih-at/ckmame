@@ -1,9 +1,5 @@
 # TODO
 
-## StatusDB
-
-- update ckstatus man page (--delete, --from, --to)
-
 ## Other
 
 - Fix rom in extra not found if in roms/.ckmame.db but not in roms/ (ckmamedb-file-removed.vtest)
