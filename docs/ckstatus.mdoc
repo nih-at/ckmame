@@ -1,4 +1,4 @@
-.\" Copyright (c) 2024 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2024-2025 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -41,12 +41,16 @@ runs
 .Op Fl Fl changes
 .Op Fl Fl config Ar file
 .Op Fl Fl correct
+.Op Fl Fl delete
+.Op Fl Fl from Ar RUN
 .Op Fl h , Fl Fl help
 .Op Fl Fl list-sets
 .Op Fl Fl mia-have
 .Op Fl Fl missing
+.Op Fl Fl run Ar RUN
 .Op Fl Fl runs
 .Op Fl Fl set Ar pattern
+.Op Fl Fl to Ar RUN
 .Op Fl Fl status-db Ar dbfile
 .Op Fl Fl summary
 .Op Fl V , Fl Fl version
@@ -70,7 +74,11 @@ List all missing ROMs.
 Report on all configured sets.
 .It Fl Fl changes
 List the changes in between two runs.
-By default, the newest two runs are compared.
+By default, the newest two runs are compared, but the runs to compare
+can be chosen with
+.Fl Fl from Ar RUN
+and
+.Fl Fl to Ar RUN .
 .It Fl Fl config Ar file
 Read the configuration from
 .Ar file .
@@ -78,6 +86,13 @@ Read the configuration from
 List all correct ROMs.
 .It Fl h , Fl Fl help
 Show a short help.
+.It Fl Fl delete
+List the run specified by the
+.Fl Fl run Ar RUN
+option (required to avoid accidental data loss).
+.It Fl Fl from Ar RUN
+Select the base run for the comparison with
+.Fl Fl changes .
 .It Fl Fl list-sets
 List all configured sets, for the
 .Fl Fl set
@@ -87,6 +102,10 @@ List all games containing ROMs that are MIA according to the database.
 .It Fl Fl missing
 List all missing ROMs except those that are MIA according to the
 database.
+.It Fl Fl run Ar RUN
+Select the run on which to report, or which to delete
+(for
+.Fl Fl delete ) .
 .It Fl Fl runs
 List all available runs.
 .It Fl Fl set Ar pattern
@@ -99,6 +118,9 @@ instead of the default
 .Pa .ckmame-status.db .
 .It Fl Fl summary
 Print summary information on the number of missing games.
+.It Fl Fl to Ar RUN
+Select the target run for the comparison with
+.Fl Fl changes .
 .It Fl V , Fl Fl version
 Report the version of
 .Nm .
