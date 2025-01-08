@@ -1,0 +1,10 @@
+description test all games, one rom missing, create fixdat
+features HAVE_LIBXML2
+return 0
+arguments --no-status-db --complete-games-only -Fvc -D ../mamedb-lost-parent-ok.db --create-fixdat
+file "fixdat_ckmame test db (1).dat" {} fixdat-missing-both.fixdat
+directory roms <>
+stdout
+In game clone-8:
+game clone-8                                 : not a single file found
+end-of-inline-data

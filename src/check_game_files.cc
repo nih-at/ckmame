@@ -107,7 +107,7 @@ void check_game_files(Game* game, filetype_t filetype, GameArchives* archives, R
 
         if (rom.where == FILE_INGAME && match->quality == Match::MISSING && rom.hashes.size > 0 &&
             !rom.hashes.empty() && rom.status != Rom::NO_DUMP) {
-            if (configuration.complete_games_only) {
+            if (configuration.complete_games_only && !configuration.create_fixdat) {
                 match->quality = Match::UNCHECKED;
                 if (missing_roms) {
                     continue;
