@@ -1,9 +1,10 @@
-X.X (Unreleased)
+3.0 (2025-01-20)
 ================
 
+* Keep results of last runs, use `ckstatus` to query state of ROM set. The `ckmame` command line options duplicating this functionality (`--complete-list`, `--missing-list`, and `--report-changes`) are deprecated.
+* Add support for SHA256 and mia flag for ROMs and disks.
 * Don't match any files for ROMs or disks with no hashes.
 * When only keeping complete games, minimize searching when a ROM is missing.
-* Add support for SHA256 and mia flag for ROMs and disks.
 
 2.1 (2024-02-23)
 ================
