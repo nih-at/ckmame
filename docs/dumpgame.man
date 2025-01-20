@@ -149,8 +149,8 @@ Display all roms matching the checksum
 \fBdumpgame -c c1e6ab10\fR
 .RE
 .SH "SEE ALSO"
-ckmame(1),
-mkmamedb(1)
+mkmamedb(1),
+ckmamerc(5)
 .SH "AUTHORS"
 \fBdumpgame\fR
 was written by

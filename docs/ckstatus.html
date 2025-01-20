@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!-- This is an automatically generated file.  Do not edit.
-   Copyright (c) 2024 Dieter Baron and Thomas Klausner.
+   Copyright (c) 2024-2025 Dieter Baron and Thomas Klausner.
    All rights reserved.
   
    Redistribution and use in source and binary forms, with or without
@@ -61,16 +61,24 @@
       [<code class="Fl">-</code><code class="Fl">-config</code>
       <var class="Ar">file</var>]
       [<code class="Fl">-</code><code class="Fl">-correct</code>]
-      [<code class="Fl">-</code><code class="Fl">-correct-mia</code>]
-      [<code class="Fl">-h</code>,
-      <code class="Fl">-</code><code class="Fl">-help</code>]
+      [<code class="Fl">-</code><code class="Fl">-delete</code>]
+      [<code class="Fl">-</code><code class="Fl">-from</code>
+      <var class="Ar">RUN</var>] [<code class="Fl">-h</code>,
+      <code class="Fl">-</code> <code class="Fl">-help</code>]
       [<code class="Fl">-</code><code class="Fl">-list-sets</code>]
+      [<code class="Fl">-</code><code class="Fl">-mia-have</code>]
       [<code class="Fl">-</code><code class="Fl">-missing</code>]
+      [<code class="Fl">-</code><code class="Fl">-run</code>
+      <var class="Ar">RUN</var>]
       [<code class="Fl">-</code><code class="Fl">-runs</code>]
       [<code class="Fl">-</code><code class="Fl">-set</code>
       <var class="Ar">pattern</var>]
+      [<code class="Fl">-</code><code class="Fl">-to</code>
+      <var class="Ar">RUN</var>]
       [<code class="Fl">-</code><code class="Fl">-status-db</code>
-      <var class="Ar">dbfile</var>] [<code class="Fl">-V</code>,
+      <var class="Ar">dbfile</var>]
+      [<code class="Fl">-</code><code class="Fl">-summary</code>]
+      [<code class="Fl">-V</code>,
       <code class="Fl">-</code><code class="Fl">-version</code>]</td>
   </tr>
 </table>
@@ -82,7 +90,7 @@
   The data is read from the <span class="Pa">.ckmame-status.db</span> file in
   the current directory, or the place configured in the config file, either for
   the default or the selected set(s). It compares the output of different runs,
-  i.e. starts of <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1.)</a>
+  i.e. starts of <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>.
 <section class="Ss">
 <h2 class="Ss" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h2>
 Supported options:
@@ -93,23 +101,41 @@ Supported options:
   <dd>Report on all configured sets.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-changes</code></dt>
   <dd>List the changes in between two runs. By default, the newest two runs are
-      compared.</dd>
+      compared, but the runs to compare can be chosen with
+      <code class="Fl">-</code> <code class="Fl">-from</code>
+      <var class="Ar">RUN</var> and
+      <code class="Fl">-</code><code class="Fl">-to</code>
+      <var class="Ar">RUN</var>.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-config</code>
     <var class="Ar">file</var></dt>
   <dd>Read the configuration from <var class="Ar">file</var>.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-correct</code></dt>
   <dd>List all correct ROMs.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-correct-mia</code></dt>
-  <dd>List all correct ROMs that are MIA according to the database.</dd>
   <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a>,
     <code class="Fl">-</code><code class="Fl">-help</code></dt>
   <dd>Show a short help.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-delete</code></dt>
+  <dd>Delete the run specified by the
+      <code class="Fl">-</code><code class="Fl">-run</code>
+      <var class="Ar">RUN</var> option (required to avoid accidental data
+    loss).</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-from</code>
+    <var class="Ar">RUN</var></dt>
+  <dd>Select the base run for the comparison with
+      <code class="Fl">-</code><code class="Fl">-changes</code>.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-list-sets</code></dt>
   <dd>List all configured sets, for the
       <code class="Fl">-</code><code class="Fl">-set</code> option.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-mia-have</code></dt>
+  <dd>List all games containing ROMs that are MIA according to the
+    database.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-missing</code></dt>
   <dd>List all missing ROMs except those that are MIA according to the
     database.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-run</code>
+    <var class="Ar">RUN</var></dt>
+  <dd>Select the run on which to report, or which to delete (for
+      <code class="Fl">-</code><code class="Fl">-delete</code>).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-runs</code></dt>
   <dd>List all available runs.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-set</code>
@@ -119,6 +145,12 @@ Supported options:
     <var class="Ar">dbfile</var></dt>
   <dd>Use <var class="Ar">dbfile</var> instead of the default
       <span class="Pa">.ckmame-status.db</span>.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-summary</code></dt>
+  <dd>Print summary information on the number of missing games.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-to</code>
+    <var class="Ar">RUN</var></dt>
+  <dd>Select the target run for the comparison with
+      <code class="Fl">-</code><code class="Fl">-changes</code>.</dd>
   <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>,
     <code class="Fl">-</code><code class="Fl">-version</code></dt>
   <dd>Report the version of <code class="Nm">ckstatus</code>.</dd>
@@ -133,7 +165,8 @@ By default, the run information is read from
 <section class="Sh">
 <h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
   ALSO</a></h1>
-<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>
+<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>,
+  <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmamerc.html">ckmamerc(5)</a>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
@@ -145,7 +178,7 @@ By default, the run information is read from
 </div>
 <table class="foot">
   <tr>
-    <td class="foot-date">November 4, 2024</td>
+    <td class="foot-date">January 9, 2025</td>
     <td class="foot-os">NiH</td>
   </tr>
 </table>

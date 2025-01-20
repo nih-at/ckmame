@@ -27,7 +27,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH "CKMAMERC" "5" "June 26, 2024" "NiH" "File Formats Manual"
+.TH "CKMAMERC" "5" "January 8, 2025" "NiH" "File Formats Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -265,6 +265,19 @@ Boolean.
 .RE
 .PP
 The following variables are only supported by
+ckstatus(1):
+.RS 4n
+.TP 22n
+report-status
+Report this set when running
+ckstatus(1)
+with
+\fB\-\fR\fB\-all-sets\fR.
+Defaults to
+\(lqtrue\(rq.
+.RE
+.PP
+The following variables are only supported by
 mkmamedb(1):
 .RS 4n
 .TP 22n
@@ -375,6 +388,7 @@ ckmame --set Big Set
 .RE
 .SH "SEE ALSO"
 ckmame(1),
+ckstatus(1),
 dumpgame(1),
 mkmamedb(1)
 .SH "AUTHORS"
