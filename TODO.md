@@ -2,6 +2,7 @@
 
 ## Other
 
+- Remove fixdat if no ROMs are missing.
 - Fix rom in extra not found if in roms/.ckmame.db but not in roms/ (ckmamedb-file-removed.vtest)
 - Fix failing tests.
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.

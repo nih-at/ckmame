@@ -142,6 +142,7 @@ TomlSchema::TypePtr Configuration::file_schema = TomlSchema::table({
 
 
 std::vector<Commandline::Option> Configuration::commandline_options = {
+    Commandline::Option("clear-extra-directories", "don't use extra directories specified in config file"),
     Commandline::Option("complete-games-only", 'C', "only keep complete games in ROM set"),
     Commandline::Option("complete-list", "file", "write list of complete games to file"),
     Commandline::Option("config", "file", "read configuration from file"),
@@ -198,6 +199,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
 
 
 std::unordered_map<std::string, std::string> Configuration::option_to_variable = {
+    {"clear-extra-directories", "extra_directories"},
     { "copy-from-extra", "move_from_extra" },
     { "extra-directory", "extra_directories" },
     { "no-complete-games-only", "complete_games_only" },
@@ -400,7 +402,10 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
     auto extra_directory_specified = false;
 
     for (const auto &option : commandline.options) {
-        if (option.name == "complete-games-only") {
+        if (option.name == "clear-extra-directories") {
+            extra_directories.clear();
+        }
+        else if (option.name == "complete-games-only") {
             complete_games_only = true;
         }
         else if (option.name == "complete-list") {
@@ -416,10 +421,6 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
             delete_unknown_pattern = option.argument;
         }
         else if (option.name == "extra-directory") {
-            if (!extra_directory_specified) {
-                extra_directories.clear();
-                extra_directory_specified = true;
-            }
             std::string name = option.argument;
             auto last = name.find_last_not_of('/');
             if (last == std::string::npos) {
