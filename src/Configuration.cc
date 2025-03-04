@@ -399,8 +399,6 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
 	merge_config_file(file);
     }
 
-    auto extra_directory_specified = false;
-
     for (const auto &option : commandline.options) {
         if (option.name == "clear-extra-directories") {
             extra_directories.clear();
