@@ -201,6 +201,19 @@ std::string human_number(uint64_t value) {
     return s;
 }
 
+bool string_less_case_insensitive(const std::string &lhs, const std::string &rhs) {
+    const auto result = std::mismatch(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend(), [](const unsigned char lhc, const unsigned char rhc) {
+            return tolower(lhc) == tolower(rhc);
+        });
+
+    return result.second != rhs.cend() && (result.first == lhs.cend() || tolower(*result.first) < tolower(*result.second));
+}
+
+
+void sort_strings_case_insensitive(std::vector<std::string> &strings) {
+    std::sort(strings.begin(), strings.end(), string_less_case_insensitive);
+}
+
 
 std::string string_format(const char *format, ...) {
     va_list ap;

@@ -222,7 +222,9 @@ void CkStatus::delete_run() {
 
 
 void CkStatus::list_games(const std::unordered_set<GameStatus>& status) {
-    for (const auto& game : status_db->get_games_by_status(get_run_id(), status)) {
+    auto games = status_db->get_games_by_status(get_run_id(), status);
+    sort_strings_case_insensitive(games);
+    for (const auto& game : games) {
         output.message(game);
     }
 }

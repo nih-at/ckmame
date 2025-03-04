@@ -49,6 +49,7 @@ typedef enum name_type name_type_t;
 
 std::vector<uint8_t> hex2bin(const std::string &hex);
 std::string bin2hex(const std::vector<uint8_t> &bin);
+bool string_less_case_insensitive(const std::string &lhs, const std::string &rhs);
 std::string string_lower(const std::string &s);
 bool string_starts_with(const std::string &large, const std::string &small);
 name_type_t name_type(const std::string &name);
@@ -60,6 +61,7 @@ bool is_ziplike(const std::string &fname);
 std::filesystem::path home_directory();
 std::string human_number(uint64_t value);
 std::string format_time(const std::string &format, time_t timestamp);
+void sort_strings_case_insensitive(std::vector<std::string> &strings);
 std::string string_format(const char *format, ...) PRINTF_LIKE(1, 2);
 std::string string_format_v(const char *format, va_list ap);
 std::string slurp(const std::string &fname);

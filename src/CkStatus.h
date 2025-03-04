@@ -39,6 +39,7 @@
 #include "Command.h"
 #include "Result.h"
 #include "StatusDB.h"
+#include "util.h"
 
 namespace std {
 template <>
@@ -86,7 +87,7 @@ class CkStatus : public Command {
             std::string name;
             std::vector<uint8_t> checksum;
 
-            bool operator<(const GameChecksum &other) const {return name < other.name ;}
+            bool operator<(const GameChecksum &other) const {return string_less_case_insensitive(name, other.name);}
         };
 
         class GameDiff {

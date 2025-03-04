@@ -403,6 +403,7 @@ void Dumpgame::dump_hash_types() {
 bool Dumpgame::dump_list(int type) {
     try {
         auto list = db->read_list(static_cast<enum dbh_list>(type));
+        sort_strings_case_insensitive(list);
 
         for (const auto &name : list) {
             output.message(name);
