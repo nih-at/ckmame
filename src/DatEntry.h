@@ -41,6 +41,7 @@ public:
     std::string name;
     std::string description;
     std::string version;
+    uint32_t crc{};
     
     void merge(const DatEntry *high, const DatEntry *low);
 };

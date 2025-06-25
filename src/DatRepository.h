@@ -46,7 +46,7 @@ class DatRepository {
 
     static bool is_newer(const std::string& a, const std::string& b);
 
-    std::optional<DatDB::DatInfo> find_dat(const std::string &name);
+    std::vector<DatDB::DatInfo> find_dats(const std::string &name);
     std::vector<std::string> list_dats();
 
   private:

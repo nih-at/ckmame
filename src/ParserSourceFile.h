@@ -34,6 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "Hashes.h"
 #include "ParserSource.h"
 #include "SharedFile.h"
 
@@ -45,6 +46,7 @@ public:
     ParserSourcePtr open(const std::string &name) override;
     size_t read_xxx(void *data, size_t length) override;
     time_t get_mtime() override;
+    uint32_t get_crc() override;
     
 private:
     std::string file_name;

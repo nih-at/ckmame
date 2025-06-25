@@ -1,6 +1,6 @@
->>> table dat (dat_idx, name, description, author, version)
-0|ckmame test db|<null>|<null>|1
-1|ckmame test db|<null>|<null>|2
+>>> table dat (dat_idx, name, description, author, version, crc)
+0|ckmame test db|<null>|<null>|1|4055240243
+1|ckmame test db|<null>|<null>|2|3012081824
 >>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1, sha256, missing)
 1|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>|<null>|0
 2|0|0|08.rom|<null>|0|0|8|911640957|<null>|<null>|<null>|0

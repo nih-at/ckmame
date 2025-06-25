@@ -42,46 +42,54 @@
 #include "ParserSourceFile.h"
 #include "Parser.h"
 
+
 static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo> &dats_to_use) {
     auto repository = DatRepository(configuration.dat_directories);
 
     auto up_to_date = true;
 
-    std::vector<DatEntry> db_dats;
+    std::vector<DatEntry> db_dat_list;
 
     try {
 	auto existing_db = RomDB(configuration.rom_db, DBH_READ);
-	db_dats = existing_db.read_dat();
+	db_dat_list = existing_db.read_dat();
     }
     catch (...) { }
 
-    std::unordered_map<std::string, std::string> db_versions;
+    std::unordered_map<std::string, const DatEntry*> db_dats;
 
-    for (const auto &db_dat : db_dats) {
-	db_versions[db_dat.name] = db_dat.version;
+    for (const auto &db_dat : db_dat_list) {
+	db_dats[db_dat.name] = &db_dat;
     }
 
     // TODO: remove duplicates from dats
 
     for (const auto &dat_name : configuration.dats) {
-	auto it = db_versions.find(dat_name);
-	auto fs_dat_maybe = repository.find_dat(dat_name);
-	if (!fs_dat_maybe.has_value()) {
+	auto it = db_dats.find(dat_name);
+	auto fs_dats = repository.find_dats(dat_name);
+	if (fs_dats.empty()) {
 	    throw Exception("can't find dat '" + dat_name + "'");
 	}
-	const auto& fs_dat = fs_dat_maybe.value();
+        else if (fs_dats.size() > 1) {
+            throw Exception("multiple different dats found for '" + dat_name + "' with version '" + fs_dats[0].version + "'");
+        }
+	const auto& fs_dat = fs_dats[0];
 
 	dats_to_use.push_back(fs_dat);
 
-	if (it == db_versions.end()) {
+	if (it == db_dats.end()) {
 	    output.message("%s (-> %s)", dat_name.c_str(), fs_dat.version.c_str());
 	    up_to_date = false;
 	    continue;
 	}
-	const auto& db_version = it->second;
+	const auto& db_dat = it->second;
 
-	if (DatRepository::is_newer(fs_dat.version, db_version)) {
-	    output.message("%s (%s -> %s)", dat_name.c_str(), db_version.c_str(), fs_dat.version.c_str());
+        if (fs_dat.version == db_dat->version && fs_dat.crc != db_dat->crc) {
+            output.message("%s (%s %x -> %x)", dat_name.c_str(), db_dat->version.c_str(), db_dat->crc, fs_dat.crc);
+            up_to_date = false;
+        }
+	else if (DatRepository::is_newer(fs_dat.version, db_dat->version)) {
+	    output.message("%s (%s -> %s)", dat_name.c_str(), db_dat->version.c_str(), fs_dat.version.c_str());
 	    up_to_date = false;
 	}
     }

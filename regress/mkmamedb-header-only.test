@@ -3,4 +3,4 @@ return 0
 program mkmamedb
 arguments mamedb.dat
 file mamedb.dat mamedb-header-only.dat
-file mame.db {} mamedb-empty.dump
+file mame.db {} mamedb-empty-1.dump

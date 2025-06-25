@@ -1,5 +1,5 @@
->>> table dat (dat_idx, name, description, author, version)
-0|Test|Test v2.56|<null>|20201210
+>>> table dat (dat_idx, name, description, author, version, crc)
+0|Test|Test v2.56|<null>|20201210|242100271
 >>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1, sha256, missing)
 1|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>|<null>|0
 2|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>|<null>|0

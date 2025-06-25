@@ -3,11 +3,18 @@ return 0
 arguments --only-if-database-updated 1-4
 file dats/mame.dat mamedb-baddump.dat
 set-modification-time dats/mame.dat 1644506227
-file output.db mame.db
+file output.db mame.db mamedb-baddump.db
 file dats/.mkmamedb.db {} mkmamedb-datdb-7.dump
+directory roms {} <>
 file .ckmamerc <inline>
 [global]
 dat-directories = [ "dats" ]
 dats = [ "ckmame test db" ]
 rom-db = "output.db"
+end-of-inline-data
+stdout
+ckmame test db (1 54242138 -> 5492d05e)
+end-of-inline-data
+stderr
+game '1-4' unknown
 end-of-inline-data

@@ -3,7 +3,7 @@ return 0
 arguments --update-database 1-4
 file dats/mame.dat mamedb-baddump.dat
 set-modification-time dats/mame.dat 1644506227
-file output.db mame.db
+file output.db mame.db mamedb-baddump.db
 file dats/.mkmamedb.db {} mkmamedb-datdb-7.dump
 file .ckmamerc <inline>
 [global]
@@ -13,6 +13,8 @@ rom-db = "output.db"
 end-of-inline-data
 directory roms {} <>
 stdout
-In game 1-4:
-game 1-4                                     : not a single file found
+ckmame test db (1 54242138 -> 5492d05e)
+end-of-inline-data
+stderr
+game '1-4' unknown
 end-of-inline-data

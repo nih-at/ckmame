@@ -537,6 +537,9 @@ Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, 
 bool Parser::header_end() {
     CHECK_STATE(PARSE_IN_HEADER);
 
+    if (ps) {
+        de.crc = ps->get_crc();
+    }
     de.merge(&dat_default, &de);
     if (de.version[0] == '#') {
         de.name += " (Numbered)";

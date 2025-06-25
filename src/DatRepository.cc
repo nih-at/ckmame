@@ -84,24 +84,25 @@ DatRepository::~DatRepository() {
 }
 
 
-std::optional<DatDB::DatInfo> DatRepository::find_dat(const std::string &name) {
-    auto dat = DatDB::DatInfo();
+std::vector<DatDB::DatInfo> DatRepository::find_dats(const std::string &name) {
+    auto dats = std::vector<DatDB::DatInfo>{};
+    std::string newest_version;
 
     for (auto const &pair : dbs) {
 	auto matches = pair.second->get_dats(name);
 
 	for (const auto &match : matches) {
-	    if (is_newer(match.version, dat.version)) {
-		dat = match;
-		dat.file_name = pair.first + "/" + match.file_name; // TODO: use std::filesystem
+	    if (match.version == newest_version) {
+	        dats.emplace_back(match, pair.first + "/" + match.file_name); // TODO: use std::filesystem
+	    }
+	    else if (is_newer(match.version, newest_version)) {
+	        dats.clear();
+	        dats.emplace_back(match, pair.first + "/" + match.file_name); // TODO: use std::filesystem
 	    }
 	}
     }
 
-    if (dat.file_name.empty()) {
-	return {};
-    }
-    return dat;
+    return dats;
 }
 
 
@@ -164,7 +165,7 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 			    if (parser) {
 				if (parser->parse_header()) {
 				    auto header = output.get_header();
-				    entries.emplace_back(entry_name, header.name, header.version);
+				    entries.emplace_back(entry_name, header.name, header.version, header.crc);
 				}
 			    }
 			}
@@ -183,7 +184,7 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 		    if (parser) {
 			if (parser->parse_header() && output.close()) {
 			    auto header = output.get_header();
-			    entries.emplace_back("", header.name, header.version);
+			    entries.emplace_back("", header.name, header.version, header.crc);
 			}
 		    }
 		}

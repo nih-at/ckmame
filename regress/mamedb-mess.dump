@@ -1,5 +1,5 @@
->>> table dat (dat_idx, name, description, author, version)
-0|aes|SNK Neo Geo AES cartridges|<null>|1648812916
+>>> table dat (dat_idx, name, description, author, version, crc)
+0|aes|SNK Neo Geo AES cartridges|<null>|1648812916|3639152910
 >>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1, sha256, missing)
 1|0|0|001-p1.bin|<null>|0|0|524288|3433023825|<null>|<92f4e6ddeeb825077d92dbb70b50afea985f15c0>|<null>|0
 1|0|1|001-s1.bin|<null>|0|0|131072|2039003729|<null>|<bc2f661f381b06b34ac2fa215dd5689d3bf84832>|<null>|0

@@ -38,7 +38,7 @@ const std::string DatDB::db_name = ".mkmamedb.db";
 
 const DB::DBFormat DatDB::format = {
     0x02,
-    4,
+    5,
     "create table file (\n\
 file_id integer primary key autoincrement,\n\
 file_name text not null,\n\
@@ -50,7 +50,8 @@ create table dat (\n\
 file_id integer not null,\n\
 entry_name text,\n\
 name text,\n\
-version text\n\
+version text,\n\
+crc int\n\
 );\n\
 create index dat_name on dat (name);\n\
 ",
@@ -60,11 +61,11 @@ create index dat_name on dat (name);\n\
 std::unordered_map<DatDB::Statement, std::string> DatDB::queries = {
     { DELETE_DATS, "delete from dat where file_id = :file_id" },
     { DELETE_FILE, "delete from file where file_id = :file_id"},
-    { INSERT_DAT, "insert into dat (file_id, entry_name, name, version) values (:file_id, :entry_name, :name, :version)" },
+    { INSERT_DAT, "insert into dat (file_id, entry_name, name, version, crc) values (:file_id, :entry_name, :name, :version, :crc)" },
     { INSERT_FILE, "insert into file (file_name, mtime, size) values (:file_name, :mtime, :size)" },
     { LIST_DATS, "select distinct name from dat"},
     { LIST_FILES, "select file_name from file" },
-    { QUERY_DAT, "select file_name, entry_name, version from file f, dat d where f.file_id = d.file_id and name = :name"},
+    { QUERY_DAT, "select file_name, entry_name, version, crc from file f, dat d where f.file_id = d.file_id and name = :name"},
     { QUERY_FILE_ID, "select file_id from file where file_name = :file_name" },
     { QUERY_FILE_LAST_CHANGE, "select file_id, size, mtime from file where file_name = :file_name" },
     { QUERY_HAS_FILES, "select file_id from file limit 1" }
@@ -176,6 +177,7 @@ void DatDB::insert_file(const std::string &file_name, time_t mtime, size_t size,
 	    stmt->set_string("entry_name", dat.entry_name);
 	    stmt->set_string("name", dat.name);
 	    stmt->set_string("version", dat.version);
+	    stmt->set_uint64("crc", dat.crc);
 	    stmt->execute();
 	    stmt->reset();
 	}
@@ -191,7 +193,7 @@ std::vector<DatDB::DatInfo> DatDB::get_dats(const std::string &name) {
     std::vector<DatInfo> dats;
 
     while (stmt->step()) {
-	dats.emplace_back(stmt->get_string("file_name"), stmt->get_string("entry_name"), name, stmt->get_string("version"));
+	dats.emplace_back(stmt->get_string("file_name"), stmt->get_string("entry_name"), name, stmt->get_string("version"), stmt->get_uint64("crc"));
     }
 
     return dats;

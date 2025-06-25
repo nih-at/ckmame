@@ -1,7 +1,7 @@
->>> table dat (file_id, entry_name, name, version)
-1|<null>|game-with-disk|1
-2|<null>|Test|20201210
-3|<null>|aes|1643902216
+>>> table dat (file_id, entry_name, name, version, crc)
+1|<null>|game-with-disk|1|1715483110
+2|<null>|Test|20201210|242100271
+3|<null>|aes|1643902216|3639152910
 >>> table file (file_id, file_name, mtime, size)
 1|mamedb-disk.dat|1643902216|290
 2|mamedb.rc|1643902216|550

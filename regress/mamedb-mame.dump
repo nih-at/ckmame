@@ -1,5 +1,5 @@
->>> table dat (dat_idx, name, description, author, version)
-0|M.A.M.E.|<null>|<null>|0.141
+>>> table dat (dat_idx, name, description, author, version, crc)
+0|M.A.M.E.|<null>|<null>|0.141|1576020819
 >>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1, sha256, missing)
 1|0|0|namcopac.6e|<null>|0|0|4096|4276249523|<null>|<87117ba5082cd7a615b4ec7c02dd819003fbd669>|<null>|0
 1|0|1|namcopac.6f|<null>|0|0|4096|970062979|<null>|<326dbbf94c6fa2e96613dedb53702f8832b47d59>|<null>|0

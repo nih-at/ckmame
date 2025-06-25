@@ -12,3 +12,7 @@ dat-directories = [ "dats" ]
 dats = [ "ckmame test db" ]
 rom-db = "output.db"
 end-of-inline-data
+stdout
+ckmame test db (1 54242138 -> 5492d05e)
+end-of-inline-data
+

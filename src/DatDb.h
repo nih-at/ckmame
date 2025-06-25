@@ -58,23 +58,26 @@ class DatDB : public DB {
 
     class DatEntry {
       public:
-	DatEntry(std::string entry_name, std::string name, std::string version) : entry_name(std::move(entry_name)), name(std::move(name)), version(std::move(version)) { }
+	DatEntry(std::string entry_name, std::string name, std::string version, uint32_t crc) : entry_name(std::move(entry_name)), name(std::move(name)), version(std::move(version)), crc(crc) { }
 
 	const std::string entry_name;
 	const std::string name;
 	const std::string version;
+    	uint32_t crc;
     };
 
     class DatInfo {
       public:
 	DatInfo() = default;
 
-	DatInfo(std::string file_name, std::string entry_name, std::string name, std::string version) : file_name(std::move(file_name)), entry_name(std::move(entry_name)), name(std::move(name)), version(std::move(version)) { }
+	DatInfo(std::string file_name, std::string entry_name, std::string name, std::string version, uint32_t crc) : file_name(std::move(file_name)), entry_name(std::move(entry_name)), name(std::move(name)), version(std::move(version)), crc(crc) { }
+    	DatInfo(const DatInfo& other, std::string file_name): file_name{std::move(file_name)}, entry_name(other.entry_name), name(other.name), version(other.version), crc(other.crc) {}
 
 	std::string file_name;
 	std::string entry_name;
 	std::string name;
 	std::string version;
+    	uint32_t crc = 0;
     };
 
     explicit DatDB(const std::string& directory);

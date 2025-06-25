@@ -33,10 +33,12 @@
 
 #include "DatEntry.h"
 
-#define de_copy_member(X) (X = (high && !high->X.empty() ? high->X : low && !low->X.empty() ? low->X : ""))
+#define de_copy_string(X) (X = (high && !high->X.empty() ? high->X : low && !low->X.empty() ? low->X : ""))
+#define de_copy_uint32(X) (X = (high && high->X != 0 ? high->X : low && low->X != 0 ? low->X : 0))
 
 void DatEntry::merge(const DatEntry *high, const DatEntry *low) {
-    de_copy_member(name);
-    de_copy_member(description);
-    de_copy_member(version);
+    de_copy_string(name);
+    de_copy_string(description);
+    de_copy_string(version);
+    de_copy_uint32(crc);
 }

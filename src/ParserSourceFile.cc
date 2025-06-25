@@ -33,17 +33,17 @@
 
 #include "ParserSourceFile.h"
 
-#include <filesystem>
 #include <cstring>
+#include <filesystem>
 #include <sys/stat.h>
 
 #include "Exception.h"
 #include "globals.h"
 
-ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname), f(nullptr) {
+ParserSourceFile::ParserSourceFile(const std::string& fname) : file_name(fname), f(nullptr) {
     if (!file_name.empty()) {
-	f = make_shared_file(file_name, "r");
-	if (!f) {
+        f = make_shared_file(file_name, "r");
+        if (!f) {
             throw Exception("can't open '%s': %s", fname.c_str(), strerror(errno));
         }
     }
@@ -61,34 +61,36 @@ ParserSourceFile::~ParserSourceFile() {
 
 bool ParserSourceFile::close() {
     auto ok = true;
-    
-    if (!file_name.empty()) {
+
+    if (!file_name.empty() && f) {
         ok = fflush(f.get()) == 0;
-        file_name = "";
     }
-    
+
     f = nullptr;
 
     return ok;
 }
 
 
-ParserSourcePtr ParserSourceFile::open(const std::string &name) {
+ParserSourcePtr ParserSourceFile::open(const std::string& name) {
     std::string full_name;
-    
+
     if (!file_name.empty()) {
         full_name = std::filesystem::path(file_name).parent_path() / name;
     }
-    
+    else {
+        full_name = name;
+    }
+
     return static_cast<ParserSourcePtr>(std::make_shared<ParserSourceFile>(full_name));
 }
 
 
-size_t ParserSourceFile::read_xxx(void *data, size_t length) {
+size_t ParserSourceFile::read_xxx(void* data, size_t length) {
     if (f == nullptr) {
         return 0;
     }
-    
+
     return fread(data, 1, length, f.get());
 }
 
@@ -100,4 +102,30 @@ time_t ParserSourceFile::get_mtime() {
         return 0;
     }
     return st.st_mtime;
+}
+
+
+uint32_t ParserSourceFile::get_crc() {
+    if (file_name.empty()) {
+        return 0;
+    }
+    auto file = make_shared_file(file_name, "r");
+
+    Hashes h;
+    h.add_types(Hashes::TYPE_CRC);
+    Hashes::Update hu(&h);
+
+    size_t n;
+    while (!feof(file.get())) {
+        char buffer[8192];
+        if ((n = fread(buffer, 1, sizeof(buffer), file.get())) < 0) {
+            // TODO: handle error
+            return 0;
+        }
+        if (n > 0) {
+            hu.update(buffer, n);
+        }
+    }
+    hu.end();
+    return h.crc;
 }

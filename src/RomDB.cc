@@ -41,14 +41,15 @@ std::unique_ptr<RomDB> old_db;
 
 const DB::DBFormat RomDB::format = {
     0x0,
-    4,
+    5,
     "\
 create table dat (\n\
     dat_idx integer primary key,\n\
     name text,\n\
     description text,\n\
     author text,\n\
-    version text\n\
+    version text,\n\
+    crc int\n\
 );\n\
 \n\
 create table game (\n\
@@ -100,6 +101,9 @@ create table test (\n\
         {MigrationVersions(3, 4), "\
 alter table file add column sha256 binary;\n\
 alter table file add column missing integer not null default 0;\n\
+"},
+        {MigrationVersions(4, 5), "\
+alter table dat add column crc int;\n\
 "}
     }
 
@@ -117,14 +121,14 @@ std::unordered_map<int, std::string> RomDB::queries = {
     {  DELETE_FILE, "delete from file where game_id = :game_id" },
     {  DELETE_GAME, "delete from game where game_id = :game_id" },
     {  INSERT_DAT_DETECTOR, "insert into dat (dat_idx, name, author, version) values (-1, :name, :author, :version)" },
-    {  INSERT_DAT, "insert into dat (dat_idx, name, description, version) values (:dat_idx, :name, :description, :version)" },
+    {  INSERT_DAT, "insert into dat (dat_idx, name, description, version, crc) values (:dat_idx, :name, :description, :version, :crc)" },
     {  INSERT_FILE, "insert into file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1, sha256, missing) values (:game_id, :file_type, :file_idx, :name, :merge, :status, :location, :size, :crc, :md5, :sha1, :sha256, :missing)" },
     {  INSERT_GAME, "insert into game (name, description, dat_idx, parent) values (:name, :description, :dat_idx, :parent)" },
     {  INSERT_RULE, "insert into rule (rule_idx, start_offset, end_offset, operation) values (:rule_idx, :start_offset, :end_offset, :operation)" },
     {  INSERT_TEST, "insert into test (rule_idx, test_idx, type, offset, size, mask, value, result) values (:rule_idx, :test_idx, :type, :offset, :size, :mask, :value, :result)" },
     {  QUERY_CLONES, "select name from game where parent = :parent" },
     {  QUERY_DAT_DETECTOR, "select name, author, version from dat where dat_idx = -1" },
-    {  QUERY_DAT, "select name, description, version from dat where dat_idx >= 0 order by dat_idx" },
+    {  QUERY_DAT, "select name, description, version, crc from dat where dat_idx >= 0 order by dat_idx" },
     {  QUERY_FILE_FBN, "select g.name, f.file_idx from game g, file f where f.game_id = g.game_id and f.file_type = :file_type and f.name = :name" },
     {  QUERY_FILE, "select name, merge, status, location, size, crc, md5, sha1, sha256, missing from file where game_id = :game_id and file_type = :file_type order by file_idx" },
     {  QUERY_GAME_ID, "select game_id from game where name = :name" },
@@ -287,6 +291,7 @@ std::vector<DatEntry> RomDB::read_dat() {
         de.name = stmt->get_string("name");
         de.description = stmt->get_string("description");
         de.version = stmt->get_string("version");
+        de.crc = stmt->get_uint64("crc");
         
         dat.push_back(de);
     }
@@ -491,6 +496,7 @@ void RomDB::write_dat(const std::vector<DatEntry> &dats) {
         stmt->set_string("name", dat.name);
         stmt->set_string("description", dat.description);
         stmt->set_string("version", dat.version);
+        stmt->set_uint64("crc", dat.crc);
         stmt->execute();
         stmt->reset();
     }
