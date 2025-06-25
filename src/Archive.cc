@@ -614,9 +614,12 @@ std::optional<size_t> ArchiveContents::file_index_by_name(const std::string &fil
 bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors) {
     auto got_new_hashes = false;
 
+    Progress::push_message("computing hashes in '" + name + "'");
     for (size_t index = 0; index < files.size(); index++) {
         auto &file = files[index];
         std::unordered_map<size_t, DetectorPtr> missing_detectors;
+
+        Progress::update();
 
         for (const auto &pair : detectors) {
             if (file.detector_hashes.find(pair.first) == file.detector_hashes.end()) {
@@ -636,6 +639,8 @@ bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorP
     if (got_new_hashes) {
         set_cache_changed(HASHES_ONLY);
     }
+    Progress::pop_message();
+
     return got_new_hashes;
 }
 

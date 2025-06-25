@@ -87,13 +87,19 @@ bool ArchiveZip::check() {
     return ensure_zip();
 }
 
+static void close_progress(zip_t *za, double progress, void *ud) {
+    Progress::update();
+}
 
 bool ArchiveZip::close_xxx() {
     if (za == nullptr) {
         return true;
     }
 
+    Progress::push_message("writing '" + name + "'");
+    zip_register_progress_callback_with_state(za, 0.1, close_progress, nullptr, nullptr);
     if (zip_close(za) < 0) {
+        Progress::pop_message();
 	/* error closing, so zip is still valid */
 	output.archive_error("error closing zip: %s", zip_strerror(za));
 
@@ -103,6 +109,7 @@ bool ArchiveZip::close_xxx() {
         za = nullptr;
         return false;
     }
+    Progress::pop_message();
 
     za = nullptr;
 
