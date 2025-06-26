@@ -128,7 +128,6 @@
 - [bug] check if needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [bug] DB export: export detector
-- [bug] diagnostics (fix?): don't process disks if checking samples
 - [feature] `mkmamedb`: split to original CM dat files + detector XML on export
 - [feature] database consistency checks during `mkmamedb`
   - are all roms of one set included in one other set
