@@ -100,6 +100,18 @@ void Progress::print_message(bool starting) {
     }
     std::cout << std::endl;
 
+    if (!trace) {
+        auto first = true;
+        for (auto it = messages.rbegin(); it != messages.rend(); ++it) {
+            if (first) {
+                first = false;
+            }
+            else {
+                std::cout << "\t" << *it << std::endl;
+            }
+        }
+    }
+
     siginfo_caught = false;
 }
 
