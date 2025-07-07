@@ -500,7 +500,7 @@ void CkmameDB::refresh_zipped() {
             }
         }
 
-        if (db->has_disks()) {
+        if (::db->has_disks()) {
             auto progress = Progress::Message("scanning loose disk images in '" + directory + "'");
             auto a = Archive::open_toplevel(directory, TYPE_DISK, where, 0);
             if (a) {
