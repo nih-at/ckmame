@@ -141,6 +141,8 @@ void CkMame::global_setup(const ParsedCommandline &commandline) {
 }
 
 bool CkMame::execute(const std::vector<std::string> &arguments) {
+    Progress::enable();
+
     int found;
     auto checking_all_games = false;
 
@@ -288,7 +290,6 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
         ckmame_cache->ensure_extra_maps();
     }
 
-    Progress::enable();
     if (checking_all_games && configuration.fix_romset && configuration.status_db != "none") {
         ensure_dir(std::filesystem::path(configuration.status_db), true);
         status_db = std::make_shared<StatusDB>(configuration.status_db, DBH_WRITE|DBH_CREATE);
