@@ -24,7 +24,7 @@ To speed up operations, ckmame creates an SQLite database from the dat file. Thi
 
 To get the ROM set in its best possible state, run `ckmame --fix`.
 
-THe state of the ROM set is recorded in another database, which can be queried using [ckstatus](https://nih.at/ckmame/ckstatus.html).
+The state of the ROM set is recorded in another database, which can be queried using [ckstatus](https://nih.at/ckmame/ckstatus.html).
 ## Staying in Touch
 
 More information and the latest version can always be found on [nih.at](https://nih.at/ckmame).
