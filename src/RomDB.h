@@ -59,7 +59,7 @@ public:
         QUERY_FILE,
         QUERY_GAME_ID,
         QUERY_GAME,
-        QUERY_HAS_DISKS,
+        QUERY_HAS_FILE_TYPE,
         QUERY_HASH_TYPE_CRC,
         QUERY_HASH_TYPE_MD5,
         QUERY_HASH_TYPE_SHA1,
@@ -80,6 +80,36 @@ public:
     enum ParameterizedStatement {
         QUERY_FILE_FBH
     };
+
+    class FileTypeIterator {
+        public:
+            using iterator_category = std::forward_iterator_tag;
+            using value_type = filetype_t;
+
+            FileTypeIterator(const bool* types, int file_type);
+
+            FileTypeIterator& operator++();
+            FileTypeIterator operator++(int) {auto next=*this; ++*this; return next;}
+            filetype_t operator*() const {return static_cast<filetype_t>(file_type);}
+            bool operator==(const FileTypeIterator& other) const {return file_type == other.file_type;}
+            bool operator!=(const FileTypeIterator& other) const {return file_type != other.file_type;}
+
+        private:
+            void skip_missing();
+            const bool* types;
+            int file_type;
+    };
+
+    class FileTypes {
+        public:
+            FileTypes(const RomDB& db): types{db.has_types} {}
+
+            FileTypeIterator begin() {return {types, 0};}
+            FileTypeIterator end() {return {types, TYPE_MAX};}
+
+        private:
+           const bool *types;
+    };
     
     RomDB(const std::string &name, int mode);
     ~RomDB() override = default;
@@ -96,7 +126,8 @@ public:
     std::vector<std::string> get_clones(const std::string &game_name);
     void delete_game(const Game *game) { delete_game(game->name); }
     void delete_game(const std::string &name);
-    bool has_disks();
+    bool has_type(filetype_t type) const {return has_types[type];}
+    bool has_disks() const {return has_type(TYPE_DISK);}
 
     bool has_detector() const { return !detectors.empty(); }
     DetectorPtr get_detector(size_t id);
@@ -107,6 +138,7 @@ public:
     std::vector<RomLocation> read_file_by_hash(filetype_t ft, const Hashes &hashes);
     GamePtr read_game(const std::string &name);
     int hashtypes(filetype_t);
+    FileTypes filetypes();
     std::vector<std::string> read_list(enum dbh_list type);
     void update_file_location(Game *game);
     void update_game_parent(const Game *game);
@@ -115,13 +147,15 @@ public:
     void write_game(Game *game);
     void write_hashtypes(int, int);
     int export_db(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out);
-    
+
+    bool has_types[TYPE_MAX];
+
 protected:
     std::string get_query(int name, bool parameterized) const override;
     
 private:
     int hashtypes_[TYPE_MAX];
-    
+
     static const std::string init2_sql;
     static const Statement query_hash_type[];
     static std::unordered_map<int, std::string> queries;
@@ -130,6 +164,7 @@ private:
     DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
     DBStatement *get_statement(ParameterizedStatement name, const Hashes &hashes, bool have_size) { return get_statement_internal(name, hashes, have_size); }
 
+    bool get_has_type(int type);
     DetectorPtr read_detector();
     void read_files(Game *game, filetype_t ft);
     void read_hashtypes(filetype_t type);

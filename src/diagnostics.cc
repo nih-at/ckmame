@@ -50,9 +50,7 @@ static void diagnostics_game(filetype_t ft, const Game *game, const Result &resu
 void diagnostics(const Game *game, const GameArchives &archives, const Result &result) {
     ckmame_cache->stats.add_game(result.game);
 
-    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        auto filetype = static_cast<filetype_t>(ft);
-
+    for (auto filetype: db->filetypes()) {
         for (size_t i = 0; i < game->files[filetype].size(); i++) {
             ckmame_cache->stats.add_rom(filetype, &game->files[filetype][i], result.game_files[filetype][i].quality);
         }

@@ -54,8 +54,7 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
 int fix_game(Game *game, const GameArchives archives, Result *result) {
     int ret = 0;
 
-    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        auto filetype = static_cast<filetype_t>(ft);
+    for (auto filetype: db->filetypes()) {
         Archive *archive = archives[filetype];
         GarbagePtr garbage;
         DeleteList::Mark extra_mark, needed_mark, superfluous_mark;
@@ -164,8 +163,7 @@ int fix_save_needed_from_unknown(Game *game, const GameArchives archives, Result
     auto needs_recheck = false;
 
     if (configuration.fix_romset) {
-	for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-	    auto filetype = static_cast<filetype_t>(ft);
+        for (auto filetype: db->filetypes()) {
 	    auto garbage_name = make_garbage_name(archives[filetype]->name, 0);
 
 	    warn_set_info(WARN_TYPE_ARCHIVE, garbage_name);

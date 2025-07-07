@@ -50,11 +50,11 @@ Tree check_tree;
 
 bool Tree::add(const std::string &game_name) {
     GamePtr game = db->read_game(game_name);
-    
+
     if (!game) {
 	return false;
     }
-    
+
     auto tree = this;
 
     if (!game->cloneof[1].empty()) {
@@ -117,21 +117,19 @@ void Tree::traverse() {
 
 void Tree::traverse_internal(GameArchives *ancestor_archives) {
     GameArchives archives[] = { GameArchives(), ancestor_archives[0], ancestor_archives[1] };
-    
+
     Progress::push_message("checking " + name);
 
     auto flags = check ? ARCHIVE_FL_CREATE : 0;
-    
-    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        auto filetype = static_cast<filetype_t>(ft);
-        
+
+    for (auto filetype: db->filetypes()) {
         auto full_name = findfile(filetype, name);
 
         if (full_name.empty() && check) {
             full_name = make_file_name(filetype, name);
         }
         if (!full_name.empty()) {
-            archives[0].archive[ft] = Archive::open(full_name, filetype, FILE_ROMSET, flags);
+            archives[0].archive[filetype] = Archive::open(full_name, filetype, FILE_ROMSET, flags);
         }
     }
 
@@ -149,7 +147,7 @@ void Tree::traverse_internal(GameArchives *ancestor_archives) {
 
 Tree *Tree::add_node(const std::string &game_name, bool do_check) {
     auto it = children.find(game_name);
-    
+
     if (it == children.end()) {
         auto child = std::make_shared<Tree>(game_name, do_check);
         children[game_name] = child;
@@ -166,7 +164,7 @@ Tree *Tree::add_node(const std::string &game_name, bool do_check) {
 
 void Tree::process(GameArchives *archives) {
     auto game = db->read_game(name);
-    
+
     if (!game) {
 	output.error("db error: %s not found", name.c_str());
         return;
@@ -178,9 +176,9 @@ void Tree::process(GameArchives *archives) {
 	Result res(game.get(), archives[0]);
 
 	check_old(game.get(), &res);
-	for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-	    check_game_files(game.get(), static_cast<filetype_t>(ft), archives, &res);
-	    check_archive_files(static_cast<filetype_t>(ft), archives[0], game->name, &res);
+        for (auto ft: db->filetypes()) {
+	    check_game_files(game.get(), ft, archives, &res);
+	    check_archive_files(ft, archives[0], game->name, &res);
 	}
 	update_game_status(game.get(), &res);
 

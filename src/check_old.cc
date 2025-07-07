@@ -44,9 +44,7 @@ check_old(Game *game, Result *result) {
 
     auto all_old = true;
     
-    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        auto filetype = static_cast<filetype_t>(ft);
-        
+    for (auto filetype: db->filetypes()) {
         for (size_t i = 0; i < game->files[filetype].size(); i++) {
             if (find_in_old(filetype, &game->files[filetype][i], nullptr, &result->game_files[filetype][i]) != FIND_EXISTS) {
                 all_old = false;

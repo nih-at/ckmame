@@ -133,7 +133,7 @@ std::unordered_map<int, std::string> RomDB::queries = {
     {  QUERY_FILE, "select name, merge, status, location, size, crc, md5, sha1, sha256, missing from file where game_id = :game_id and file_type = :file_type order by file_idx" },
     {  QUERY_GAME_ID, "select game_id from game where name = :name" },
     {  QUERY_GAME, "select game_id, description, dat_idx, parent from game where name = :name" },
-    {  QUERY_HAS_DISKS, "select file_idx from file where file_type = 1 limit 1" },
+    {  QUERY_HAS_FILE_TYPE, "select file_idx from file where file_type = :file_type limit 1" },
     {  QUERY_HASH_TYPE_CRC, "select name from file where file_type = :file_type and crc not null limit 1" },
     {  QUERY_HASH_TYPE_MD5, "select name from file where file_type = :file_type and md5 not null limit 1" },
     {  QUERY_HASH_TYPE_SHA1, "select name from file where file_type = :file_type and sha1 not null limit 1" },
@@ -216,9 +216,9 @@ Stats RomDB::get_stats() {
 }
 
 
-bool RomDB::has_disks() {
-    auto stmt = get_statement(QUERY_HAS_DISKS);
-
+bool RomDB::get_has_type(int type) {
+    auto stmt = get_statement(QUERY_HAS_FILE_TYPE);
+    stmt->set_int("file_type", type);
     return stmt->step();
 }
 
@@ -227,9 +227,35 @@ int RomDB::hashtypes(filetype_t type) {
     if (hashtypes_[type] == -1) {
         read_hashtypes(type);
     }
-    
+
     return hashtypes_[type];
 }
+RomDB::FileTypes RomDB::filetypes() {
+    for (int i = 0; i < TYPE_MAX; i++) {
+        (void)has_type(static_cast<filetype_t>(i));
+    }
+    return {*this};
+}
+
+RomDB::FileTypeIterator::FileTypeIterator(const bool* types, int file_type) : types{types}, file_type{file_type} {
+    skip_missing();
+}
+
+
+RomDB::FileTypeIterator& RomDB::FileTypeIterator::operator++() {
+    if (file_type < TYPE_MAX) {
+        file_type++;
+    }
+    skip_missing();
+    return *this;
+}
+
+void RomDB::FileTypeIterator::skip_missing() {
+    while (file_type < TYPE_MAX && !types[file_type]) {
+        file_type++;
+    }
+}
+
 
 
 RomDB::RomDB(const std::string &name, int mode) : DB(format, name, mode) {
@@ -242,6 +268,10 @@ RomDB::RomDB(const std::string &name, int mode) : DB(format, name, mode) {
     while (stmt->step()) {
         auto detector_id = Detector::get_id(DetectorDescriptor(stmt->get_string("name"), stmt->get_string("version")));
         detectors[detector_id] = read_detector();
+    }
+
+    for (size_t i = 0; i < TYPE_MAX; i++) {
+        has_types[i] = get_has_type(i);
     }
 }
 

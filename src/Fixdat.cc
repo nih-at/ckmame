@@ -68,7 +68,7 @@ void Fixdat::write(const Game *game, const Result *result) {
 
     auto empty = true;
     
-    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+    for (auto ft: db->filetypes()) {
         for (size_t i = 0; i < game->files[ft].size(); i++) {
             auto &match = result->game_files[ft][i];
             auto &rom = game->files[ft][i];
