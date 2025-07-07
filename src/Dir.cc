@@ -36,13 +36,17 @@
 #include <algorithm>
 #include <filesystem>
 
+#include "Progress.h"
+
 Dir::Dir(const std::string &name, bool recursive) : index(0) {
     if (recursive) {
 	for (const auto &p : std::filesystem::recursive_directory_iterator(name)) {
+	    Progress::update();
 	    entries.push_back(p);
 	}
     } else {
 	for (const auto &p : std::filesystem::directory_iterator(name)) {
+	    Progress::update();
 	    entries.push_back(p);
 	}
     }
