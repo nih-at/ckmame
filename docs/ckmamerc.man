@@ -63,8 +63,7 @@ section contains settings that apply in general.
 .TP 29n
 ["set name"]
 \(lqset name\(rq
-sections contain settings for a particular set (see the
-\fB\-\fR\fB\-set\fR
+sections contain settings for a particular set (see the \fB\-\-set\fR
 command line option).
 .TP 29n
 [profile."profile name"]
@@ -90,17 +89,14 @@ variable = value
 .RE
 syntax.
 For example,
-ckmame(1)'s
-\fB\-\fR\fB\-complete-games-only\fR
+ckmame(1)'s \fB\-\-complete-games-only\fR
 will be written in the config file as
 .RS 6n
 complete-games-only = true
 .RE
 .PP
-Options that exist as
-\fB\-\fR\fB\-foo\fR
-and
-\fB\-\fR\fB\-no-foo\fR
+Options that exist as \fB\-\-foo\fR
+and \fB\-\-no-foo\fR
 are mapped to a single configuration value with values
 \(lqtrue\(rq
 and
@@ -161,7 +157,7 @@ below
 This affects the location of
 mkmamedb(1)'s
 \fI.mkmamedb.db\fR
-(\fB\-\fR\fB\-directory-cache\fR)
+(\fB\-\-directory-cache\fR)
 and
 ckmame(1)'s
 \fI.ckmame.db\fR
@@ -223,8 +219,7 @@ move-from-extra
 Boolean.
 Setting this to
 \(lqfalse\(rq
-is the same as using
-\fB\-\fR\fB\-copy-from-extra\fR
+is the same as using \fB\-\-copy-from-extra\fR
 on the command line.
 .TP 22n
 old-db
@@ -271,8 +266,7 @@ ckstatus(1):
 report-status
 Report this set when running
 ckstatus(1)
-with
-\fB\-\fR\fB\-all-sets\fR.
+with \fB\-\-all-sets\fR.
 Defaults to
 \(lqtrue\(rq.
 .RE

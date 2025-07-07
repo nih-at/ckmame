@@ -42,54 +42,54 @@
 [\fB\-O\fR\ \fIdbfile\fR]
 [\fB\-R\fR\ \fIdir\fR]
 [\fB\-T\fR\ \fIfile\fR]
-[\fB\-\fR\fB\-all-sets\fR]
-[\fB\-\fR\fB\-complete-list\fR\ \fIfile\fR]
-[\fB\-\fR\fB\-complete-games-only\fR]
-[\fB\-\fR\fB\-config\fR\ \fIfile\fR]
-[\fB\-\fR\fB\-copy-from-extra\fR]
-[\fB\-\fR\fB\-create-fixdat\fR]
-[\fB\-\fR\fB\-delete-unknown-pattern\fR\ \fIpattern\fR]
-[\fB\-\fR\fB\-extra-directory\fR\ \fIdir\fR]
-[\fB\-\fR\fB\-fix\fR]
-[\fB\-\fR\fB\-fixdat-directory\fR\ \fIdir\fR]
-[\fB\-\fR\fB\-game-list\fR\ \fIfile\fR]
-[\fB\-\fR\fB\-help\fR]
-[\fB\-\fR\fB\-keep-old-duplicate\fR]
-[\fB\-\fR\fB\-list-sets\fR]
-[\fB\-\fR\fB\-missing-list\fR\ \fIfile\fR]
-[\fB\-\fR\fB\-move-from-extra\fR]
-[\fB\-\fR\fB\-no-complete-games-only\fR]
-[\fB\-\fR\fB\-no-create-fixdat\fR]
-[\fB\-\fR\fB\-no-report-changes\fR]
-[\fB\-\fR\fB\-no-report-correct\fR]
-[\fB\-\fR\fB\-no-report-correct-mia\fR]
-[\fB\-\fR\fB\-no-report-detailed\fR]
-[\fB\-\fR\fB\-no-report-fixable\fR]
-[\fB\-\fR\fB\-no-report-missing\fR]
-[\fB\-\fR\fB\-no-report-missing-mia\fR]
-[\fB\-\fR\fB\-no-report-no-good-dump\fR]
-[\fB\-\fR\fB\-no-report-summary\fR]
-[\fB\-\fR\fB\-old-db\fR\ \fIdbfile\fR]
-[\fB\-\fR\fB\-only-if-database-updated\fR]
-[\fB\-\fR\fB\-report-changes\fR]
-[\fB\-\fR\fB\-report-correct\fR]
-[\fB\-\fR\fB\-report-correct-mia\fR]
-[\fB\-\fR\fB\-report-detailed\fR]
-[\fB\-\fR\fB\-report-fixable\fR]
-[\fB\-\fR\fB\-report-missing\fR]
-[\fB\-\fR\fB\-report-missing-mia\fR]
-[\fB\-\fR\fB\-report-no-good-dump\fR]
-[\fB\-\fR\fB\-report-summary\fR]
-[\fB\-\fR\fB\-rom-db\fR\ \fIdbfile\fR]
-[\fB\-\fR\fB\-rom-directory\fR\ \fIdir\fR]
-[\fB\-\fR\fB\-roms-unzipped\fR]
-[\fB\-\fR\fB\-save-directory\fR\ \fIdir\fR]
-[\fB\-\fR\fB\-set\fR\ \fIpattern\fR]
-[\fB\-\fR\fB\-unknown-directory\fR\ \fIdir\fR]
-[\fB\-\fR\fB\-update-database\fR]
-[\fB\-\fR\fB\-use-torrentzip\fR]
-[\fB\-\fR\fB\-verbose\fR]
-[\fB\-\fR\fB\-version\fR]
+[\fB\-\-all-sets\fR]
+[\fB\-\-complete-list\fR\ \fIfile\fR]
+[\fB\-\-complete-games-only\fR]
+[\fB\-\-config\fR\ \fIfile\fR]
+[\fB\-\-copy-from-extra\fR]
+[\fB\-\-create-fixdat\fR]
+[\fB\-\-delete-unknown-pattern\fR\ \fIpattern\fR]
+[\fB\-\-extra-directory\fR\ \fIdir\fR]
+[\fB\-\-fix\fR]
+[\fB\-\-fixdat-directory\fR\ \fIdir\fR]
+[\fB\-\-game-list\fR\ \fIfile\fR]
+[\fB\-\-help\fR]
+[\fB\-\-keep-old-duplicate\fR]
+[\fB\-\-list-sets\fR]
+[\fB\-\-missing-list\fR\ \fIfile\fR]
+[\fB\-\-move-from-extra\fR]
+[\fB\-\-no-complete-games-only\fR]
+[\fB\-\-no-create-fixdat\fR]
+[\fB\-\-no-report-changes\fR]
+[\fB\-\-no-report-correct\fR]
+[\fB\-\-no-report-correct-mia\fR]
+[\fB\-\-no-report-detailed\fR]
+[\fB\-\-no-report-fixable\fR]
+[\fB\-\-no-report-missing\fR]
+[\fB\-\-no-report-missing-mia\fR]
+[\fB\-\-no-report-no-good-dump\fR]
+[\fB\-\-no-report-summary\fR]
+[\fB\-\-old-db\fR\ \fIdbfile\fR]
+[\fB\-\-only-if-database-updated\fR]
+[\fB\-\-report-changes\fR]
+[\fB\-\-report-correct\fR]
+[\fB\-\-report-correct-mia\fR]
+[\fB\-\-report-detailed\fR]
+[\fB\-\-report-fixable\fR]
+[\fB\-\-report-missing\fR]
+[\fB\-\-report-missing-mia\fR]
+[\fB\-\-report-no-good-dump\fR]
+[\fB\-\-report-summary\fR]
+[\fB\-\-rom-db\fR\ \fIdbfile\fR]
+[\fB\-\-rom-directory\fR\ \fIdir\fR]
+[\fB\-\-roms-unzipped\fR]
+[\fB\-\-save-directory\fR\ \fIdir\fR]
+[\fB\-\-set\fR\ \fIpattern\fR]
+[\fB\-\-unknown-directory\fR\ \fIdir\fR]
+[\fB\-\-update-database\fR]
+[\fB\-\-use-torrentzip\fR]
+[\fB\-\-verbose\fR]
+[\fB\-\-version\fR]
 [\fIgame\ ...\fR]
 .SH "DESCRIPTION"
 \fBckmame\fR
@@ -146,10 +146,10 @@ You can use command line options to select which type of errors to report.
 .SS "OPTIONS"
 Supported options:
 .TP 32n
-\fB\-\fR\fB\-all-sets\fR
+\fB\-\-all-sets\fR
 Do the action for all configured sets.
 .TP 32n
-\fB\-C\fR, \fB\-\fR\fB\-complete-games-only\fR
+\fB\-C\fR, \fB\-\-complete-games-only\fR
 Only create complete games.
 ROMs for incomplete games are moved to the
 \fIsaved\fR
@@ -160,160 +160,156 @@ instead, where
 \(lq$set\(rq
 is the name of the set.
 .TP 32n
-\fB\-c\fR, \fB\-\fR\fB\-report-correct\fR
+\fB\-c\fR, \fB\-\-report-correct\fR
 Report status of ROMs that are correct.
 By default they are not mentioned.
 .TP 32n
-\fB\-\fR\fB\-config\fR \fIfile\fR
+\fB\-\-config\fR \fIfile\fR
 read configuration from
 \fIfile\fR.
 See the
 \fICONFIG FILE\fR
 section for more details.
 .TP 32n
-\fB\-\fR\fB\-complete-list\fR \fIfile\fR
+\fB\-\-complete-list\fR \fIfile\fR
 Write all complete games into
 \fIfile\fR,
 one line per game, and sorted alphabetically.
 .TP 32n
-\fB\-\fR\fB\-copy-from-extra\fR
+\fB\-\-copy-from-extra\fR
 Keep used files in extra directories (default).
 .TP 32n
-\fB\-\fR\fB\-create-fixdat\fR
+\fB\-\-create-fixdat\fR
 Create a clrmamepro-style
 \(lqfixdat\(rq
 file, i.e. an XML file containing only the files missing in the ROM
 set compared to the database used.
 .TP 32n
-\fB\-D\fR, \fB\-\fR\fB\-rom-db\fR \fIdbfile\fR
+\fB\-D\fR, \fB\-\-rom-db\fR \fIdbfile\fR
 Use
 \fIdbfile\fR
 instead of the default
 \fImame.db\fR
 as the database.
 .TP 32n
-\fB\-\fR\fB\-delete-unknown-pattern\fR \fIpattern\fR
+\fB\-\-delete-unknown-pattern\fR \fIpattern\fR
 When moving files to the
 \fIunknown\fR
 directory, skip files matching
 \fIpattern\fR
 and just delete them instead.
 .TP 32n
-\fB\-e\fR, \fB\-\fR\fB\-extra-directory\fR \fIdir\fR
+\fB\-e\fR, \fB\-\-extra-directory\fR \fIdir\fR
 Search for missing files in directory dir (multiple directories can be
 specified by repeating this option).
 .TP 32n
-\fB\-F\fR, \fB\-\fR\fB\-fix\fR
+\fB\-F\fR, \fB\-\-fix\fR
 Fix the ROM set.
 By default, only the status is reported.
 .TP 32n
-\fB\-\fR\fB\-fixdat-directory\fR \fIdir\fR
-Create the fixdat (see
-\fB\-\fR\fB\-create-fixdat\fR)
+\fB\-\-fixdat-directory\fR \fIdir\fR
+Create the fixdat (see \fB\-\-create-fixdat\fR)
 in
 \fIdir\fR
 instead of the current directory.
 .TP 32n
-\fB\-h\fR, \fB\-\fR\fB\-help\fR
+\fB\-h\fR, \fB\-\-help\fR
 Display a short usage.
 .TP 32n
-\fB\-j\fR, \fB\-\fR\fB\-move-from-extra\fR
+\fB\-j\fR, \fB\-\-move-from-extra\fR
 Remove used files from extra directories.
-Opposite of
-\fB\-\fR\fB\-copy-from-extra\fR.
+Opposite of \fB\-\-copy-from-extra\fR.
 .TP 32n
-\fB\-\fR\fB\-keep-old-duplicate\fR
+\fB\-\-keep-old-duplicate\fR
 Keep files in ROM set that are also in old ROM database.
 .TP 32n
-\fB\-\fR\fB\-list-sets\fR
+\fB\-\-list-sets\fR
 List all configured sets.
 .TP 32n
-\fB\-\fR\fB\-missing-list\fR \fIfile\fR
+\fB\-\-missing-list\fR \fIfile\fR
 Write all complete games into
 \fIfile\fR,
 one line per game, and sorted alphabetically.
 .TP 32n
-\fB\-\fR\fB\-no-complete-games-only\fR
+\fB\-\-no-complete-games-only\fR
 Keep partial games in ROM set (default).
 .TP 32n
-\fB\-\fR\fB\-no-create-fixdat\fR
+\fB\-\-no-create-fixdat\fR
 Do not create a fixdat for the missing ROM sets (default).
 .TP 32n
-\fB\-\fR\fB\-no-report-changes\fR
+\fB\-\-no-report-changes\fR
 Don't report a summary of changes while fixing a ROM set (default).
 .TP 32n
-\fB\-\fR\fB\-no-report-correct\fR
+\fB\-\-no-report-correct\fR
 Don't report status of ROMs that are correct (default).
 .TP 32n
-\fB\-\fR\fB\-no-report-correct-mia\fR
+\fB\-\-no-report-correct-mia\fR
 Don't report status of ROMs that are correct but marked as mia in ROM database (default).
 .TP 32n
-\fB\-\fR\fB\-no-report-detailed\fR
+\fB\-\-no-report-detailed\fR
 Don't report status of every ROM (default).
 .TP 32n
-\fB\-\fR\fB\-no-report-fixable\fR
+\fB\-\-no-report-fixable\fR
 Don't report status of ROMs that can be fixed.
 .TP 32n
-\fB\-\fR\fB\-no-report-missing\fR
+\fB\-\-no-report-missing\fR
 Don't report status of ROMs that are missing.
 .TP 32n
-\fB\-\fR\fB\-no-report-missing-mia\fR
+\fB\-\-no-report-missing-mia\fR
 Don't report status of ROMs that are missing and marked as mia in ROM database (default).
 .TP 32n
-\fB\-\fR\fB\-no-report-no-good-dump\fR
+\fB\-\-no-report-no-good-dump\fR
 Don't report status of ROMs for which no good dump exists (default).
 .TP 32n
-\fB\-\fR\fB\-no-report-summary\fR
+\fB\-\-no-report-summary\fR
 Don't print summary of ROM set status (default).
 .TP 32n
-\fB\-O\fR, \fB\-\fR\fB\-old-db\fR \fIdbfile\fR
+\fB\-O\fR, \fB\-\-old-db\fR \fIdbfile\fR
 Assume that the files in the database
 \fIdbfile\fR
 exist in some other location (e.g., on an offline disk or backup
 medium).
 .TP 32n
-\fB\-R\fR, \fB\-\fR\fB\-rom-directory\fR \fIdir\fR
+\fB\-R\fR, \fB\-\-rom-directory\fR \fIdir\fR
 Look for the ROM set in the directory
 \fIdir\fR
 instead of the default
 \fIroms\fR.
 .TP 32n
-\fB\-\fR\fB\-report-changes\fR
+\fB\-\-report-changes\fR
 Report a summary of changes while fixing a ROM set.
 .TP 32n
-\fB\-\fR\fB\-report-correct-mia\fR
+\fB\-\-report-correct-mia\fR
 Report status of ROMs that are correct but marked as mia in ROM database.
 .TP 32n
-\fB\-\fR\fB\-report-detailed\fR
+\fB\-\-report-detailed\fR
 Report status of every ROM that is checked.
 .TP 32n
-\fB\-\fR\fB\-report-fixable\fR
+\fB\-\-report-fixable\fR
 Report status of ROMs that can be fixed (default).
 .TP 32n
-\fB\-\fR\fB\-report-missing\fR
+\fB\-\-report-missing\fR
 Report status of ROMs that are missing (default).
 .TP 32n
-\fB\-\fR\fB\-report-missing-mia\fR
+\fB\-\-report-missing-mia\fR
 Report status of ROMs that are missing and marked as mia in ROM database.
 .TP 32n
-\fB\-\fR\fB\-report-no-good-dump\fR
+\fB\-\-report-no-good-dump\fR
 Don't suppress reporting status of ROMs for which no good dump exists.
-Status of such ROMs is reported according to
-\fB\-\fR\fB\-report-correct\fR
-or
-\fB\-\fR\fB\-report-missing\fR.
+Status of such ROMs is reported according to \fB\-\-report-correct\fR
+or \fB\-\-report-missing\fR.
 .TP 32n
-\fB\-\fR\fB\-report-summary\fR
+\fB\-\-report-summary\fR
 Print summary of ROM set status at the end of the output.
 .TP 32n
-\fB\-\fR\fB\-roms-unzipped\fR
+\fB\-\-roms-unzipped\fR
 Instead of looking for ROMs in the zip archive
 \fIroms/games.zip\fR,
 look for them in the directory
 \fIroms/games/\fR
 in the file system.
 .TP 32n
-\fB\-\fR\fB\-save-directory\fR \fIdir\fR
+\fB\-\-save-directory\fR \fIdir\fR
 When a ROM file is encountered that does not belong to the set that is
 currently checked, but is needed by a different set, move it this
 directory.
@@ -321,7 +317,7 @@ It will be found there automatically later
 (efault:
 \(lq\fIsaved ).\fR\(rq
 .TP 32n
-\fB\-\fR\fB\-set\fR \fIpattern\fR
+\fB\-\-set\fR \fIpattern\fR
 Check all ROM sets matching
 \fIpattern\fR.
 This uses the configuration from the corresponding section in the
@@ -330,50 +326,47 @@ See
 \fICONFIG FILES\fR
 for details
 .TP 32n
-\fB\-T\fR, \fB\-\fR\fB\-game-list\fR \fIfile\fR
+\fB\-T\fR, \fB\-\-game-list\fR \fIfile\fR
 Read the list of games to check from
 \fIfile\fR.
 \fIfile\fR
 should contain one line per game.
 .TP 32n
-\fB\-U\fR, \fB\-\fR\fB\-only-if-database-updated\fR
+\fB\-U\fR, \fB\-\-only-if-database-updated\fR
 Only run
 \fBckmame\fR
-if the database was updated (implies
-\fB\-\fR\fB\-update-database\fR).
+if the database was updated (implies \fB\-\-update-database\fR).
 .TP 32n
-\fB\-\fR\fB\-unknown-directory\fR \fIdir\fR
+\fB\-\-unknown-directory\fR \fIdir\fR
 When a file is encountered that does not belong to the set that is
 currently checked and is not known by the database, move it this
 directory
 (efault:
 \(lq\fIunknown ).\fR\(rq
 .TP 32n
-\fB\-\fR\fB\-update-database\fR
+\fB\-\-update-database\fR
 Update the database before checking the ROMs.
 .TP 32n
-\fB\-\fR\fB\-use-torrentzip\fR
+\fB\-\-use-torrentzip\fR
 When the ROM set is zipped, write the zip archives in torrentzip format.
 .TP 32n
-\fB\-V\fR, \fB\-\fR\fB\-version\fR
+\fB\-V\fR, \fB\-\-version\fR
 Display version number.
 .TP 32n
-\fB\-v\fR, \fB\-\fR\fB\-verbose\fR
+\fB\-v\fR, \fB\-\-verbose\fR
 Print fixes made.
 .SH "ENVIRONMENT"
 .TP 12n
 \fRMAMEDB\fR
 Location for the database file.
-Can be overridden with the
-\fB\-\fR\fB\-dbfile\fR
+Can be overridden with the \fB\-\-dbfile\fR
 option.
 Defaults to
 \(lq\fImame.db\fR\(rq.
 .TP 12n
 \fRMAMEDB_OLD\fR
 Location for the database file of files that exist elsewhere.
-Can be overridden with the
-\fB\-\fR\fB\-old-db\fR
+Can be overridden with the \fB\-\-old-db\fR
 option.
 Defaults to
 \(lq\fIold.db\fR\(rq.

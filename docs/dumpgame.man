@@ -36,14 +36,14 @@
 .SH "SYNOPSIS"
 .HP 9n
 \fBdumpgame\fR
-{\fB\-b\fR\ |\ \fB\-\fR\fB\-brief\fR}
-[{\fB\-D\fR\ \fIdbfile\fR\ |\ \fB\-\fR\fB\-rom-db\fR\ \fIdbfile\fR}]
+{\fB\-b\fR\ |\ \fB\-\-brief\fR}
+[{\fB\-D\fR\ \fIdbfile\fR\ |\ \fB\-\-rom-db\fR\ \fIdbfile\fR}]
 [\fIgame\fR]
 .br
 .PD 0
 .HP 9n
 \fBdumpgame\fR
-\fB\-c\fR\ |\ \fB\-\fR\fB\-checksum\fR
+\fB\-c\fR\ |\ \fB\-\-checksum\fR
 [{\fB\-D\fR\ \fIdbfile\fR\ |\ \fB\--db\fR\ \fIdbfile\fR}]
 \fIchecksum\fR
 [\fI...\fR]
@@ -51,18 +51,18 @@
 .HP 9n
 \fBdumpgame\fR
 [\fB\-hV\fR]
-[\fB\-\fR\fB\-all-sets\fR]
-[\fB\-\fR\fB\-dats\fR]
-[\fB\-\fR\fB\-detector\fR]
-[\fB\-\fR\fB\-disks\fR]
-[\fB\-\fR\fB\-games\fR]
-[\fB\-\fR\fB\-hash-types\fR]
-[\fB\-\fR\fB\-help\fR]
-[\fB\-\fR\fB\-list-sets\fR]
-[\fB\-\fR\fB\-mia\fR]
-[\fB\-\fR\fB\-set\fR\ \fIpattern\fR]
-[\fB\-\fR\fB\-summary\fR]
-[\fB\-\fR\fB\-version\fR]
+[\fB\-\-all-sets\fR]
+[\fB\-\-dats\fR]
+[\fB\-\-detector\fR]
+[\fB\-\-disks\fR]
+[\fB\-\-games\fR]
+[\fB\-\-hash-types\fR]
+[\fB\-\-help\fR]
+[\fB\-\-list-sets\fR]
+[\fB\-\-mia\fR]
+[\fB\-\-set\fR\ \fIpattern\fR]
+[\fB\-\-summary\fR]
+[\fB\-\-version\fR]
 .PD
 .SH "DESCRIPTION"
 \fBdumpgame\fR
@@ -75,58 +75,58 @@ can also find roms matching a particular checksum.
 \fBdumpgame\fR
 supports the following options:
 .TP 29n
-\fB\-\fR\fB\-all-sets\fR
+\fB\-\-all-sets\fR
 Do the action for all configured sets.
 .TP 29n
-\fB\-b\fR, \fB\-\fR\fB\-brief\fR
+\fB\-b\fR, \fB\-\-brief\fR
 Use brief mode: don't output ROM and disk information.
 .TP 29n
-\fB\-c\fR, \fB\-\fR\fB\-checksum\fR
+\fB\-c\fR, \fB\-\-checksum\fR
 Look for a ROM or disk by checksum (instead of the default
 behaviour to look for a game by name).
 .TP 29n
-\fB\-D\fR \fIdbfile\fR, \fB\-\fR\fB\-rom-db\fR \fIdbfile\fR
+\fB\-D\fR \fIdbfile\fR, \fB\-\-rom-db\fR \fIdbfile\fR
 Use database
 \fIdbfile\fR
 instead of the default
 \(lq\fImame.db\fR\(rq.
 .TP 29n
-\fB\-\fR\fB\-dats\fR
+\fB\-\-dats\fR
 Names of the datfiles used for creating the database, and their
 descriptions.
 .TP 29n
-\fB\-\fR\fB\-detector\fR
+\fB\-\-detector\fR
 Name and version of the CMPro XML header skip detector used (if any).
 .TP 29n
-\fB\-\fR\fB\-disks\fR
+\fB\-\-disks\fR
 List names of all disks in the database.
 .TP 29n
-\fB\-\fR\fB\-games\fR
+\fB\-\-games\fR
 List names of all games in the database.
 .TP 29n
-\fB\-\fR\fB\-hash-types\fR
+\fB\-\-hash-types\fR
 Types of checksums used (crc, md5, sha1).
 One line each for roms and disks.
 .TP 29n
-\fB\-h\fR, \fB\-\fR\fB\-help\fR
+\fB\-h\fR, \fB\-\-help\fR
 Display a short help message.
 .TP 29n
-\fB\-\fR\fB\-list-sets\fR
+\fB\-\-list-sets\fR
 List all configured sets.
 .TP 29n
-\fB\-\fR\fB\-mia\fR
+\fB\-\-mia\fR
 List names of games containing ROMs that are marked as mia in the database.
 .TP 29n
-\fB\-\fR\fB\-set\fR \fIpattern\fR
+\fB\-\-set\fR \fIpattern\fR
 Run
 \fBdumpgame\fR
 for all sets matching
 \fIpattern\fR.
 .TP 29n
-\fB\-\fR\fB\-summary\fR
+\fB\-\-summary\fR
 List some statistics about the contents of the database.
 .TP 29n
-\fB\-V\fR, \fB\-\fR\fB\-version\fR
+\fB\-V\fR, \fB\-\-version\fR
 Display program name and version number.
 .SH "ENVIRONMENT"
 .TP 12n

@@ -32,6 +32,7 @@
  -->
 <head>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="../nih-man.css" type="text/css" media="all"/>
   <title>CKSTATUS(1)</title>
 </head>
@@ -46,134 +47,121 @@
 <div class="manual-text">
 <section class="Sh">
 <h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
-<code class="Nm">ckstatus</code> &#x2014;
-<div class="Nd">report on <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>
-  runs</div>
+<p class="Pp"><code class="Nm">ckstatus</code> &#x2014; <span class="Nd">report
+    on <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a> runs</span></p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
 <table class="Nm">
   <tr>
     <td><code class="Nm">ckstatus</code></td>
-    <td>[<code class="Fl">-</code><code class="Fl">-all-missing</code>]
-      [<code class="Fl">-</code><code class="Fl">-all-sets</code>]
-      [<code class="Fl">-</code><code class="Fl">-changes</code>]
-      [<code class="Fl">-</code><code class="Fl">-config</code>
-      <var class="Ar">file</var>]
-      [<code class="Fl">-</code><code class="Fl">-correct</code>]
-      [<code class="Fl">-</code><code class="Fl">-delete</code>]
-      [<code class="Fl">-</code><code class="Fl">-from</code>
-      <var class="Ar">RUN</var>] [<code class="Fl">-h</code>,
-      <code class="Fl">-</code> <code class="Fl">-help</code>]
-      [<code class="Fl">-</code><code class="Fl">-list-sets</code>]
-      [<code class="Fl">-</code><code class="Fl">-mia-have</code>]
-      [<code class="Fl">-</code><code class="Fl">-missing</code>]
-      [<code class="Fl">-</code><code class="Fl">-run</code>
-      <var class="Ar">RUN</var>]
-      [<code class="Fl">-</code><code class="Fl">-runs</code>]
-      [<code class="Fl">-</code><code class="Fl">-set</code>
-      <var class="Ar">pattern</var>]
-      [<code class="Fl">-</code><code class="Fl">-to</code>
-      <var class="Ar">RUN</var>]
-      [<code class="Fl">-</code><code class="Fl">-status-db</code>
-      <var class="Ar">dbfile</var>]
-      [<code class="Fl">-</code><code class="Fl">-summary</code>]
-      [<code class="Fl">-V</code>,
-      <code class="Fl">-</code><code class="Fl">-version</code>]</td>
+    <td>[<code class="Fl">--all-missing</code>]
+      [<code class="Fl">--all-sets</code>] [<code class="Fl">--changes</code>]
+      [<code class="Fl">--config</code> <var class="Ar">file</var>]
+      [<code class="Fl">--correct</code>] [<code class="Fl">--delete</code>]
+      [<code class="Fl">--from</code> <var class="Ar">RUN</var>]
+      [<code class="Fl">-h</code>, <code class="Fl">--help</code>]
+      [<code class="Fl">--list-sets</code>] [<code class="Fl">--mia-have</code>]
+      [<code class="Fl">--missing</code>] [<code class="Fl">--run</code>
+      <var class="Ar">RUN</var>] [<code class="Fl">--runs</code>]
+      [<code class="Fl">--set</code> <var class="Ar">pattern</var>]
+      [<code class="Fl">--to</code> <var class="Ar">RUN</var>]
+      [<code class="Fl">--status-db</code> <var class="Ar">dbfile</var>]
+      [<code class="Fl">--summary</code>] [<code class="Fl">-V</code>,
+      <code class="Fl">--version</code>]</td>
   </tr>
 </table>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
-<code class="Nm">ckstatus</code> is a program to report on the results and/or
-  changes of <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a> runs on a ROM set.
-  The data is read from the <span class="Pa">.ckmame-status.db</span> file in
-  the current directory, or the place configured in the config file, either for
-  the default or the selected set(s). It compares the output of different runs,
-  i.e. starts of <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>.
+<p class="Pp"><code class="Nm">ckstatus</code> is a program to report on the
+    results and/or changes of <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>
+    runs on a ROM set. The data is read from the
+    <span class="Pa">.ckmame-status.db</span> file in the current directory, or
+    the place configured in the config file, either for the default or the
+    selected set(s). It compares the output of different runs, i.e. starts of
+    <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>.</p>
 <section class="Ss">
 <h2 class="Ss" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h2>
-Supported options:
+<p class="Pp">Supported options:</p>
 <dl class="Bl-tag">
-  <dt><code class="Fl">-</code><code class="Fl">-all-missing</code></dt>
+  <dt id="all-missing"><a class="permalink" href="#all-missing"><code class="Fl">--all-missing</code></a></dt>
   <dd>List all missing ROMs.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-all-sets</code></dt>
+  <dt id="all-sets"><a class="permalink" href="#all-sets"><code class="Fl">--all-sets</code></a></dt>
   <dd>Report on all configured sets.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-changes</code></dt>
+  <dt id="changes"><a class="permalink" href="#changes"><code class="Fl">--changes</code></a></dt>
   <dd>List the changes in between two runs. By default, the newest two runs are
       compared, but the runs to compare can be chosen with
-      <code class="Fl">-</code> <code class="Fl">-from</code>
-      <var class="Ar">RUN</var> and
-      <code class="Fl">-</code><code class="Fl">-to</code>
-      <var class="Ar">RUN</var>.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-config</code>
+      <code class="Fl">--from</code> <var class="Ar">RUN</var> and
+      <code class="Fl">--to</code> <var class="Ar">RUN</var>.</dd>
+  <dt id="config"><a class="permalink" href="#config"><code class="Fl">--config</code></a>
     <var class="Ar">file</var></dt>
   <dd>Read the configuration from <var class="Ar">file</var>.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-correct</code></dt>
+  <dt id="correct"><a class="permalink" href="#correct"><code class="Fl">--correct</code></a></dt>
   <dd>List all correct ROMs.</dd>
-  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a>,
-    <code class="Fl">-</code><code class="Fl">-help</code></dt>
+  <dt id="h"><a class="permalink" href="#h"><code class="Fl">-h</code></a>,
+    <code class="Fl">--help</code></dt>
   <dd>Show a short help.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-delete</code></dt>
-  <dd>Delete the run specified by the
-      <code class="Fl">-</code><code class="Fl">-run</code>
+  <dt id="delete"><a class="permalink" href="#delete"><code class="Fl">--delete</code></a></dt>
+  <dd>Delete the run specified by the <code class="Fl">--run</code>
       <var class="Ar">RUN</var> option (required to avoid accidental data
     loss).</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-from</code>
+  <dt id="from"><a class="permalink" href="#from"><code class="Fl">--from</code></a>
     <var class="Ar">RUN</var></dt>
   <dd>Select the base run for the comparison with
-      <code class="Fl">-</code><code class="Fl">-changes</code>.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-list-sets</code></dt>
-  <dd>List all configured sets, for the
-      <code class="Fl">-</code><code class="Fl">-set</code> option.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-mia-have</code></dt>
+      <code class="Fl">--changes</code>.</dd>
+  <dt id="list-sets"><a class="permalink" href="#list-sets"><code class="Fl">--list-sets</code></a></dt>
+  <dd>List all configured sets, for the <code class="Fl">--set</code>
+    option.</dd>
+  <dt id="mia-have"><a class="permalink" href="#mia-have"><code class="Fl">--mia-have</code></a></dt>
   <dd>List all games containing ROMs that are MIA according to the
     database.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-missing</code></dt>
+  <dt id="missing"><a class="permalink" href="#missing"><code class="Fl">--missing</code></a></dt>
   <dd>List all missing ROMs except those that are MIA according to the
     database.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-run</code>
+  <dt id="run"><a class="permalink" href="#run"><code class="Fl">--run</code></a>
     <var class="Ar">RUN</var></dt>
   <dd>Select the run on which to report, or which to delete (for
-      <code class="Fl">-</code><code class="Fl">-delete</code>).</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-runs</code></dt>
+      <code class="Fl">--delete</code>).</dd>
+  <dt id="runs"><a class="permalink" href="#runs"><code class="Fl">--runs</code></a></dt>
   <dd>List all available runs.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-set</code>
+  <dt id="set"><a class="permalink" href="#set"><code class="Fl">--set</code></a>
     <var class="Ar">pattern</var></dt>
   <dd>Report on all sets matching <var class="Ar">pattern</var>.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-status-db</code>
+  <dt id="status-db"><a class="permalink" href="#status-db"><code class="Fl">--status-db</code></a>
     <var class="Ar">dbfile</var></dt>
   <dd>Use <var class="Ar">dbfile</var> instead of the default
       <span class="Pa">.ckmame-status.db</span>.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-summary</code></dt>
+  <dt id="summary"><a class="permalink" href="#summary"><code class="Fl">--summary</code></a></dt>
   <dd>Print summary information on the number of missing games.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-to</code>
+  <dt id="to"><a class="permalink" href="#to"><code class="Fl">--to</code></a>
     <var class="Ar">RUN</var></dt>
   <dd>Select the target run for the comparison with
-      <code class="Fl">-</code><code class="Fl">-changes</code>.</dd>
-  <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>,
-    <code class="Fl">-</code><code class="Fl">-version</code></dt>
+      <code class="Fl">--changes</code>.</dd>
+  <dt id="V"><a class="permalink" href="#V"><code class="Fl">-V</code></a>,
+    <code class="Fl">--version</code></dt>
   <dd>Report the version of <code class="Nm">ckstatus</code>.</dd>
 </dl>
 </section>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
-By default, the run information is read from
-  <span class="Pa">.ckmame-status.db</span>.
+<p class="Pp">By default, the run information is read from
+    <span class="Pa">.ckmame-status.db</span>.</p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
   ALSO</a></h1>
-<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>,
-  <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmamerc.html">ckmamerc(5)</a>
+<p class="Pp"><a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>,
+    <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmamerc.html">ckmamerc(5)</a></p>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
-<code class="Nm">ckstatus</code> was written by <span class="An">Dieter
-  Baron</span> &lt;<a class="Mt" href="mailto:dillo@nih.at">dillo@nih.at</a>&gt;
-  and <span class="An">Thomas Klausner</span>
-  &lt;<a class="Mt" href="mailto:wiz@gatalith.at">wiz@gatalith.at</a>&gt;.
+<p class="Pp"><code class="Nm">ckstatus</code> was written by
+    <span class="An">Dieter Baron</span>
+    &lt;<a class="Mt" href="mailto:dillo@nih.at">dillo@nih.at</a>&gt; and
+    <span class="An">Thomas Klausner</span>
+    &lt;<a class="Mt" href="mailto:wiz@gatalith.at">wiz@gatalith.at</a>&gt;.</p>
 </section>
 </div>
 <table class="foot">

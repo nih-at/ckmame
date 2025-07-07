@@ -38,24 +38,24 @@ runs
 .SH "SYNOPSIS"
 .HP 9n
 \fBckstatus\fR
-[\fB\-\fR\fB\-all-missing\fR]
-[\fB\-\fR\fB\-all-sets\fR]
-[\fB\-\fR\fB\-changes\fR]
-[\fB\-\fR\fB\-config\fR\ \fIfile\fR]
-[\fB\-\fR\fB\-correct\fR]
-[\fB\-\fR\fB\-delete\fR]
-[\fB\-\fR\fB\-from\fR\ \fIRUN\fR]
-[\fB\-h\fR,\ \fB\-\fR\fB\-help\fR]
-[\fB\-\fR\fB\-list-sets\fR]
-[\fB\-\fR\fB\-mia-have\fR]
-[\fB\-\fR\fB\-missing\fR]
-[\fB\-\fR\fB\-run\fR\ \fIRUN\fR]
-[\fB\-\fR\fB\-runs\fR]
-[\fB\-\fR\fB\-set\fR\ \fIpattern\fR]
-[\fB\-\fR\fB\-to\fR\ \fIRUN\fR]
-[\fB\-\fR\fB\-status-db\fR\ \fIdbfile\fR]
-[\fB\-\fR\fB\-summary\fR]
-[\fB\-V\fR,\ \fB\-\fR\fB\-version\fR]
+[\fB\-\-all-missing\fR]
+[\fB\-\-all-sets\fR]
+[\fB\-\-changes\fR]
+[\fB\-\-config\fR\ \fIfile\fR]
+[\fB\-\-correct\fR]
+[\fB\-\-delete\fR]
+[\fB\-\-from\fR\ \fIRUN\fR]
+[\fB\-h\fR,\ \fB\-\-help\fR]
+[\fB\-\-list-sets\fR]
+[\fB\-\-mia-have\fR]
+[\fB\-\-missing\fR]
+[\fB\-\-run\fR\ \fIRUN\fR]
+[\fB\-\-runs\fR]
+[\fB\-\-set\fR\ \fIpattern\fR]
+[\fB\-\-to\fR\ \fIRUN\fR]
+[\fB\-\-status-db\fR\ \fIdbfile\fR]
+[\fB\-\-summary\fR]
+[\fB\-V\fR,\ \fB\-\-version\fR]
 .SH "DESCRIPTION"
 \fBckstatus\fR
 is a program to report on the results and/or changes of
@@ -70,77 +70,70 @@ ckmame(1).
 .SS "OPTIONS"
 Supported options:
 .TP 22n
-\fB\-\fR\fB\-all-missing\fR
+\fB\-\-all-missing\fR
 List all missing ROMs.
 .TP 22n
-\fB\-\fR\fB\-all-sets\fR
+\fB\-\-all-sets\fR
 Report on all configured sets.
 .TP 22n
-\fB\-\fR\fB\-changes\fR
+\fB\-\-changes\fR
 List the changes in between two runs.
 By default, the newest two runs are compared, but the runs to compare
-can be chosen with
-\fB\-\fR\fB\-from\fR \fIRUN\fR
-and
-\fB\-\fR\fB\-to\fR \fIRUN\fR.
+can be chosen with \fB\-\-from\fR \fIRUN\fR
+and \fB\-\-to\fR \fIRUN\fR.
 .TP 22n
-\fB\-\fR\fB\-config\fR \fIfile\fR
+\fB\-\-config\fR \fIfile\fR
 Read the configuration from
 \fIfile\fR.
 .TP 22n
-\fB\-\fR\fB\-correct\fR
+\fB\-\-correct\fR
 List all correct ROMs.
 .TP 22n
-\fB\-h\fR, \fB\-\fR\fB\-help\fR
+\fB\-h\fR, \fB\-\-help\fR
 Show a short help.
 .TP 22n
-\fB\-\fR\fB\-delete\fR
-Delete the run specified by the
-\fB\-\fR\fB\-run\fR \fIRUN\fR
+\fB\-\-delete\fR
+Delete the run specified by the \fB\-\-run\fR \fIRUN\fR
 option (required to avoid accidental data loss).
 .TP 22n
-\fB\-\fR\fB\-from\fR \fIRUN\fR
-Select the base run for the comparison with
-\fB\-\fR\fB\-changes\fR.
+\fB\-\-from\fR \fIRUN\fR
+Select the base run for the comparison with \fB\-\-changes\fR.
 .TP 22n
-\fB\-\fR\fB\-list-sets\fR
-List all configured sets, for the
-\fB\-\fR\fB\-set\fR
+\fB\-\-list-sets\fR
+List all configured sets, for the \fB\-\-set\fR
 option.
 .TP 22n
-\fB\-\fR\fB\-mia-have\fR
+\fB\-\-mia-have\fR
 List all games containing ROMs that are MIA according to the database.
 .TP 22n
-\fB\-\fR\fB\-missing\fR
+\fB\-\-missing\fR
 List all missing ROMs except those that are MIA according to the
 database.
 .TP 22n
-\fB\-\fR\fB\-run\fR \fIRUN\fR
+\fB\-\-run\fR \fIRUN\fR
 Select the run on which to report, or which to delete
-(for
-\fB\-\fR\fB\-delete\fR).
+(for \fB\-\-delete\fR).
 .TP 22n
-\fB\-\fR\fB\-runs\fR
+\fB\-\-runs\fR
 List all available runs.
 .TP 22n
-\fB\-\fR\fB\-set\fR \fIpattern\fR
+\fB\-\-set\fR \fIpattern\fR
 Report on all sets matching
 \fIpattern\fR.
 .TP 22n
-\fB\-\fR\fB\-status-db\fR \fIdbfile\fR
+\fB\-\-status-db\fR \fIdbfile\fR
 Use
 \fIdbfile\fR
 instead of the default
 \fI.ckmame-status.db\fR.
 .TP 22n
-\fB\-\fR\fB\-summary\fR
+\fB\-\-summary\fR
 Print summary information on the number of missing games.
 .TP 22n
-\fB\-\fR\fB\-to\fR \fIRUN\fR
-Select the target run for the comparison with
-\fB\-\fR\fB\-changes\fR.
+\fB\-\-to\fR \fIRUN\fR
+Select the target run for the comparison with \fB\-\-changes\fR.
 .TP 22n
-\fB\-V\fR, \fB\-\fR\fB\-version\fR
+\fB\-V\fR, \fB\-\-version\fR
 Report the version of
 \fBckstatus\fR.
 .SH "FILES"
