@@ -32,6 +32,7 @@
  */
 
 #include "CkmameDB.h"
+#include "RomDB.h"
 #include "globals.h"
 
 #include <utility>
@@ -499,12 +500,13 @@ void CkmameDB::refresh_zipped() {
             }
         }
 
-        Progress::push_message("scanning loose files in '" + directory + "'");
-        auto a = Archive::open_toplevel(directory, TYPE_DISK, where, 0);
-        if (a) {
-            a->close();
+        if (db->has_disks()) {
+            auto progress = Progress::Message("scanning loose disk images in '" + directory + "'");
+            auto a = Archive::open_toplevel(directory, TYPE_DISK, where, 0);
+            if (a) {
+                a->close();
+            }
         }
-        Progress::pop_message();
     }
     catch (...) {
     }
