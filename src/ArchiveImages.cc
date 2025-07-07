@@ -40,6 +40,7 @@
 #include "Chd.h"
 #include "Dir.h"
 #include "Exception.h"
+#include "Progress.h"
 #include "globals.h"
 #include "util.h"
 
@@ -64,6 +65,7 @@ bool ArchiveImages::read_infos_xxx() {
         Dir dir(name, (contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY) == 0);
 
         for (const auto& entry : dir) {
+            Progress::update();
             if (name == entry.path() || name_type(entry) == NAME_IGNORE || entry.path().extension() != ".chd" || !entry.is_regular_file()) {
                 continue;
             }
