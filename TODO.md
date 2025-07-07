@@ -6,7 +6,6 @@
 - Fix rom in extra not found if in roms/.ckmame.db but not in roms/ (ckmamedb-file-removed.vtest)
 - Fix failing tests.
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
-- status update: SIGINFO support in Archive::commit, via libzip progress callback
 - search loose files in zipped mode: Add option in ArchiveDir to ignore zip files, but keep in .ckmame.db.
 - speedup idea: when opening archives (in extra dirs) only compute hashes if we need them
 - `mkmamedb`: When a game is in two dat files (identical name and ROMs), skip it from second (with warning).

@@ -37,18 +37,32 @@
 
 #include <algorithm>
 
+#include "CkmameCache.h"
+#include "Garbage.h"
+#include "Progress.h"
 #include "check.h"
 #include "diagnostics.h"
 #include "fix_util.h"
-#include "Garbage.h"
 #include "warn.h"
-#include "CkmameCache.h"
 
 
 static void cleanup_archive(filetype_t filetype, Archive *archive, Result *result, int flags);
 
 
 void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
+    const char* what;
+    switch (where) {
+        case FILE_SUPERFLUOUS:
+            what = "superfluous";
+            break;
+        case FILE_NEEDED:
+            what = "needed";
+        case FILE_EXTRA:
+            what = "extra";
+        default:
+            what = "unknown";
+    }
+    auto progress = Progress::Message(std::string("cleaning up ") + what + "files");
     list->sort_archives();
     list->sort_entries();
     size_t di = 0;

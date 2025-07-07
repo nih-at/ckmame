@@ -101,6 +101,7 @@ bool ArchiveLibarchive::close_xxx() {
 
 
 bool ArchiveLibarchive::commit_xxx() {
+    auto progress = Progress::Message("writing '" + name + "'");
     auto tmpfile = make_unique_path(name);
 
     output.set_error_archive(name, "");
@@ -140,6 +141,7 @@ bool ArchiveLibarchive::commit_xxx() {
         time_t now = time(nullptr);
 
         for (uint64_t index = 0; index < files.size(); index++) {
+            Progress::update();
             auto &file = files[index];
             auto &change = changes[index];
 

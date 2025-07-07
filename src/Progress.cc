@@ -85,6 +85,8 @@ void Progress::print_message(bool starting) {
         std::cout << std::put_time(std::localtime(&now), "%Y-%m-%d %H:%M:%S ") << (starting ? "start " : "done ");
     }
     else {
+        siginfo_caught = false;
+
         std::cout << ProgramName::get() << ": ";
         if (messages.empty()) {
             std::cout << "no progress available" << std::endl;
@@ -111,8 +113,6 @@ void Progress::print_message(bool starting) {
             }
         }
     }
-
-    siginfo_caught = false;
 }
 
 void Progress::enable() {

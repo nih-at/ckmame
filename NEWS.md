@@ -1,3 +1,7 @@
+3.1 (Unreleased)
+
+* Improve speed on slow file systems.
+
 3.0 (2025-01-20)
 ================
 
