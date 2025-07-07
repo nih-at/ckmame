@@ -474,7 +474,6 @@ void CkmameDB::refresh_unzipped() {
 
 void CkmameDB::refresh_zipped() {
     try {
-        auto progress = Progress::Message("refreshing directory '" + directory + "'");
         Dir dir(directory, true);
         std::filesystem::path filepath;
 
