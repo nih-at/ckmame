@@ -36,13 +36,14 @@
 #include <algorithm>
 #include <unordered_set>
 
+#include "CkmameCache.h"
 #include "Dir.h"
 #include "Exception.h"
+#include "Progress.h"
+#include "RomDB.h"
 #include "fix_util.h"
 #include "globals.h"
-#include "RomDB.h"
 #include "util.h"
-#include "CkmameCache.h"
 
 
 DeleteList::Mark::Mark(const DeleteListPtr& list_) : list(list_), index(0), rollback(false) {
@@ -79,11 +80,14 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
     bool have_toplevel_roms = false;
     bool have_toplevel_disks = false;
 
+    auto progress = Progress::Message("Listing directory " + directory);
+
     try {
         Dir dir(directory, false);
         std::filesystem::path filepath;
         
         while ((filepath = dir.next()) != "") {
+            Progress::update();
             if (name_type(filepath) == NAME_IGNORE) {
                 continue;
             }

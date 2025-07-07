@@ -163,7 +163,7 @@ public:
     bool commit();
     bool compare_size_hashes(size_t index, size_t detector_id, const FileData *rom);
     bool compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors);
-    void ensure_valid_archive();
+    void move_broken_archive();
     bool file_add_empty(const std::string &filename);
     int file_compare_hashes(uint64_t idx, const Hashes *h);
     virtual bool file_ensure_hashes(uint64_t idx, int hashtypes) { return file_ensure_hashes(idx, 0, hashtypes); }

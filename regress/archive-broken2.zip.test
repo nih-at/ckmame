@@ -3,8 +3,10 @@ description test game (no parent), zip is incomplete, looked-at zip is broken
 return 0
 arguments -Fvc 1-4
 file mame.db mame.db
-file roms/2-48.zip CMakeLists.txt
+file roms/2-48.zip CMakeLists.txt {}
+file roms/2-48.zip-000.broken {} CMakeLists.txt
 stdout
+rename broken archive 'roms/2-48.zip' to 'roms/2-48.zip-000.broken'
 In game 1-4:
 game 1-4                                     : not a single file found
 end-of-inline-data

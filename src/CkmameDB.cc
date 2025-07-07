@@ -483,12 +483,11 @@ void CkmameDB::refresh_zipped() {
             switch ((nt = name_type(filepath))) {
             case NAME_IMAGES:
             case NAME_ZIP: {
-                Progress::push_message("scanning archive '" + filepath.string() + "'");
+                auto progress = Progress::Message("scanning archive '" + filepath.string() + "'");
                 auto a = Archive::open(filepath, nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK, where, 0);
                 if (a) {
                     a->close();
                 }
-                Progress::pop_message();
                 break;
             }
 

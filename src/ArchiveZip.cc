@@ -65,6 +65,15 @@ bool ArchiveZip::ensure_zip() {
 	zip_error_init_with_code(&error, err);
         output.error("error %s zip archive '%s': %s", (contents->flags & ARCHIVE_FL_CREATE ? "creating" : "opening"), name.c_str(), zip_error_strerror(&error));
 	zip_error_fini(&error);
+
+        if (where == FILE_ROMSET && configuration.fix_romset && std::filesystem::exists(name)) {
+            move_broken_archive();
+            if (contents->flags & ARCHIVE_FL_CREATE) {
+                za = zip_open(name.c_str(), zip_flags, &err);
+                return za != nullptr;
+            }
+        }
+
 	return false;
     }
 
@@ -96,10 +105,9 @@ bool ArchiveZip::close_xxx() {
         return true;
     }
 
-    Progress::push_message("writing '" + name + "'");
+    auto progress = Progress::Message("writing '" + name + "'");
     zip_register_progress_callback_with_state(za, 0.1, close_progress, nullptr, nullptr);
     if (zip_close(za) < 0) {
-        Progress::pop_message();
 	/* error closing, so zip is still valid */
 	output.archive_error("error closing zip: %s", zip_strerror(za));
 
@@ -109,7 +117,6 @@ bool ArchiveZip::close_xxx() {
         za = nullptr;
         return false;
     }
-    Progress::pop_message();
 
     za = nullptr;
 

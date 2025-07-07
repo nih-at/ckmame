@@ -143,21 +143,12 @@ int Archive::close() {
 }
 
 
-void Archive::ensure_valid_archive() {
-    if (check()) {
-        return;
-    }
-
-    /* opening the archive failed, rename it and create new one */
-
+void Archive::move_broken_archive() {
     auto new_name = ::make_unique_name(name, ".broken");
 
     output.message_verbose("rename broken archive '%s' to '%s'", name.c_str(), new_name.c_str());
     if (!rename_or_move(name, new_name)) {
         throw(Exception("can't rename file")); // TODO: rename_or_move should throw
-    }
-    if (!check()) {
-        throw(Exception("can't create archive '" + name + "'")); // TODO: details
     }
 }
 
