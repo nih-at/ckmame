@@ -474,10 +474,12 @@ void CkmameDB::refresh_unzipped() {
 
 void CkmameDB::refresh_zipped() {
     try {
+        auto progress = Progress::Message("refreshing directory '" + directory + "'");
         Dir dir(directory, true);
         std::filesystem::path filepath;
 
         while (!(filepath = dir.next()).empty()) {
+            Progress::update();
             name_type_t nt;
 
             switch ((nt = name_type(filepath))) {

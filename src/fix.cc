@@ -61,7 +61,7 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
 
         if (configuration.fix_romset) {
             garbage = std::make_shared<Garbage>(archive);
-            
+
             extra_mark = DeleteList::Mark(ckmame_cache->extra_delete_list);
             needed_mark = DeleteList::Mark(ckmame_cache->needed_delete_list);
             superfluous_mark = DeleteList::Mark(ckmame_cache->superfluous_delete_list);

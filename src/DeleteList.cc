@@ -80,7 +80,7 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
     bool have_toplevel_roms = false;
     bool have_toplevel_disks = false;
 
-    auto progress = Progress::Message("Listing directory " + directory);
+    auto progress = Progress::Message("listing directory '" + directory + "'");
 
     try {
         Dir dir(directory, false);
