@@ -38,7 +38,7 @@
 
 #include "Progress.h"
 
-Dir::Dir(const std::string &name, bool recursive) : index(0) {
+Dir::Dir(const std::string &name, bool recursive) {
     if (recursive) {
 	for (const auto &p : std::filesystem::recursive_directory_iterator(name)) {
 	    Progress::update();
@@ -52,12 +52,4 @@ Dir::Dir(const std::string &name, bool recursive) : index(0) {
     }
 
     std::sort(entries.begin(), entries.end());
-}
-
-std::filesystem::path Dir::next() {
-    if (index >= entries.size()) {
-	return "";
-    }
-
-    return entries[index++];
 }

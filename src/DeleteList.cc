@@ -84,38 +84,37 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
 
     try {
         Dir dir(directory, false);
-        std::filesystem::path filepath;
-        
-        while ((filepath = dir.next()) != "") {
+
+        for (const auto& entry : dir ) {
             Progress::update();
-            if (name_type(filepath) == NAME_IGNORE) {
+            if (name_type(entry) == NAME_IGNORE) {
                 continue;
             }
             
             bool known = false;
             
-            if (std::filesystem::is_directory(filepath)) {
-                auto filename = filepath.filename();
+            if (entry.is_directory()) {
+                auto filename = entry.path().filename();
                 known = known_games.find(filename) != known_games.end();
                                 
                 if (configuration.roms_zipped) {
                     if (!known) {
-                        archives.emplace_back(filepath, TYPE_DISK);
+                        archives.emplace_back(entry.path(), TYPE_DISK);
                     }
-                    list_non_chds(filepath);
+                    list_non_chds(entry.path());
                 }
                 else {
                     if (!known) {
-                        archives.emplace_back(filepath, TYPE_ROM);
+                        archives.emplace_back(entry.path(), TYPE_ROM);
                     }
                 }
             }
             else {
                 if (configuration.roms_zipped) {
-                    auto ext = filepath.extension();
+                    auto ext = entry.path().extension();
                     
                     if (ext == ".zip") {
-                        auto stem = filepath.stem();
+                        auto stem = entry.path().stem();
                         known = known_games.find(stem) != known_games.end();
                     }
                     else if (ext == ".chd") {
@@ -131,7 +130,7 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
                 }
 
                 if (!known) {
-                    archives.emplace_back(filepath, TYPE_ROM);
+                    archives.emplace_back(entry.path(), TYPE_ROM);
                 }
             }
         }
@@ -169,7 +168,7 @@ int DeleteList::execute() {
             }
             else {
                 filetype_t filetype;
-                switch (name_type(name)) {
+                switch (name_type_s(name)) {
                     case NAME_ZIP:
                         filetype = TYPE_ROM;
                         break;
@@ -243,11 +242,10 @@ void DeleteList::sort_entries() {
 void DeleteList::list_non_chds(const std::string &directory) {
     try {
         Dir dir(directory, true);
-        std::filesystem::path filepath;
-        
-        while ((filepath = dir.next()) != "") {
-            if (filepath.extension() != ".chd") {
-                archives.emplace_back(filepath, TYPE_ROM);
+
+        for (const auto &entry : dir) {
+            if (entry.path().extension() != ".chd") {
+                archives.emplace_back(entry.path(), TYPE_ROM);
             }
         }
     }

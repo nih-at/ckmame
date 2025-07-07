@@ -99,13 +99,8 @@ std::vector<uint8_t> hex2bin(const std::string &hex) {
 
     return bin;
 }
-
-name_type_t name_type(const std::string &name) {
-    if (!std::filesystem::exists(name)) {
-        return NAME_UNKNOWN;
-    }
-
-    if (std::filesystem::is_directory(name)) {
+name_type_t name_type(const std::filesystem::directory_entry &entry) {
+    if (entry.is_directory()) {
         if (configuration.roms_zipped) {
             return NAME_IMAGES;
         }
@@ -114,16 +109,28 @@ name_type_t name_type(const std::string &name) {
         }
     }
 
-    auto filename = std::filesystem::path(name).filename();
+    auto filename = entry.path().filename();
     if (filename == CkmameDB::db_name || filename == DatDB::db_name || filename == ".DS_Store" || filename.string().substr(0, 2) == "._") {
         return NAME_IGNORE;
     }
 
-    if (configuration.roms_zipped && is_ziplike(name)) {
-	return NAME_ZIP;
+    if (configuration.roms_zipped && is_ziplike(entry.path())) {
+        return NAME_ZIP;
     }
 
     return NAME_UNKNOWN;
+}
+
+
+name_type_t name_type_s(const std::string &name) {
+    std::error_code ec;
+    auto entry = std::filesystem::directory_entry(name, ec);
+
+    if (ec) {
+        return NAME_UNKNOWN;
+    }
+
+    return name_type(entry);
 }
 
 
@@ -166,8 +173,8 @@ std::filesystem::path home_directory() {
 }
 
 
-bool is_ziplike(const std::string &fname) {
-    auto extension = std::filesystem::path(fname).extension();
+bool is_ziplike(const std::filesystem::path &fname) {
+    auto extension = fname.extension();
 
     if (iequals(extension, ".zip")) {
         return true;

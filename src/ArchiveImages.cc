@@ -62,31 +62,32 @@ bool ArchiveImages::read_infos_xxx() {
 
     try {
         Dir dir(name, (contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY) == 0);
-        std::filesystem::path filepath;
 
-        while ((filepath = dir.next()) != "") {
-            if (name == filepath || name_type(filepath) == NAME_IGNORE || filepath.extension() != ".chd" || !std::filesystem::is_regular_file(filepath)) {
+        for (const auto& entry : dir) {
+            if (name == entry.path() || name_type(entry) == NAME_IGNORE || entry.path().extension() != ".chd" || !entry.is_regular_file()) {
                 continue;
             }
 
             files.emplace_back();
             auto &f = files[files.size() - 1];
-            auto filename = filepath.string();
+            auto filename = entry.path().string();
             auto start = name.length() + 1;
             f.name = filename.substr(start, filename.length() - start - 4);
 
             try {
+#if 0
+                // auto ftime = entry->last_write_time();
+                // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
+#else
                 struct stat sb;
 
-                if (stat(filepath.c_str(), &sb) != 0) {
+                if (stat(entry.path().c_str(), &sb) != 0) {
                     throw Exception("%s", strerror(errno));
                 }
 
-                // auto ftime = std::filesystem::last_write_time(filepath);
-                // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
                 f.mtime = sb.st_mtime;
-
-                Chd chd(filepath);
+#endif
+                Chd chd(entry.path());
 
                 f.hashes.size = chd.size();
                 f.hashes.set_hashes(chd.hashes);

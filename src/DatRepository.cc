@@ -121,19 +121,18 @@ std::vector<std::string> DatRepository::list_dats() {
 void DatRepository::update_directory(const std::string &directory, const DatDBPtr &db) {
     auto dir = Dir(directory, true);
     std::unordered_set<std::string> files;
-    std::filesystem::path filepath;
 
-    while ((filepath = dir.next()) != "") {
+    for (const auto& entry: dir) {
 	try {
-	    if (directory == filepath || name_type(filepath) == NAME_IGNORE || !std::filesystem::is_regular_file(filepath)) {
+	    if (directory == entry.path() || name_type(entry) == NAME_IGNORE || !entry.is_regular_file()) {
 		continue;
 	    }
 
-	    auto file = filepath.string().substr(directory.size() + 1);
+	    auto file = entry.path().string().substr(directory.size() + 1);
 
 	    struct stat st{};
 
-	    if (stat(filepath.c_str(), &st) < 0) {
+	    if (stat(entry.path().c_str(), &st) < 0) {
 		continue;
 	    }
 
@@ -152,14 +151,14 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 	    std::vector<DatDB::DatEntry> entries;
 
 	    try {
-		auto zip_archive = zip_open(filepath.c_str(), 0, nullptr);
+		auto zip_archive = zip_open(entry.path().c_str(), 0, nullptr);
 		if (zip_archive != nullptr) {
 		    for (size_t index = 0; static_cast<int64_t>(index) < zip_get_num_entries(zip_archive, 0); index++) {
 			try {
 			    auto entry_name = zip_get_name(zip_archive, index, 0);
 			    auto output = OutputContextHeader();
 
-			    auto source = std::make_shared<ParserSourceZip>(filepath, zip_archive, entry_name);
+			    auto source = std::make_shared<ParserSourceZip>(entry.path(), zip_archive, entry_name);
                             auto parser_options = Parser::Options{{}, false};
 			    auto parser = Parser::create(source, {}, nullptr, &output, parser_options);
 			    if (parser) {
@@ -177,7 +176,7 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 		else {
 		    auto output = OutputContextHeader();
 
-		    auto source = std::make_shared<ParserSourceFile>(filepath);
+		    auto source = std::make_shared<ParserSourceFile>(entry.path());
                     auto parser_options = Parser::Options{{}, false};
 		    auto parser = Parser::create(source, {}, nullptr, &output, parser_options);
 
@@ -195,7 +194,7 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 	    db->insert_file(file, st.st_mtime, st.st_size, entries);
 	}
 	catch (Exception &ex) {
-	    output.error("can't process '%s': %s", filepath.c_str(), ex.what());
+	    output.error("can't process '%s': %s", entry.path().c_str(), ex.what());
 	}
     }
 

@@ -35,18 +35,17 @@
 */
 
 #include <filesystem>
-#include <string>
 #include <vector>
 
 class Dir {
- public:
-    Dir(const std::string& path, bool recursive);
+  public:
+     Dir(const std::string& path, bool recursive);
 
-    std::filesystem::path next();
+     auto begin() {return entries.cbegin();}
+     auto end() {return entries.cend();}
 
- private:
-    std::vector<std::filesystem::path> entries;
-    size_t index;
+  private:
+    std::vector<std::filesystem::directory_entry> entries;
 };
 
 #endif /* HAD_DIR_H */

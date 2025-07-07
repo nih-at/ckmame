@@ -449,15 +449,14 @@ void CkmameDB::refresh() {
 void CkmameDB::refresh_unzipped() {
     try {
         Dir dir(directory, false);
-        std::filesystem::path filepath;
 
-        while (!(filepath = dir.next()).empty()) {
-            if (name_type(filepath) == NAME_IGNORE) {
+        for (const auto& entry : dir) {
+            if (name_type(entry) == NAME_IGNORE) {
                 continue;
             }
-            if (std::filesystem::is_directory(filepath)) {
-                Progress::push_message("scanning directory '" + filepath.string() + "'");
-                auto a = Archive::open(filepath, TYPE_ROM, where, 0);
+            if (entry.is_directory()) {
+                Progress::push_message("scanning directory '" + entry.path().string() + "'");
+                auto a = Archive::open(entry.path(), TYPE_ROM, where, 0);
                 a->close();
                 Progress::pop_message();
             }
@@ -476,17 +475,16 @@ void CkmameDB::refresh_unzipped() {
 void CkmameDB::refresh_zipped() {
     try {
         Dir dir(directory, true);
-        std::filesystem::path filepath;
 
-        while (!(filepath = dir.next()).empty()) {
+        for (const auto& entry : dir) {
             Progress::update();
             name_type_t nt;
 
-            switch ((nt = name_type(filepath))) {
+            switch ((nt = name_type(entry))) {
             case NAME_IMAGES:
             case NAME_ZIP: {
-                auto progress = Progress::Message("scanning archive '" + filepath.string() + "'");
-                auto a = Archive::open(filepath, nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK, where, 0);
+                auto progress = Progress::Message("scanning archive '" + entry.path().string() + "'");
+                auto a = Archive::open(entry.path(), nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK, where, 0);
                 if (a) {
                     a->close();
                 }

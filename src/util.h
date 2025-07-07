@@ -52,12 +52,13 @@ std::string bin2hex(const std::vector<uint8_t> &bin);
 bool string_less_case_insensitive(const std::string &lhs, const std::string &rhs);
 std::string string_lower(const std::string &s);
 bool string_starts_with(const std::string &large, const std::string &small);
-name_type_t name_type(const std::string &name);
+name_type_t name_type(const std::filesystem::directory_entry &entry);
+name_type_t name_type_s(const std::string &name);
 void diff_lines(const std::vector<std::string>& old_lines, const std::vector<std::string>& new_lines, size_t& added, size_t& removed);
 bool ensure_dir(const std::filesystem::path& name, bool strip_filename); // TODO: replace with ensure_directory
 void ensure_directory(const std::filesystem::path& name, bool strip_filename = false);
 bool iequals(const std::string& a, const std::string& b);
-bool is_ziplike(const std::string &fname);
+bool is_ziplike(const std::filesystem::path &fname);
 std::filesystem::path home_directory();
 std::string human_number(uint64_t value);
 std::string format_time(const std::string &format, time_t timestamp);

@@ -250,21 +250,20 @@ void ArchiveDir::Commit::ensure_parent_directory(const std::filesystem::path &fi
 bool ArchiveDir::read_infos_xxx() {
     try {
 	 Dir dir(name, !(contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY));
-	 std::filesystem::path filepath;
 
-	 while ((filepath = dir.next()) != "") {
-             if (name == filepath || name_type(filepath) == NAME_IGNORE || !std::filesystem::is_regular_file(filepath)) {
+         for (const auto& entry: dir) {
+             if (name == entry.path() || name_type(entry) == NAME_IGNORE || !entry.is_regular_file()) {
                  continue;
              }
 
              files.emplace_back();
              auto &f = files[files.size() - 1];
 
-             f.name = filepath.string().substr(name.size() + 1);
-             f.hashes.size = std::filesystem::file_size(filepath);
-             // auto ftime = std::filesystem::last_write_time(filepath);
+             f.name = entry.path().string().substr(name.size() + 1);
+             f.hashes.size = entry.file_size();
+             // auto ftime = entry.last_write_time();
              // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
-             f.mtime = get_mtime(filepath);
+             f.mtime = get_mtime(entry.path());
          }
     }
     catch (...) {

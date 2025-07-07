@@ -88,8 +88,8 @@ class CkmameCache {
 
     bool enter_dir_in_map_and_list(const DeleteListPtr &list, const std::string &directory_name, where_t where);
     static bool enter_dir_in_map_and_list_unzipped(const DeleteListPtr &list, const std::string &directory_name, where_t where);
-    static bool enter_dir_in_map_and_list_zipped(const DeleteListPtr &list, const std::string &dir_name, where_t where);
-    static bool enter_file_in_map_and_list(const DeleteListPtr &list, const std::string &name, where_t where);
+    static bool enter_dir_in_map_and_list_zipped(const DeleteListPtr &list, const std::string &directory_name, where_t where);
+    static bool enter_file_in_map_and_list(const DeleteListPtr &list, const std::filesystem::directory_entry& entry, where_t where);
 
     const CacheDirectory* get_directory_for_archive(const std::string &name);
 };

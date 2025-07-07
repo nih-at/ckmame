@@ -189,7 +189,7 @@ void CkmameCache::ensure_extra_maps() {
 
     for (auto &entry : superfluous_delete_list->archives) {
 	auto file = entry.name;
-	switch ((name_type(file))) {
+	switch ((name_type_s(file))) {
 	case NAME_IMAGES:
 	case NAME_ZIP: {
             Progress::push_message("scanning '" + file + "'");
@@ -269,15 +269,14 @@ bool CkmameCache::enter_dir_in_map_and_list(const DeleteListPtr &list, const std
 bool CkmameCache::enter_dir_in_map_and_list_unzipped(const DeleteListPtr &list, const std::string &directory_name, where_t where) {
     try {
 	Dir dir(directory_name, false);
-	std::filesystem::path filepath;
 
-	while (!(filepath = dir.next()).empty()) {
-	    if (name_type(filepath) == NAME_IGNORE) {
+        for (const auto& entry : dir) {
+	    if (name_type(entry) == NAME_IGNORE) {
 		continue;
 	    }
-	    if (std::filesystem::is_directory(filepath)) {
-                Progress::push_message("scanning '" + filepath.string() + "'");
-		auto a = Archive::open(filepath, TYPE_ROM, where, 0);
+	    if (entry.is_directory()) {
+                Progress::push_message("scanning '" + entry.path().string() + "'");
+		auto a = Archive::open(entry.path(), TYPE_ROM, where, 0);
 		if (a) {
 		    list->add(a.get());
 		    a->close();
@@ -304,10 +303,9 @@ bool CkmameCache::enter_dir_in_map_and_list_unzipped(const DeleteListPtr &list, 
 bool CkmameCache::enter_dir_in_map_and_list_zipped(const DeleteListPtr &list, const std::string &dir_name, where_t where) {
     try {
 	Dir dir(dir_name, true);
-	std::filesystem::path filepath;
 
-	while (!(filepath = dir.next()).empty()) {
-	    enter_file_in_map_and_list(list, filepath, where);
+        for (const auto &entry : dir) {
+	    enter_file_in_map_and_list(list, entry, where);
 	}
 
         Progress::push_message("scanning '" + dir_name + "'");
@@ -325,14 +323,14 @@ bool CkmameCache::enter_dir_in_map_and_list_zipped(const DeleteListPtr &list, co
 }
 
 
-bool CkmameCache::enter_file_in_map_and_list(const DeleteListPtr &list, const std::string &name, where_t where) {
+bool CkmameCache::enter_file_in_map_and_list(const DeleteListPtr &list, const std::filesystem::directory_entry &entry, where_t where) {
     name_type_t nt;
 
-    switch ((nt = name_type(name))) {
+    switch ((nt = name_type(entry))) {
     case NAME_IMAGES:
     case NAME_ZIP: {
-        Progress::push_message("scanning '" + name + "'");
-	auto a = Archive::open(name, nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK, where, 0);
+        Progress::push_message("scanning '" + entry.path().string() + "'");
+	auto a = Archive::open(entry.path(), nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK, where, 0);
 	if (a) {
 	    list->add(a.get());
 	    a->close();

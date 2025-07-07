@@ -52,12 +52,12 @@ bool ParserDir::parse() {
 
     try {
 	Dir dir(directory_name, false);
-	std::filesystem::path filepath;
 
 	if (configuration.roms_zipped) {
             auto have_loose_chds = false;
-            
-            while ((filepath = dir.next()) != "") {
+
+	    for (const auto& entry : dir) {
+	        auto filepath = entry.path();
                 if (std::filesystem::is_directory(filepath)) {
                     auto dir_empty = true;
                     
@@ -110,7 +110,7 @@ bool ParserDir::parse() {
                     }
                 }
                 else {
-                    switch (name_type(filepath)) {
+                    switch (name_type(entry)) {
                         case NAME_ZIP: {
                             /* TODO: handle errors */
                             auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, 0);
@@ -166,10 +166,10 @@ bool ParserDir::parse() {
 	else {
             auto have_loose_files = false;
 
-            while ((filepath = dir.next()) != "") {
-                if (std::filesystem::is_directory(filepath)) {
+	    for (const auto& entry : dir) {
+                if (entry.is_directory()) {
                     /* TODO: handle errors */
-                    auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, 0);
+                    auto a = Archive::open(entry.path(), TYPE_ROM, FILE_NOWHERE, 0);
                     if (a) {
                         start_game(a->name, directory_name);
                         parse_archive(TYPE_ROM, a.get());
@@ -177,13 +177,13 @@ bool ParserDir::parse() {
                     }
                 }
                 else {
-                    if (std::filesystem::is_regular_file(filepath)) {
+                    if (entry.is_regular_file()) {
                         /* TODO: always include loose files, separate flag? */
                         if (options.full_archive_names) {
                             have_loose_files = true;
                         }
                         else {
-                            output.error("found file '%s' outside of game subdirectory", filepath.c_str());
+                            output.error("found file '%s' outside of game subdirectory", entry.path().c_str());
                         }
                     }
                 }
