@@ -1,0 +1,18 @@
+description only updated if the database changed - no change
+return 1
+program mkmamedb
+file dats/mame.dat mamedb-header-only.dat
+set-modification-time dats/mame.dat 1644506227
+file dats/.mkmamedb.db {} mkmamedb-datdb-empty.dump
+file .ckmamerc <inline>
+[global]
+dat-directories = [ "dats" ]
+dats = [ "ckmame test db" ]
+rom-db = "output.db"
+end-of-inline-data
+stdout
+ckmame test db (-> 1)
+end-of-inline-data
+stderr
+can't update ROM database: dat 'ckmame test db' is empty
+end-of-inline-data

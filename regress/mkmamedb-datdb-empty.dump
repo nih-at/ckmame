@@ -1,0 +1,4 @@
+>>> table dat (file_id, entry_name, name, version, crc)
+1|<null>|ckmame test db|1|4186386448
+>>> table file (file_id, file_name, mtime, size)
+1|mame.dat|1644506227|49

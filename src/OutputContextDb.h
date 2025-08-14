@@ -49,6 +49,8 @@ public:
     bool header(DatEntry *dat) override;
     void error_occurred() override { ok = false; }
 
+    RomDB* get_db() const {return db.get();}
+
 private:
     std::string file_name;
     std::string temp_file_name;

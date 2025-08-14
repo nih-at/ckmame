@@ -33,14 +33,18 @@
 
 #include "update_romdb.h"
 
+#include <stddef.h>
+
 #include "DatRepository.h"
 #include "Exception.h"
-#include "globals.h"
 #include "OutputContext.h"
-#include "RomDB.h"
-#include "ParserSourceZip.h"
-#include "ParserSourceFile.h"
+#include "OutputContextDb.h"
 #include "Parser.h"
+#include "ParserSourceFile.h"
+#include "ParserSourceZip.h"
+#include "RomDB.h"
+#include "file_util.h"
+#include "globals.h"
 
 
 static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo> &dats_to_use) {
@@ -114,8 +118,14 @@ bool update_romdb(bool force) {
     OutputContextPtr output;
 
     try {
-	output = OutputContext::create(OutputContext::FORMAT_DB, configuration.rom_db, 0);
+        auto filename = configuration.rom_db;
+        if (!configuration.use_temp_directory) {
+            filename = make_unique_path(filename);
+        }
+	output = OutputContext::create(OutputContext::FORMAT_DB, filename, 0);
+        auto new_db = dynamic_cast<OutputContextDb*>(output.get())->get_db();
 
+        size_t dat_idx = 0;
 	for (const auto &dat : dats_to_use) {
 	    ParserSourcePtr source;
 
@@ -143,13 +153,25 @@ bool update_romdb(bool force) {
 		}
 		throw Exception(message);
 	    }
+
+	    if (new_db->games_from_dat(dat_idx) == 0 && !configuration.dat_allow_epty_dat(dat.name)) {
+	        throw Exception("dat '" + dat.name + "' is empty");
+	    }
+
+	    dat_idx++;
 	}
 
 	auto ok = output->close();
 	output.reset();
 	if (!ok) {
+	    if (!configuration.use_temp_directory) {
+	        std::filesystem::remove(filename);
+	    }
 	    throw Exception("can't write database");
 	}
+        if (!configuration.use_temp_directory) {
+            std::filesystem::rename(filename, configuration.rom_db);
+        }
     }
     catch (std::exception &ex) {
 	if (output) {

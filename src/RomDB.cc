@@ -146,6 +146,7 @@ std::unordered_map<int, std::string> RomDB::queries = {
     {  QUERY_RULE, "select rule_idx, start_offset, end_offset, operation from rule order by rule_idx" },
     {  QUERY_STATS_FILES, "select file_type, count(name) amount, sum(size) total_size from file group by file_type order by file_type" },
     {  QUERY_STATS_GAMES, "select count(name) as amount from game" },
+    {  QUERY_STATS_GAMES_FROM_DAT, "select count(name) as amount from game where dat_idx = :dat_idx" },
     {  QUERY_TEST, "select type, offset, size, mask, value, result from test where rule_idx = :rule_idx order by test_idx" },
     {  UPDATE_FILE, "update file set location = :location where game_id = :game_id and file_type = :file_type and file_idx = :file_idx" },
     {  UPDATE_PARENT, "update game set parent = :parent where game_id = :game_id" }
@@ -185,14 +186,14 @@ Stats RomDB::get_stats() {
     Stats stats;
 
     auto stmt = get_statement(RomDB::QUERY_STATS_GAMES);
-    
+
     // This statement always returns one row.
     (void)stmt->step();
-    
+
     stats.games_total = stmt->get_uint64("amount");
-    
+
     stmt = get_statement(RomDB::QUERY_STATS_FILES);
-    
+
     int ft = -1;
     for (int i = 0; i < TYPE_MAX; i++) {
         if (ft < i) {
@@ -203,16 +204,22 @@ Stats RomDB::get_stats() {
                 ft = TYPE_MAX;
             }
         }
-        
+
         if (ft != i) {
             continue;
         }
-        
+
         stats.files[i].files_total = stmt->get_uint64("amount");
         stats.files[i].bytes_total = stmt->get_uint64("total_size");
     }
-    
+
     return stats;
+}
+uint64_t RomDB::games_from_dat(size_t dat_idx) {
+    auto stmt = get_statement(QUERY_STATS_GAMES_FROM_DAT);
+    stmt->set_uint64("dat_idx", dat_idx);
+    (void)stmt->step();
+    return stmt->get_uint64("amount");
 }
 
 

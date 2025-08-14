@@ -77,6 +77,7 @@ TomlSchema::TypePtr Configuration::dat_directories_schema = TomlSchema::alternat
 TomlSchema::TypePtr Configuration::dats_schema = TomlSchema::alternatives({
 	TomlSchema::array(TomlSchema::string()),
 	TomlSchema::table({}, TomlSchema::table({
+	    { "allow-empty-dat", TomlSchema::boolean()},
 	    { "game-name-suffix", TomlSchema::string() },
 	    { "use-description-as-name", TomlSchema::boolean() } }, {}))
     }, "array or table");
@@ -89,6 +90,7 @@ TomlSchema::TypePtr Configuration::extra_directories_schema = TomlSchema::altern
         }, "array or table");
 
 TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table({
+      { "allow-empty-dat", TomlSchema::boolean()},
     { "complete-games-only", TomlSchema::boolean() },
     { "complete-list", TomlSchema::string() },
     { "create-fixdat",  TomlSchema::boolean() },
@@ -263,6 +265,7 @@ Configuration::Configuration() : fix_romset(false) {
 }
 
 void Configuration::reset() {
+    allow_empty_dat = false;
     complete_games_only = false;
     complete_list = "";
     create_fixdat = false;
@@ -610,6 +613,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
 	}
     }
 
+    set_bool(table, "allow-empty-dat", allow_empty_dat);
     set_bool(table, "complete-games-only", complete_games_only);
     set_string(table, "complete-list", complete_list);
     set_bool(table, "create-fixdat", create_fixdat);
@@ -781,6 +785,14 @@ std::string Configuration::dat_game_name_suffix(const std::string &dat) {
     return it->second.game_name_suffix.value();
 }
 
+bool Configuration::dat_allow_epty_dat(const std::string &dat) {
+    auto it = dat_options.find(dat);
+    if (it == dat_options.end() || !it->second.game_name_suffix.has_value()) {
+        return allow_empty_dat;
+    }
+    return *it->second.allow_empty_dat;
+}
+
 
 bool Configuration::dat_directory_use_central_cache_directory(const std::string &directory){
     auto it = dat_directory_options.find(directory);
@@ -863,6 +875,7 @@ void Configuration::merge_dats(const toml::table& table) {
 	    if (options_table != nullptr && !options_table->empty()) {
 		auto parsed_options = DatOptions();
 
+	        set_bool_optional(*options_table, "allow-empty-dat", parsed_options.allow_empty_dat);
 		set_string_optional(*options_table, "game-name-suffix", parsed_options.game_name_suffix);
 		set_bool_optional(*options_table, "use-description-as-name", parsed_options.use_description_as_name);
 		dat_options[dat] = parsed_options;

@@ -72,6 +72,7 @@ public:
         QUERY_RULE,
         QUERY_STATS_FILES,
         QUERY_STATS_GAMES,
+        QUERY_STATS_GAMES_FROM_DAT,
         QUERY_TEST,
         UPDATE_FILE,
         UPDATE_PARENT
@@ -123,6 +124,7 @@ public:
     std::unordered_map<size_t, DetectorPtr> detectors;
 
     Stats get_stats();
+    uint64_t games_from_dat(size_t dat_idx);
     std::vector<std::string> get_clones(const std::string &game_name);
     void delete_game(const Game *game) { delete_game(game->name); }
     void delete_game(const std::string &name);

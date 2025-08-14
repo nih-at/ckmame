@@ -80,6 +80,7 @@ public:
     void handle_commandline(const ParsedCommandline &commandline);
     void prepare(const std::string& set, const ParsedCommandline& commandline);
 
+    bool dat_allow_epty_dat(const std::string& dat);
     std::string dat_game_name_suffix(const std::string& dat);
     bool dat_directory_use_central_cache_directory(const std::string& directory);
     bool dat_use_description_as_name(const std::string& dat);
@@ -127,6 +128,7 @@ public:
     bool use_temp_directory; // create RomDB in temporary directory, then move into place
     bool use_torrentzip; // use TORRENTZIP format for zip archives in ROM set.
     bool verbose; // print all actions taken to fix ROM set
+    bool allow_empty_dat; // Update RomDB even if dat is empty.
 
     // TODO: Are these needed? They have no command line options.
     /* file_correct */
@@ -144,6 +146,7 @@ private:
 
     class DatOptions {
       public:
+        std::optional<bool> allow_empty_dat; // Update RomDB even if dat is empty.
         std::optional<std::string> game_name_suffix;
 	std::optional<bool> use_description_as_name;
     };
