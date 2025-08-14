@@ -1,7 +1,7 @@
 3.1 (Unreleased)
 
 * Improve speed on slow file systems.
-* By default, don't create empty RomDB, can be overridden by `allow-empty-dat` configuration option.
+* By default, don't update RomDB if dat is empty, can be overridden by `allow-empty-dat` configuration option.
 
 3.0 (2025-01-20)
 ================
