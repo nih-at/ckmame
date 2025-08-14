@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
 option(RUN_REGRESS "Run regression tests" ON)
+option(ENABLE_COVERAGE "Enable code coverage reporting of test suite" OFF)
 
 include(CheckFunctionExists)
 include(CheckIncludeFiles)
@@ -124,12 +125,20 @@ if(RUN_REGRESS)
   endif()
 endif()
 
+if(ENABLE_COVERAGE)
+  find_program(LCOV lcov REQUIRED)
+  find_program(GENHTML genhtml REQUIRED)
+endif()
+
 # Testing
 enable_testing()
 
 # Targets
 add_subdirectory(docs)
-add_subdirectory(regress)
+if(RUN_REGRESS)
+  include(CTest)
+  add_subdirectory(regress)
+endif()
 add_subdirectory(src)
 
 # write out config file

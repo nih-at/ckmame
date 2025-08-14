@@ -12,6 +12,10 @@ foreach(PROGRAM ${SUPPORT_PROGRAMS})
   # compat.h
   target_include_directories(${PROGRAM} BEFORE PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src)
   target_link_libraries(${PROGRAM} libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
+  if (ENABLE_COVERAGE)
+    target_compile_options(${PROGRAM} PRIVATE -coverage)
+    target_link_options(${PROGRAM} PRIVATE -coverage)
+  endif()
 endforeach()
 
 foreach(PROGRAM unpack)
@@ -147,10 +151,17 @@ set(XFAIL_TESTS
   unknown-rename-failed.zip.test
 )
 
+set(COVERAGE_SKIP_TESTS
+  diskfull-zip.zip.test
+)
+
 if(RUN_REGRESS)
   file(GLOB TEST_CASES ${CMAKE_CURRENT_SOURCE_DIR}/*.test)
   foreach(FULL_CASE IN LISTS TEST_CASES GENERATED_TESTS)
     get_filename_component(CASE ${FULL_CASE} NAME)
+    if (ENABLE_COVERAGE AND ${CASE} IN_LIST COVERAGE_SKIP_TESTS)
+      continue()
+    endif()
     add_test(NAME ${CASE} COMMAND ${NIHTEST} -v ${CASE})
     # TODO: add --bin-sub-directory $<CONFIG>
     set_tests_properties(${CASE} PROPERTIES SKIP_RETURN_CODE 77)
@@ -164,3 +175,13 @@ endif()
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 
 configure_file(nihtest.conf.in nihtest.conf @ONLY)
+
+if(ENABLE_COVERAGE)
+  add_custom_target(coverage
+          # gather data
+          COMMAND ${LCOV} --demangle-cpp --no-external --ignore-errors inconsistent,inconsistent --ignore-errors empty,empty --ignore-errors empty --ignore-errors gcov,gcov --ignore-errors format --directory .. --capture --output-file coverage.info
+          # generate report
+          COMMAND ${GENHTML} --demangle-cpp --ignore-errors inconsistent --ignore-errors category -o coverage coverage.info WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+          COMMAND ${CMAKE_COMMAND} -E cmake_echo_color "Open coverage/index.html in browser to view results."
+  )
+endif()
