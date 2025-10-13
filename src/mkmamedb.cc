@@ -53,22 +53,22 @@
 #include "update_romdb.h"
 
 std::vector<Commandline::Option> mkmamedb_options = {
-    Commandline::Option("detector", "xml-file", "use header detector"),
-    Commandline::Option("directory-cache", "create cache of scanned input directory (default)"),
-    Commandline::Option("exclude", 'x', "pattern", "exclude games matching shell glob pattern"),
+    Commandline::Option("detector", "xml-file", "use header detector", 1),
+    Commandline::Option("directory-cache", "create cache of scanned input directory (default)", 1),
+    Commandline::Option("exclude", 'x', "pattern", "exclude games matching shell glob pattern", 1),
     Commandline::Option("force", 'f', "recreate ROM database even if it is not out of date"),
-    Commandline::Option("format", 'F', "format", "specify output format (default: db)"),
-    Commandline::Option("hash-types", 'C', "types", "specify hash types to compute (default: all)"),
+    Commandline::Option("format", 'F', "format", "specify output format (default: db)", 1),
+    Commandline::Option("hash-types", 'C', "types", "specify hash types to compute (default: all)", 1),
     Commandline::Option("list-available-dats", "list all dats found in dat-directories"),
     Commandline::Option("list-dats", "list dats used by current set"),
-    Commandline::Option("no-directory-cache", "don't create cache of scanned input directory"),
-    Commandline::Option("only-files", "pattern", "only use zip members matching shell glob pattern"),
-    Commandline::Option("output", 'o', "dbfile", "write to database dbfile (default: mame.db)"),
-    Commandline::Option("prog-description", "description", "set description of rominfo"),
-    Commandline::Option("prog-name", "name", "set name of rominfo"),
-    Commandline::Option("prog-version", "version", "set version of rominfo"),
-    Commandline::Option("runtest", "output special format for use in ckmame test suite"),
-    Commandline::Option("skip-files", "pattern", "don't use zip members matching shell glob pattern")
+    Commandline::Option("no-directory-cache", "don't create cache of scanned input directory", 1),
+    Commandline::Option("only-files", "pattern", "only use zip members matching shell glob pattern", 1),
+    Commandline::Option("output", 'o', "dbfile", "write to database dbfile (default: mame.db)", 1),
+    Commandline::Option("prog-description", "description", "set description of rominfo", 1),
+    Commandline::Option("prog-name", "name", "set name of rominfo", 1),
+    Commandline::Option("prog-version", "version", "set version of rominfo", 1),
+    Commandline::Option("runtest", "output special format for use in ckmame test suite", 1),
+    Commandline::Option("skip-files", "pattern", "don't use zip members matching shell glob pattern", 1)
 };
 
 std::unordered_set<std::string> mkmamedb_used_variables = {

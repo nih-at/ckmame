@@ -63,26 +63,28 @@ class Commandline {
 public:
     class Option {
     public:
-        Option(std::string name_, char short_name_, std::string argument_name_, std::string description_) : name(std::move(name_)), short_name(short_name_), argument_name(std::move(argument_name_)), description(std::move(description_)) { }
-        Option(std::string name_, std::string argument_name_, std::string description_) : name(std::move(name_)), argument_name(std::move(argument_name_)), description(std::move(description_)) { }
-        Option(std::string name_, char short_name_, std::string description_) : name(std::move(name_)), short_name(short_name_), description(std::move(description_)) { }
-        Option(std::string name_, std::string description_) : name(std::move(name_)), description(std::move(description_)) { }
+        Option(std::string name_, char short_name_, std::string argument_name_, std::string description_, size_t section = 0) : name(std::move(name_)), short_name(short_name_), argument_name(std::move(argument_name_)), description(std::move(description_)), section(section) { }
+        Option(std::string name_, std::string argument_name_, std::string description_, size_t section = 0) : name(std::move(name_)), argument_name(std::move(argument_name_)), description(std::move(description_)), section(section) { }
+        Option(std::string name_, char short_name_, std::string description_, size_t section = 0) : name(std::move(name_)), short_name(short_name_), description(std::move(description_)), section(section) { }
+        Option(std::string name_, std::string description_, size_t section = 0) : name(std::move(name_)), description(std::move(description_)), section(section) { }
 
         
         std::string name;
         std::optional<char> short_name;
         std::string argument_name;
         std::string description;
+        size_t section{0};
 
         [[nodiscard]] bool has_argument() const { return !argument_name.empty(); }
         
         bool operator <(const Option &other) const;
     };
     
-    Commandline(std::vector<Option> options, std::string arguments, std::string header, std::string footer, std::string version);
+    Commandline(std::vector<Option> options, std::string arguments, std::string header, std::string footer, std::string version, std::vector<std::string> option_sections = {});
 
     void add_option(Option option);
 
+    std::vector<std::string> option_sections;
     std::vector<Option> options;
     std::string program_name;
     std::string arguments;

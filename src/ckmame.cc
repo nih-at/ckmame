@@ -66,9 +66,9 @@ std::filesystem::path rom_dir_normalized;
 
 std::vector<Commandline::Option> ckmame_options = {
     Commandline::Option("fix", 'F', "fix ROM set"),
-    Commandline::Option("game-list", 'T', "file", "read games to check from file"),
+    Commandline::Option("game-list", 'T', "file", "read games to check from file", 1),
     Commandline::Option("only-if-database-updated", 'U', "if dats didn't change, exit; otherwise update database and run"),
-    Commandline::Option("trace", "trace actions, useful for profiling")
+    Commandline::Option("trace", "trace actions, useful for profiling", 1)
 };
 
 std::unordered_set<std::string> ckmame_used_variables = {

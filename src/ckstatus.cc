@@ -53,13 +53,13 @@ std::vector<Commandline::Option> ckstatus_options = {
     Commandline::Option("changes", "list changes between runs"),
     Commandline::Option("correct", "list correct games"),
     Commandline::Option("delete", "delete specific run"),
-    Commandline::Option("from", "RUN", "first run to compare with --changes"),
+    Commandline::Option("from", "RUN", "first run to compare with --changes", 1),
     Commandline::Option("mia-have", "list games containing files marked MIA"),
     Commandline::Option("missing", "list missing games not marked MIA"),
-    Commandline::Option("run", "RUN", "use information from run RUN (default: latest)"),
+    Commandline::Option("run", "RUN", "use information from run RUN (default: latest)", 1),
     Commandline::Option("runs", "list runs"),
     Commandline::Option("summary", "print summary"),
-    Commandline::Option("to", "RUN", "second run to compare with --changes")};
+    Commandline::Option("to", "RUN", "second run to compare with --changes", 1)};
 
 
 std::unordered_set<std::string> ckstatus_used_variables = {"status_db", "report_status"};

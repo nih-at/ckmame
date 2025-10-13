@@ -2,6 +2,7 @@
 
 * Improve speed on slow file systems.
 * By default, don't update RomDB if dat is empty, can be overridden by `allow-empty-dat` configuration option.
+* Improve readability of help message by splitting options into sections.
 
 3.0 (2025-01-20)
 ================

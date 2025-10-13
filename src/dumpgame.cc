@@ -47,7 +47,7 @@
 #include "util.h"
 
 std::vector<Commandline::Option> dumpgame_options = {
-    Commandline::Option("brief", 'b', "brief listing (omit ROM details)"),
+    Commandline::Option("brief", 'b', "brief listing (omit ROM details)", 1),
     Commandline::Option("checksum", 'c', "find games containing ROMs or disks with given checksums"),
     Commandline::Option("dats", "list dats"),
     Commandline::Option("detector", "print detector"),

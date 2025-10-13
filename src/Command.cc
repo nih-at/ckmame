@@ -60,9 +60,10 @@ int Command::run(int argc, char* const* argv) {
     }
 
     auto commandline = Commandline(options, arguments, name + " by Dieter Baron and Thomas Klausner",
-                                   "Report bugs to " PACKAGE_BUGREPORT ".",
-                                   version + "\nCopyright (C) 1999-2022 Dieter Baron and Thomas Klausner\n" PACKAGE
-                                             " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n");
+                                   "Report bugs at https://github.com/nih-at/ckmame/issues/new/choose",
+                                   version + "\nCopyright (C) 1999-2025 Dieter Baron and Thomas Klausner\n" PACKAGE
+                                             " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n",
+                                             {"Operating Modes", "Detail Options"});
 
     Configuration::add_options(commandline, used_variables);
 

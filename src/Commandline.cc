@@ -40,9 +40,9 @@
 #include <unordered_map>
 #include <utility>
 
-Commandline::Commandline(std::vector<Option> options_, std::string arguments_, std::string header_, std::string footer_, std::string version_) : options(std::move(options_)), arguments(std::move(arguments_)), header(std::move(header_)), footer(std::move(footer_)), version(std::move(version_)), options_sorted(false) {
+Commandline::Commandline(std::vector<Option> options_, std::string arguments_, std::string header_, std::string footer_, std::string version_, std::vector<std::string> option_sections) : option_sections{std::move(option_sections)}, options{std::move(options_)}, arguments{std::move(arguments_)}, header{std::move(header_)}, footer{std::move(footer_)}, version{std::move(version_)}, options_sorted{false} {
     add_option(Option("help", 'h', "display this help message"));
-    add_option(Option("version", 'V', "display version integer"));
+    add_option(Option("version", 'V', "display version number"));
 }
 
 
@@ -224,7 +224,20 @@ void Commandline::usage(bool full, FILE *fout) {
                 max_length = length;
             }
         }
+
+        std::optional<size_t> current_section;
+        bool first = true;
         for (const auto &option : options) {
+            if (!current_section || *current_section != option.section) {
+                current_section = option.section;
+                if (*current_section < option_sections.size()) {
+                    if (!first) {
+                        fprintf(fout, "\n");
+                    }
+                    fprintf(fout, "%s:\n", option_sections[*current_section].c_str());
+                }
+            }
+            first = false;
             if (option.short_name.has_value()) {
                 fprintf(fout, "  -%c, ", option.short_name.value());
             }
@@ -275,6 +288,13 @@ static int compare_char(char a, char b) {
 
 
 bool Commandline::Option::operator<(const Option &other) const {
+    if (section < other.section) {
+        return true;
+    }
+    else if (section > other.section) {
+        return false;
+    }
+
     if (short_name.has_value()) {
         if (other.short_name.has_value()) {
             return compare_char(short_name.value(), other.short_name.value()) < 0;
