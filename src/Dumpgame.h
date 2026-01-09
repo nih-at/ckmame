@@ -62,7 +62,8 @@ class Dumpgame : public Command {
     bool find_checksum;
     bool first;
 
-    std::vector<std::string> arguments;
+    std::set<std::string> arguments;
+    std::vector<Hashes> checksum_arguments;
     std::set<Special> specials;
     std::vector<bool> found;
 
@@ -79,7 +80,7 @@ class Dumpgame : public Command {
     static void print_clones(const GamePtr& game);
     static void print_diskline(Rom *disk);
     static void print_match(const GamePtr& game, filetype_t ft, size_t i);
-    static void print_matches(Hashes *hash);
+    static void print_matches(const Hashes *hash);
     static void print_romline(Rom *rom);
 };
 

@@ -121,7 +121,7 @@ void Dumpgame::print_match(const GamePtr& game, filetype_t ft, size_t i) {
 }
 
 
-void Dumpgame::print_matches(Hashes *hash) {
+void Dumpgame::print_matches(const Hashes *hash) {
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         auto filetype = static_cast<filetype_t>(ft);
         auto matches = db->read_file_by_hash(filetype, *hash);
@@ -151,12 +151,24 @@ int main(int argc, char **argv) {
 
 
 void Dumpgame::global_setup(const ParsedCommandline &commandline) {
+    for (const auto &argument : commandline.arguments) {
+        arguments.insert(argument);
+    }
+
     for (const auto &option : commandline.options) {
         if (option.name == "brief") {
             brief_mode = true;
         }
         else if (option.name == "checksum") {
             find_checksum = true;
+            for (const auto &argument : arguments) {
+                Hashes hashes;
+                if (hashes.set_from_string(argument) == -1) {
+                    output.error("error parsing checksum '%s'", argument.c_str());
+                    continue;
+                }
+                checksum_arguments.push_back(hashes);
+            }
         }
         else if (option.name == "dats") {
             specials.insert(DATS);
@@ -181,7 +193,6 @@ void Dumpgame::global_setup(const ParsedCommandline &commandline) {
         }
     }
 
-    arguments = commandline.arguments;
     found.resize(arguments.size(), false);
 }
 
@@ -241,14 +252,7 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
 
     /* find matches for ROMs */
     if (find_checksum) {
-        Hashes match;
-
-        for (const auto &argument : arguments) {
-            if (match.set_from_string(argument) == -1) {
-                output.error("error parsing checksum '%s'", argument.c_str());
-                continue;
-            }
-
+        for (const auto &match : checksum_arguments) {
             print_matches(&match);
         }
         return true;
@@ -298,7 +302,7 @@ bool Dumpgame::global_cleanup() {
         size_t index = 0;
         for (const std::string &argument : arguments) {
             if (!found[index]) {
-                if (is_pattern(arguments[index])) {
+                if (is_pattern(argument)) {
                     output.error("no game matching '%s' found", argument.c_str());
                 }
                 else {
