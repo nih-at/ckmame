@@ -1,4 +1,5 @@
 # ckmame
+
 ## Check ROM sets and dat files for MAME and other emulators
 
 ## What Is ckmame?
@@ -25,13 +26,13 @@ To speed up operations, ckmame creates an SQLite database from the dat file. Thi
 To get the ROM set in its best possible state, run `ckmame --fix`.
 
 The state of the ROM set is recorded in another database, which can be queried using [ckstatus](https://nih.at/ckmame/ckstatus.html).
+
 ## Staying in Touch
 
 More information and the latest version can always be found on [nih.at](https://nih.at/ckmame).
 The official repository is at [GitHub](https://github.com/nih-at/ckmame/).
 
 If you want to reach the authors in private, use <ckmame@nih.at>.
-
 
 [![Github Actions Build Status](https://github.com/nih-at/ckmame/workflows/build/badge.svg)](https://github.com/nih-at/ckmame/actions?query=workflow%3Abuild)
 [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/ktyebjukjnuqf4fb?svg=true)](https://ci.appveyor.com/project/nih-at/ckmame)
