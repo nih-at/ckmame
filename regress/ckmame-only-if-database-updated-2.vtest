@@ -3,7 +3,7 @@ return 0
 arguments --only-if-database-updated 1-4
 file dats/mame.dat mamedb-baddump.dat
 set-modification-time dats/mame.dat 1644506227
-file output.db mame.db mamedb-baddump.db
+file output.db mame.db mamedb-baddump.dump
 file dats/.mkmamedb.db {} mkmamedb-datdb-7.dump
 directory roms {} <>
 file .ckmamerc <inline>
