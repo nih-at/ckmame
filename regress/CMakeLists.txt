@@ -11,7 +11,7 @@ foreach(PROGRAM ${SUPPORT_PROGRAMS})
   target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR})
   # compat.h
   target_include_directories(${PROGRAM} BEFORE PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src)
-  target_link_libraries(${PROGRAM} libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
+  target_link_libraries(${PROGRAM} libckmame ZLIB::ZLIB libzip::zip SQLite3::SQLite3)
   if (ENABLE_COVERAGE)
     target_compile_options(${PROGRAM} PRIVATE -coverage)
     target_link_options(${PROGRAM} PRIVATE -coverage)

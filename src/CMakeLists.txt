@@ -116,7 +116,7 @@ endif()
 
 foreach(PROGRAM ckmame ckstatus dumpgame mkmamedb)
   add_executable(${PROGRAM} ${PROGRAM}.cc)
-  target_link_libraries(${PROGRAM} PRIVATE libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
+  target_link_libraries(${PROGRAM} PRIVATE libckmame ZLIB::ZLIB libzip::zip SQLite3::SQLite3)
   # for config.h
   target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR})
   if (ENABLE_COVERAGE)
