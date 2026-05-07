@@ -1,0 +1,13 @@
+description check config parser for duplicate sections
+return 1
+file .ckmamerc <inline>
+[global]
+dat-directories = "something"
+["foo"]
+dat-directories = "bar"
+["foo"]
+dat-directories = "baz"
+end-of-inline-data
+stderr
+can't parse '.ckmamerc': Error while parsing table header: cannot redefine existing table '"foo"'
+end-of-inline-data

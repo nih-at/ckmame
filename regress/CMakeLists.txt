@@ -146,6 +146,8 @@ set(XFAIL_TESTS
   ckmamedb-keep-unzipped.zip.test
   ckmamedb-file-removed.dir.test
   ckmamedb-file-removed.zip.test
+  config-duplicate-section.dir.test
+  config-duplicate-section.zip.test
   doublezip-fix.dir.test
   doublezip-fix.zip.test
   extra-file-zip.zip.test
