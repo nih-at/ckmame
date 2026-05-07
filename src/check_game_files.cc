@@ -35,6 +35,7 @@
 #include "check.h"
 
 #include "CkmameCache.h"
+#include "Fixdat.h"
 #include "RomDB.h"
 #include "check_util.h"
 #include "find.h"
@@ -107,7 +108,7 @@ void check_game_files(Game* game, filetype_t filetype, GameArchives* archives, R
 
         if (rom.where == FILE_INGAME && match->quality == Match::MISSING && rom.hashes.size > 0 &&
             !rom.hashes.empty() && rom.status != Rom::NO_DUMP) {
-            if (configuration.complete_games_only && !configuration.create_fixdat) {
+            if (configuration.complete_games_only && !Fixdat::has_fixdat(game)) {
                 match->quality = Match::UNCHECKED;
                 if (missing_roms) {
                     continue;

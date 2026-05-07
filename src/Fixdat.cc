@@ -37,19 +37,53 @@
 #include "globals.h"
 #include "util.h"
 
-std::vector<Fixdat> Fixdat::fixdats;
+std::vector<std::optional<Fixdat>> Fixdat::fixdats;
 
 void Fixdat::begin() {
     auto dats = db->read_dat();
 
     for (const auto& dat : dats) {
-        fixdats.emplace_back(dat);
+        if (configuration.dat_create_fixdat(dat.name)) {
+            fixdats.emplace_back(dat);
+        }
+        else {
+            fixdats.emplace_back(std::nullopt);
+        }
     }
 }
 
-void Fixdat::end() { fixdats.clear(); }
+void Fixdat::end() {
+    for (auto& fixdat : fixdats) {
+        if (fixdat) {
+            fixdat->cleanup();
+        }
+    }
 
-void Fixdat::write_entry(const Game* game, const Result* result) { fixdats[game->dat_no].write(game, result); }
+    fixdats.clear(); 
+}
+
+void Fixdat::cleanup() {
+    if (output) {
+        output->close();
+        output = nullptr;
+    }
+
+    auto directory = configuration.fixdat_directory.empty() ? std::filesystem::current_path() : std::filesystem::path(configuration.fixdat_directory);
+    auto current_filename = empty ? "" : fixdat_filename();
+    auto prefix = fixdat_filename_prefix();
+    for (auto file: std::filesystem::directory_iterator(directory)) {
+        auto fname = file.path().filename().string();
+        if (file.is_regular_file() && fname.starts_with(prefix) && fname.ends_with(".dat") && fname != current_filename) {
+            std::filesystem::remove(file);
+        }
+    }
+}
+
+void Fixdat::write_entry(const Game* game, const Result* result) { 
+    if (fixdats[game->dat_no]) {
+        fixdats[game->dat_no]->write(game, result);
+    }
+}
 
 void Fixdat::write(const Game* game, const Result* result) {
     if (failed) {
@@ -62,7 +96,7 @@ void Fixdat::write(const Game* game, const Result* result) {
     auto gm = std::make_shared<Game>();
     gm->name = game->name;
 
-    auto empty = true;
+    auto has_missing = false;
 
     for (auto ft : db->filetypes()) {
         for (size_t i = 0; i < game->files[ft].size(); i++) {
@@ -79,16 +113,24 @@ void Fixdat::write(const Game* game, const Result* result) {
             }
 
             gm->files[ft].push_back(rom);
-            empty = false;
+            has_missing = true;
         }
     }
 
-    if (!empty) {
+    if (has_missing) {
+        empty = false;
         if (ensure_output()) {
             output->game(gm);
         }
     }
 }
+
+std::string Fixdat::fixdat_filename_prefix() const {
+    return "fixdat_" + dat.name + " ";
+}
+std::string Fixdat::fixdat_filename() const {
+    return fixdat_filename_prefix() + "(" + dat.version + ").dat";
+} 
 
 bool Fixdat::ensure_output() {
     if (output) {
@@ -99,7 +141,7 @@ bool Fixdat::ensure_output() {
         return false;
     }
 
-    auto fixdat_fname = "fixdat_" + dat.name + " (" + dat.version + ").dat";
+    auto fixdat_fname = fixdat_filename();
     if (!configuration.fixdat_directory.empty()) {
         ensure_dir(configuration.fixdat_directory, false);
         fixdat_fname = configuration.fixdat_directory + "/" + fixdat_fname;

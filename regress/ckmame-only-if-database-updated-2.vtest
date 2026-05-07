@@ -1,4 +1,4 @@
-description only run if the database changed - no change
+description only run if the database changed - dat changed
 return 0
 arguments --only-if-database-updated 1-4
 file dats/mame.dat mamedb-baddump.dat

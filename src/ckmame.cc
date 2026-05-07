@@ -210,9 +210,7 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
         return false;
     }
 
-    if (configuration.create_fixdat) {
-        Fixdat::begin();
-    }
+    Fixdat::begin();
 
     /* build tree of games to check */
     std::vector<std::string> list;
@@ -312,9 +310,7 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
         cleanup_list(ckmame_cache->needed_delete_list, CLEANUP_UNKNOWN, FILE_NEEDED);
     }
 
-    if (configuration.create_fixdat) {
-        Fixdat::end();
-    }
+    Fixdat::end();
 
     if (configuration.fix_romset) {
         cleanup_list(ckmame_cache->extra_delete_list, 0, FILE_EXTRA);

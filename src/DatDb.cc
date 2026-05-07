@@ -74,7 +74,7 @@ std::unordered_map<DatDB::Statement, std::string> DatDB::queries = {
 DatDB::DatDB(const std::string& directory)
     : DB(format,
          make_db_file_name(directory, db_name, configuration.dat_directory_use_central_cache_directory(directory)),
-         DBH_CREATE | DBH_WRITE) {}
+         DBH_CREATE | DBH_WRITE | DBH_TRUNCATE_ON_ERROR) {}
 
 
 std::string DatDB::get_query(int name, bool parameterized) const {

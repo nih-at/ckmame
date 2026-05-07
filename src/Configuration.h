@@ -80,9 +80,11 @@ class Configuration {
     void handle_commandline(const ParsedCommandline& commandline);
     void prepare(const std::string& set, const ParsedCommandline& commandline);
 
-    bool dat_allow_epty_dat(const std::string& dat);
+    bool dat_allow_empty_dat(const std::string& dat);
+    bool dat_create_fixdat(const std::string& dat);
     std::string dat_game_name_suffix(const std::string& dat);
     bool dat_directory_use_central_cache_directory(const std::string& directory);
+    bool dat_suffix_only_duplicates(const std::string& dat);
     bool dat_use_description_as_name(const std::string& dat);
     bool extra_directory_move_from_extra(const std::string& directory);
     bool extra_directory_use_central_cache_directory(const std::string& directory);
@@ -94,6 +96,7 @@ class Configuration {
     bool complete_games_only; // only add ROMs to games if they are complete afterwards.
     std::string complete_list;
     bool create_fixdat;
+    std::optional<bool> create_fixdat_override; // from command line, overrides create_fixdat if set
     std::vector<std::string> dat_directories;
     std::vector<std::string> dats;
     std::string delete_unknown_pattern;
@@ -150,6 +153,8 @@ class Configuration {
       public:
         std::optional<bool> allow_empty_dat; // Update RomDB even if dat is empty.
         std::optional<std::string> game_name_suffix;
+        std::optional<bool> create_fixdat;
+        std::optional<bool> suffix_only_duplicates; // use game_name_suffix only for names that would otherwise be duplicates.
         std::optional<bool> use_description_as_name;
     };
 

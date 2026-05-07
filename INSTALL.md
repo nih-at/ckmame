@@ -32,6 +32,7 @@ Some useful parameters you can pass to `cmake` with `-Dparameter=value`:
 - `DOCUMENTATION_FORMAT`: choose one of 'man', 'mdoc', and 'html' for
   the installed documentation (default: decided by cmake depending on
   available tools)
+- `PYTHONBIN`: full path to the Python executable (for running the tests). **WARNING**: cmake's `FindPython` does not neccessarily find the python executable first in PATH.
 
 You can get verbose build output with by passing `VERBOSE=1` to `make`.
 

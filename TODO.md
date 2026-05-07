@@ -2,6 +2,7 @@
 
 ## Other
 
+- Implement `suffix-only-duplicates` option.
 - Don't read global ckmamerc file if `--config` option is given
 - Remove fixdat if no ROMs are missing.
 - Fix rom in extra not found if in roms/.ckmame.db but not in roms/ (ckmamedb-file-removed.vtest)

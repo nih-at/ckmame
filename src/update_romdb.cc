@@ -156,7 +156,7 @@ bool update_romdb(bool force) {
                 throw Exception(message);
             }
 
-            if (new_db->games_from_dat(dat_idx) == 0 && !configuration.dat_allow_epty_dat(dat.name)) {
+            if (new_db->games_from_dat(dat_idx) == 0 && !configuration.dat_allow_empty_dat(dat.name)) {
                 throw Exception("dat '" + dat.name + "' is empty");
             }
 

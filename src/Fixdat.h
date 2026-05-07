@@ -42,19 +42,24 @@ class Fixdat {
     static void begin();
     static void end();
     static void write_entry(const Game* game, const Result* result);
+    static bool has_fixdat(const Game* game) {return fixdats[game->dat_no].has_value();}
 
     explicit Fixdat(DatEntry dat) : dat(std::move(dat)), failed(false) {}
 
   private:
-    static std::vector<Fixdat> fixdats;
+    static std::vector<std::optional<Fixdat>> fixdats;
 
+    std::string fixdat_filename() const;
+    std::string fixdat_filename_prefix() const;
     void write(const Game* game, const Result* result);
+    void cleanup();
 
     bool ensure_output();
 
     DatEntry dat;
     OutputContextPtr output;
     bool failed;
+    bool empty{true};
 };
 
 

@@ -188,10 +188,27 @@ DB::DB(const DB::DBFormat& format, std::string filename_, int mode) : db(nullptr
         open(format, sql3_flags, needs_init);
     }
     catch (Exception& e) {
-        close();
-        throw e;
+        if (mode & DBH_TRUNCATE_ON_ERROR) {
+            std::error_code error;
+            std::filesystem::remove(filename, error);
+            if (error) {
+                throw Exception("can't truncate on error: %s", error.message().c_str());
+            }
+            try {
+                open(format, sql3_flags | SQLITE_OPEN_CREATE, true);
+            }
+            catch (Exception& e) {
+                close();
+                throw e;
+            }
+        }
+        else {
+            close();
+            throw e;
+        }
     }
 }
+
 
 
 void DB::open(const DBFormat& format, int sql3_flags, bool needs_init) {

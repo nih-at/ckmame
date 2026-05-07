@@ -200,9 +200,7 @@ void Tree::process(GameArchives* archives) {
         status_run.insert_game_status(*game.get(), res.game);
 
         /* TODO: includes too much when rechecking */
-        if (configuration.create_fixdat) {
-            Fixdat::write_entry(game.get(), &res);
-        }
+        Fixdat::write_entry(game.get(), &res);
 
         if (configuration.fix_romset) {
             ret |= fix_save_needed_from_unknown(game.get(), archives[0], &res);

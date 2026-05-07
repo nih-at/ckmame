@@ -78,6 +78,8 @@ TomlSchema::TypePtr Configuration::dats_schema = TomlSchema::alternatives(
     {TomlSchema::array(TomlSchema::string()),
      TomlSchema::table({}, TomlSchema::table({{"allow-empty-dat", TomlSchema::boolean()},
                                               {"game-name-suffix", TomlSchema::string()},
+                                              {"create-fixdat", TomlSchema::boolean()},
+                                              {"suffix-only-duplicates", TomlSchema::boolean()},
                                               {"use-description-as-name", TomlSchema::boolean()}},
                                              {}))},
     "array or table");
@@ -424,7 +426,7 @@ void Configuration::prepare(const std::string& current_set, const ParsedCommandl
             move_from_extra = false;
         }
         else if (option.name == "create-fixdat") {
-            create_fixdat = true;
+            create_fixdat_override = true;
         }
         else if (option.name == "delete-unknown-pattern") {
             delete_unknown_pattern = option.argument;
@@ -799,21 +801,39 @@ std::string Configuration::dat_game_name_suffix(const std::string& dat) {
     return it->second.game_name_suffix.value();
 }
 
-bool Configuration::dat_allow_epty_dat(const std::string& dat) {
+bool Configuration::dat_allow_empty_dat(const std::string& dat) {
     auto it = dat_options.find(dat);
-    if (it == dat_options.end() || !it->second.game_name_suffix.has_value()) {
+    if (it == dat_options.end() || !it->second.allow_empty_dat.has_value()) {
         return allow_empty_dat;
     }
     return *it->second.allow_empty_dat;
 }
 
+bool Configuration::dat_create_fixdat(const std::string& dat) {
+    if (create_fixdat_override) {
+        return *create_fixdat_override;
+    }
+    auto it = dat_options.find(dat);
+    if (it == dat_options.end() || !it->second.create_fixdat.has_value()) {
+        return create_fixdat;
+    }
+    return *it->second.create_fixdat;
+}
+
+bool Configuration::dat_suffix_only_duplicates(const std::string& dat) {
+    auto it = dat_options.find(dat);
+    if (it == dat_options.end() || !it->second.suffix_only_duplicates.has_value()) {
+        return false;
+    }
+    return *it->second.suffix_only_duplicates;
+}
 
 bool Configuration::dat_directory_use_central_cache_directory(const std::string& directory) {
     auto it = dat_directory_options.find(directory);
     if (it == dat_directory_options.end() || !it->second.use_central_cache_directory.has_value()) {
         return use_central_cache_directory;
     }
-    return it->second.use_central_cache_directory.value();
+    return *it->second.use_central_cache_directory;
 }
 
 
@@ -822,7 +842,7 @@ bool Configuration::dat_use_description_as_name(const std::string& dat) {
     if (it == dat_options.end() || !it->second.use_description_as_name.has_value()) {
         return use_description_as_name;
     }
-    return it->second.use_description_as_name.value();
+    return *it->second.use_description_as_name;
 }
 
 
@@ -831,7 +851,7 @@ bool Configuration::extra_directory_move_from_extra(const std::string& directory
     if (it == extra_directory_options.end() || !it->second.move_from_extra.has_value()) {
         return move_from_extra;
     }
-    return it->second.move_from_extra.value();
+    return *it->second.move_from_extra;
 }
 
 
@@ -840,7 +860,7 @@ bool Configuration::extra_directory_use_central_cache_directory(const std::strin
     if (it == extra_directory_options.end() || !it->second.use_central_cache_directory.has_value()) {
         return use_central_cache_directory;
     }
-    return it->second.use_central_cache_directory.value();
+    return *it->second.use_central_cache_directory;
 }
 
 
@@ -893,6 +913,8 @@ void Configuration::merge_dats(const toml::table& table) {
                 set_bool_optional(*options_table, "allow-empty-dat", parsed_options.allow_empty_dat);
                 set_string_optional(*options_table, "game-name-suffix", parsed_options.game_name_suffix);
                 set_bool_optional(*options_table, "use-description-as-name", parsed_options.use_description_as_name);
+                set_bool_optional(*options_table, "create-fixdat", parsed_options.create_fixdat);
+                set_bool_optional(*options_table, "suffix-only-duplicates", parsed_options.suffix_only_duplicates);
                 dat_options[dat] = parsed_options;
             }
         }

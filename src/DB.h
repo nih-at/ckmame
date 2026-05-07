@@ -48,6 +48,7 @@
 #define DBH_WRITE 0x10                                  /* open for writing */
 #define DBH_CREATE 0x20                                 /* create database if it doesn't exist */
 #define DBH_TRUNCATE 0x40                               /* delete database if it exists */
+#define DBH_TRUNCATE_ON_ERROR 0x80                      /* delete database if it exists and is invalid */
 #define DBH_NEW (DBH_CREATE | DBH_TRUNCATE | DBH_WRITE) /* create new writable empty database */
 
 enum dbh_list {
