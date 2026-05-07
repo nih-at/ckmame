@@ -33,26 +33,26 @@
 
 #include "check.h"
 
-#include "find.h"
 #include "RomDB.h"
+#include "find.h"
 
-void
-check_old(Game *game, Result *result) {
+void check_old(Game* game, Result* result) {
     if (old_db == nullptr) {
-	return;
+        return;
     }
 
     auto all_old = true;
-    
-    for (auto filetype: db->filetypes()) {
+
+    for (auto filetype : db->filetypes()) {
         for (size_t i = 0; i < game->files[filetype].size(); i++) {
-            if (find_in_old(filetype, &game->files[filetype][i], nullptr, &result->game_files[filetype][i]) != FIND_EXISTS) {
+            if (find_in_old(filetype, &game->files[filetype][i], nullptr, &result->game_files[filetype][i]) !=
+                FIND_EXISTS) {
                 all_old = false;
             }
         }
     }
 
     if (all_old) {
-	result->game = GS_OLD;
+        result->game = GS_OLD;
     }
 }

@@ -41,13 +41,14 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class Command {
   public:
-    Command(std::string name, std::string arguments, std::vector<Commandline::Option> options, std::unordered_set<std::string> used_variables);
+    Command(std::string name, std::string arguments, std::vector<Commandline::Option> options,
+            std::unordered_set<std::string> used_variables);
     virtual ~Command() = default;
 
-    int run(int argc, char *const *argv);
+    int run(int argc, char* const* argv);
 
   protected:
-    virtual void global_setup(const ParsedCommandline& commandline) { }
+    virtual void global_setup(const ParsedCommandline& commandline) {}
     virtual bool setup() { return true; }
     virtual bool execute(const std::vector<std::string>& arguments) = 0;
     virtual bool cleanup() { return true; }

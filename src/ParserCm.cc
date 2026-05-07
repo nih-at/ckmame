@@ -205,7 +205,8 @@ bool ParserCm::parse() {
                 auto name = tokenizer.get();
                 //                    if (tokenizer.get() != "name") {
                 if (name != "name") {
-                    output.line_error(lineno, "expected token 'name' not found ('%s', '%s')", brace.c_str(), name.c_str());
+                    output.line_error(lineno, "expected token 'name' not found ('%s', '%s')", brace.c_str(),
+                                      name.c_str());
                     ok = false;
                     break;
                 }

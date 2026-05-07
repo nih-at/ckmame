@@ -38,7 +38,7 @@
 #include "util.h"
 
 
-static void pr_string(FILE *fout, const char *name, const std::string &value) {
+static void pr_string(FILE* fout, const char* name, const std::string& value) {
     if (value.empty()) {
         return;
     }
@@ -46,14 +46,14 @@ static void pr_string(FILE *fout, const char *name, const std::string &value) {
     fprintf(fout, "  <%s>%s</%s>\n", name, value.c_str(), name);
 }
 
-bool Detector::print(FILE *fout) const {
+bool Detector::print(FILE* fout) const {
     fprintf(fout, "<?xml version=\"1.0\"?>\n\n<detector>\n\n");
     pr_string(fout, "name", name);
     pr_string(fout, "author", author);
     pr_string(fout, "version", version);
     fprintf(fout, "\n");
 
-    for (auto &rule : rules) {
+    for (auto& rule : rules) {
         rule.print(fout);
     }
 
@@ -63,7 +63,7 @@ bool Detector::print(FILE *fout) const {
 }
 
 
-void Detector::Rule::print(FILE *fout) const {
+void Detector::Rule::print(FILE* fout) const {
     fprintf(fout, "  <rule");
     if (start_offset != 0) {
         fprintf(fout, " start_offset=\"%" PRId64 "\"", start_offset);
@@ -71,17 +71,17 @@ void Detector::Rule::print(FILE *fout) const {
             fprintf(fout, " end_offset=\"%" PRId64 "\"", end_offset);
         }
     }
-    
+
     if (operation != OP_NONE) {
         fprintf(fout, " operation=\"%s\"", operation_name(operation).c_str());
     }
-    
+
     if (tests.empty()) {
         fprintf(fout, "/>\n\n");
     }
     else {
         fprintf(fout, ">\n");
-        for (auto &test: tests) {
+        for (auto& test : tests) {
             test.print(fout);
         }
         fprintf(fout, "  </rule>\n\n");
@@ -89,40 +89,40 @@ void Detector::Rule::print(FILE *fout) const {
 }
 
 
-void Detector::Test::print(FILE *fout) const {
+void Detector::Test::print(FILE* fout) const {
     fprintf(fout, "    <%s", test_type_name(type).c_str());
 
     switch (type) {
-        case TEST_DATA:
-        case TEST_OR:
-        case TEST_AND:
-        case TEST_XOR:
-            if (offset != 0) {
-                fprintf(fout, " offset=\"%" PRId64 "\"", offset);
-            }
-            if (!mask.empty()) {
-                fprintf(fout, " mask=\"%s\"", bin2hex(mask).c_str());
-            }
-            fprintf(fout, " value=\"%s\"", bin2hex(value).c_str());
-            break;
+    case TEST_DATA:
+    case TEST_OR:
+    case TEST_AND:
+    case TEST_XOR:
+        if (offset != 0) {
+            fprintf(fout, " offset=\"%" PRId64 "\"", offset);
+        }
+        if (!mask.empty()) {
+            fprintf(fout, " mask=\"%s\"", bin2hex(mask).c_str());
+        }
+        fprintf(fout, " value=\"%s\"", bin2hex(value).c_str());
+        break;
 
-        case TEST_FILE_EQ:
-        case TEST_FILE_LE:
-        case TEST_FILE_GR:
-            fprintf(fout, " size=\"");
-            if (offset == DETECTOR_SIZE_POWER_OF_2) {
-                fprintf(fout, "PO2");
-            }
-            else {
-                fprintf(fout, "%" PRId64, offset);
-            }
-            fprintf(fout, "\"");
-            if (type != TEST_FILE_EQ) {
-                fprintf(fout, " operator=\"%s\"", file_test_type_name(type).c_str());
-            }
-            break;
+    case TEST_FILE_EQ:
+    case TEST_FILE_LE:
+    case TEST_FILE_GR:
+        fprintf(fout, " size=\"");
+        if (offset == DETECTOR_SIZE_POWER_OF_2) {
+            fprintf(fout, "PO2");
+        }
+        else {
+            fprintf(fout, "%" PRId64, offset);
+        }
+        fprintf(fout, "\"");
+        if (type != TEST_FILE_EQ) {
+            fprintf(fout, " operator=\"%s\"", file_test_type_name(type).c_str());
+        }
+        break;
     }
-    
+
     if (!result) {
         fprintf(fout, " result=\"false\"");
     }

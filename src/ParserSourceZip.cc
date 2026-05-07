@@ -39,23 +39,25 @@
 #include "ParserSourceFile.h"
 #include "globals.h"
 
-ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *za_, const std::string &fname, bool relaxed) : archive_name(archive_name_), za(za_), zf(nullptr) {
+ParserSourceZip::ParserSourceZip(const std::string& archive_name_, struct zip* za_, const std::string& fname,
+                                 bool relaxed)
+    : archive_name(archive_name_), za(za_), zf(nullptr) {
     zip_flags_t flags = relaxed ? ZIP_FL_NOCASE | ZIP_FL_NODIR : 0;
 
     zip_stat_t st;
     if (zip_stat(za, fname.c_str(), flags, &st) < 0 || (zf = zip_fopen(za, fname.c_str(), flags)) == nullptr) {
-	zip_error_t *error = zip_get_error(za);
+        zip_error_t* error = zip_get_error(za);
 
         switch (zip_error_code_zip(error)) {
-            case ZIP_ER_NOENT:
-                errno = ENOENT;
-                break;
-            case ZIP_ER_MEMORY:
-                errno = ENOMEM;
-                break;
-            default:
-                errno = EIO;
-                break;
+        case ZIP_ER_NOENT:
+            errno = ENOENT;
+            break;
+        case ZIP_ER_MEMORY:
+            errno = ENOMEM;
+            break;
+        default:
+            errno = EIO;
+            break;
         }
 
         throw std::exception();
@@ -84,19 +86,21 @@ bool ParserSourceZip::close() {
 }
 
 
-ParserSourcePtr ParserSourceZip::open(const std::string &name) {
+ParserSourcePtr ParserSourceZip::open(const std::string& name) {
     try {
         return static_cast<ParserSourcePtr>(std::make_shared<ParserSourceZip>(archive_name, za, name, true));
-    } catch (std::exception &e) {
+    }
+    catch (std::exception& e) {
         if (errno == ENOENT) {
-            return static_cast<ParserSourcePtr>(std::make_shared<ParserSourceFile>(std::filesystem::path(archive_name).parent_path() / name));
+            return static_cast<ParserSourcePtr>(
+                std::make_shared<ParserSourceFile>(std::filesystem::path(archive_name).parent_path() / name));
         }
         throw;
     }
 }
 
 
-size_t ParserSourceZip::read_xxx(void *data, size_t length) {
+size_t ParserSourceZip::read_xxx(void* data, size_t length) {
     if (zf == nullptr) {
         return 0;
     }

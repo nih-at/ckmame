@@ -37,19 +37,15 @@
 
 const char ParserRc::separator = static_cast<char>(0xac);
 
-std::unordered_map<std::string, ParserRc::Section> ParserRc::sections = {
-    {"[CREDITS]",   RC_CREDITS },
-    {"[DAT]",       RC_DAT     },
-    {"[EMULATOR]",  RC_EMULATOR},
-    {"[GAMES]",     RC_GAMES   },
-    {"[RESOURCES]", RC_GAMES   }
-};
+std::unordered_map<std::string, ParserRc::Section> ParserRc::sections = {{"[CREDITS]", RC_CREDITS},
+                                                                         {"[DAT]", RC_DAT},
+                                                                         {"[EMULATOR]", RC_EMULATOR},
+                                                                         {"[GAMES]", RC_GAMES},
+                                                                         {"[RESOURCES]", RC_GAMES}};
 
 std::vector<ParserRc::Field> ParserRc::fields = {
-    Field(RC_CREDITS, "version", parse_prog_version),
-    Field(RC_DAT, "plugin", rc_plugin),
-    Field(RC_EMULATOR, "refname", parse_prog_name),
-    Field(RC_EMULATOR, "version", parse_prog_description)};
+    Field(RC_CREDITS, "version", parse_prog_version), Field(RC_DAT, "plugin", rc_plugin),
+    Field(RC_EMULATOR, "refname", parse_prog_name), Field(RC_EMULATOR, "version", parse_prog_description)};
 
 
 bool ParserRc::parse() {
@@ -92,7 +88,7 @@ bool ParserRc::parse() {
             auto key = line.substr(0, position);
             auto value = line.substr(position + 1);
 
-            for (auto &field : fields) {
+            for (auto& field : fields) {
                 if (field.section == sect && key == field.name) {
                     field.cb(this, value);
                     break;
@@ -126,19 +122,13 @@ std::string ParserRc::Tokenizer::get() {
 }
 
 
-bool ParserRc::parse_prog_description(ParserRc *ctx, const std::string &attr) {
-    return ctx->prog_description(attr);
-}
+bool ParserRc::parse_prog_description(ParserRc* ctx, const std::string& attr) { return ctx->prog_description(attr); }
 
-bool ParserRc::parse_prog_name(ParserRc *ctx, const std::string &attr) {
-    return ctx->prog_name(attr);
-}
+bool ParserRc::parse_prog_name(ParserRc* ctx, const std::string& attr) { return ctx->prog_name(attr); }
 
-bool ParserRc::parse_prog_version(ParserRc *ctx, const std::string &attr) {
-    return ctx->prog_version(attr);
-}
+bool ParserRc::parse_prog_version(ParserRc* ctx, const std::string& attr) { return ctx->prog_version(attr); }
 
-bool ParserRc::rc_plugin(ParserRc *ctx, const std::string &attr) {
+bool ParserRc::rc_plugin(ParserRc* ctx, const std::string& attr) {
     output.line_error(ctx->lineno, "warning: RomCenter plugins not supported,");
     output.line_error(ctx->lineno, "warning: DAT won't work as expected.");
     return false;
@@ -152,7 +142,7 @@ void ParserRc::flush_romline() {
     gamename = "";
 }
 
-bool ParserRc::process_romline(const std::string &line) {
+bool ParserRc::process_romline(const std::string& line) {
     auto tokenizer = Tokenizer(line);
 
     if (!tokenizer.get().empty()) {

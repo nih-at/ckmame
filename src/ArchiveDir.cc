@@ -39,8 +39,8 @@
 #include "Progress.h"
 #include "file_util.h"
 #include "fix_util.h"
-#include "util.h"
 #include "globals.h"
+#include "util.h"
 
 #include <algorithm>
 #include <cerrno>
@@ -68,8 +68,8 @@ bool ArchiveDir::commit_xxx() {
 
     try {
         for (size_t index = 0; index < files.size(); index++) {
-            auto &file = files[index];
-            auto &change = changes[index];
+            auto& file = files[index];
+            auto& change = changes[index];
 
             if (!change.file.empty()) {
                 if (!ensure_dir(added_directory, false)) {
@@ -100,8 +100,8 @@ bool ArchiveDir::commit_xxx() {
 
     try {
         for (size_t index = 0; index < files.size(); index++) {
-            auto &file = files[index];
-            auto &change = changes[index];
+            auto& file = files[index];
+            auto& change = changes[index];
 
             if (change.status == Change::DELETED) {
                 commit.delete_file(get_original_filename(index));
@@ -109,7 +109,7 @@ bool ArchiveDir::commit_xxx() {
             else if (!change.file.empty() || change.source) {
                 commit.rename_file(added_names[file.name], get_full_filename(index));
             }
-            else if (!change.original_name.empty()){
+            else if (!change.original_name.empty()) {
                 commit.rename_file(get_original_filename(index), get_full_filename(index));
             }
         }
@@ -134,13 +134,13 @@ bool ArchiveDir::commit_xxx() {
 void ArchiveDir::commit_cleanup() {
     auto path = std::filesystem::path(name);
 
-    for (auto &file : files) {
+    for (auto& file : files) {
         file.mtime = get_mtime(path / file.filename());
     }
 }
 
 
-void ArchiveDir::copy_source(ZipSource *source, const std::filesystem::path &destination) {
+void ArchiveDir::copy_source(ZipSource* source, const std::filesystem::path& destination) {
     auto fout = make_shared_file(destination, "w");
     if (!fout) {
         output.archive_error("cannot open '%s': %s", destination.c_str(), strerror(errno));
@@ -165,7 +165,7 @@ void ArchiveDir::copy_source(ZipSource *source, const std::filesystem::path &des
 }
 
 
-void ArchiveDir::Commit::delete_file(const std::filesystem::path &file) {
+void ArchiveDir::Commit::delete_file(const std::filesystem::path& file) {
     auto destination = make_unique_path(deleted_directory / file.filename());
 
     ensure_dir(deleted_directory, false);
@@ -173,7 +173,7 @@ void ArchiveDir::Commit::delete_file(const std::filesystem::path &file) {
 }
 
 
-void ArchiveDir::Commit::rename_file(const std::filesystem::path &source, const std::filesystem::path &destination) {
+void ArchiveDir::Commit::rename_file(const std::filesystem::path& source, const std::filesystem::path& destination) {
     ensure_parent_directory(destination);
     ensure_file_doesnt_exist(destination);
 
@@ -181,7 +181,7 @@ void ArchiveDir::Commit::rename_file(const std::filesystem::path &source, const 
 }
 
 
-void ArchiveDir::Commit::rename(const std::filesystem::path &source, const std::filesystem::path &destination) {
+void ArchiveDir::Commit::rename(const std::filesystem::path& source, const std::filesystem::path& destination) {
     std::filesystem::rename(source, destination);
     undos.emplace_back(destination, source);
     cleanup_directories.insert(source.parent_path());
@@ -192,15 +192,15 @@ void ArchiveDir::Commit::undo() {
     std::error_code ec;
 
     for (auto it = undos.rbegin(); it != undos.rend(); it++) {
-        auto &operation = *it;
+        auto& operation = *it;
 
         switch (operation.type) {
-            case Operation::DELETE:
-                std::filesystem::remove(operation.new_name, ec);
-                break;
-            case Operation::RENAME:
-                std::filesystem::rename(operation.old_name, operation.new_name, ec);
-                break;
+        case Operation::DELETE:
+            std::filesystem::remove(operation.new_name, ec);
+            break;
+        case Operation::RENAME:
+            std::filesystem::rename(operation.old_name, operation.new_name, ec);
+            break;
         }
     }
 
@@ -212,12 +212,12 @@ void ArchiveDir::Commit::done() {
     std::error_code ec;
 
     std::filesystem::remove_all(deleted_directory, ec);
-    for (const auto &directory : cleanup_directories) {
+    for (const auto& directory : cleanup_directories) {
         remove_directories_up_to(directory, archive->name);
     }
 }
 
-std::filesystem::path ArchiveDir::Commit::get_filename(const std::filesystem::path &filename) {
+std::filesystem::path ArchiveDir::Commit::get_filename(const std::filesystem::path& filename) {
     auto it = renamed_files.find(filename);
 
     if (it != renamed_files.end()) {
@@ -228,7 +228,7 @@ std::filesystem::path ArchiveDir::Commit::get_filename(const std::filesystem::pa
 }
 
 
-void ArchiveDir::Commit::ensure_file_doesnt_exist(const std::filesystem::path &file) {
+void ArchiveDir::Commit::ensure_file_doesnt_exist(const std::filesystem::path& file) {
     if (std::filesystem::exists(file)) {
         auto new_name = make_unique_path(file);
         std::filesystem::rename(file, new_name);
@@ -238,7 +238,7 @@ void ArchiveDir::Commit::ensure_file_doesnt_exist(const std::filesystem::path &f
 }
 
 
-void ArchiveDir::Commit::ensure_parent_directory(const std::filesystem::path &file) {
+void ArchiveDir::Commit::ensure_parent_directory(const std::filesystem::path& file) {
     auto directory = file.parent_path();
     if (!std::filesystem::exists(directory)) {
         std::filesystem::create_directory(directory);
@@ -249,25 +249,25 @@ void ArchiveDir::Commit::ensure_parent_directory(const std::filesystem::path &fi
 
 bool ArchiveDir::read_infos_xxx() {
     try {
-	 Dir dir(name, !(contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY));
+        Dir dir(name, !(contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY));
 
-         for (const auto& entry: dir) {
-             if (name == entry.path() || name_type(entry) == NAME_IGNORE || !entry.is_regular_file()) {
-                 continue;
-             }
+        for (const auto& entry : dir) {
+            if (name == entry.path() || name_type(entry) == NAME_IGNORE || !entry.is_regular_file()) {
+                continue;
+            }
 
-             files.emplace_back();
-             auto &f = files[files.size() - 1];
+            files.emplace_back();
+            auto& f = files[files.size() - 1];
 
-             f.name = entry.path().string().substr(name.size() + 1);
-             f.hashes.size = entry.file_size();
-             // auto ftime = entry.last_write_time();
-             // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
-             f.mtime = get_mtime(entry.path());
-         }
+            f.name = entry.path().string().substr(name.size() + 1);
+            f.hashes.size = entry.file_size();
+            // auto ftime = entry.last_write_time();
+            // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
+            f.mtime = get_mtime(entry.path());
+        }
     }
     catch (...) {
-	return false;
+        return false;
     }
 
     return true;
@@ -308,7 +308,8 @@ ZipSourcePtr ArchiveDir::get_source(uint64_t index, uint64_t start, std::optiona
     auto filename = get_original_filename(index);
     zip_error_t error;
     zip_error_init(&error);
-    zip_source_t *source = zip_source_file_create(filename.c_str(), start, length.has_value() ? static_cast<int64_t>(length.value()) : -1, &error);
+    zip_source_t* source = zip_source_file_create(
+        filename.c_str(), start, length.has_value() ? static_cast<int64_t>(length.value()) : -1, &error);
 
     if (source == nullptr) {
         throw Exception("can't open '%s': %s", filename.c_str(), zip_error_strerror(&error));
@@ -317,7 +318,7 @@ ZipSourcePtr ArchiveDir::get_source(uint64_t index, uint64_t start, std::optiona
 }
 
 
-time_t ArchiveDir::get_mtime(const std::string &file) {
+time_t ArchiveDir::get_mtime(const std::string& file) {
     struct stat st{};
 
     if (stat(file.c_str(), &st) < 0) {
@@ -335,6 +336,6 @@ std::filesystem::path ArchiveDir::make_added_name(const std::filesystem::path& d
 }
 
 
-ArchiveDir::Commit::Commit(ArchiveDir *archive_) : archive(archive_) {
+ArchiveDir::Commit::Commit(ArchiveDir* archive_) : archive(archive_) {
     deleted_directory = std::filesystem::path(make_unique_name(std::filesystem::path(archive->name) / ".deleted", ""));
 }

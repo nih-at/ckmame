@@ -41,9 +41,15 @@
 #include <utility>
 
 class ArchiveLibarchive : public Archive {
-public:
-    ArchiveLibarchive(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_LIBARCHIVE, name, filetype, where, flags), la(nullptr), current_index(0), header_read(false), have_open_file(false) {  }
-    explicit ArchiveLibarchive(ArchiveContentsPtr contents) : Archive(std::move(contents)), la(nullptr), current_index(0), header_read(false), have_open_file(false) { }
+  public:
+    ArchiveLibarchive(const std::string& name, filetype_t filetype, where_t where, int flags)
+        : Archive(ARCHIVE_LIBARCHIVE, name, filetype, where, flags),
+          la(nullptr),
+          current_index(0),
+          header_read(false),
+          have_open_file(false) {}
+    explicit ArchiveLibarchive(ArchiveContentsPtr contents)
+        : Archive(std::move(contents)), la(nullptr), current_index(0), header_read(false), have_open_file(false) {}
 
     ~ArchiveLibarchive() override;
 
@@ -54,25 +60,25 @@ public:
     void get_last_update() override;
     bool read_infos_xxx() override;
 
-protected:
+  protected:
     ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) override;
 
-private:
+  private:
     bool seek_to_entry(uint64_t index);
-    void write_file(struct archive *writer, const ZipSourcePtr& source);
-    
-    class Source {
-    public:
-        Source(ArchiveLibarchive *archive_, uint64_t index_, uint64_t start_, uint64_t length_, uint64_t file_length);
-        
-        static zip_int64_t callback_c(void *userdata, void *data, zip_uint64_t len, zip_source_cmd_t cmd);
-        zip_int64_t callback(void *data, zip_uint64_t len, zip_source_cmd_t cmd);
+    void write_file(struct archive* writer, const ZipSourcePtr& source);
 
-        zip_source_t *get_source();
-        
+    class Source {
+      public:
+        Source(ArchiveLibarchive* archive_, uint64_t index_, uint64_t start_, uint64_t length_, uint64_t file_length);
+
+        static zip_int64_t callback_c(void* userdata, void* data, zip_uint64_t len, zip_source_cmd_t cmd);
+        zip_int64_t callback(void* data, zip_uint64_t len, zip_source_cmd_t cmd);
+
+        zip_source_t* get_source();
+
         bool open();
-        
-        ArchiveLibarchive *archive;
+
+        ArchiveLibarchive* archive;
         uint64_t index;
         bool complete_file;
         uint64_t start;
@@ -80,16 +86,15 @@ private:
 
         zip_error_t error;
     };
-    
-    struct archive *la;
+
+    struct archive* la;
     uint64_t current_index;
     bool header_read;
     bool have_open_file;
-    
+
     std::vector<time_t> mtimes;
-    
+
     bool ensure_la();
-    
 };
 
 

@@ -33,22 +33,23 @@
 
 #include "ArchiveZip.h"
 
-#include <sys/stat.h>
 #include <cerrno>
+#include <sys/stat.h>
 
 #include "Detector.h"
 #include "Exception.h"
 #include "Progress.h"
+#include "globals.h"
 #include "util.h"
 #include "zip_util.h"
-#include "globals.h"
 
 
 ArchiveZip::~ArchiveZip() {
     try {
         close();
     }
-    catch (...) { }
+    catch (...) {
+    }
 }
 
 
@@ -61,10 +62,11 @@ bool ArchiveZip::ensure_zip() {
 
     int err;
     if ((za = zip_open(name.c_str(), zip_flags, &err)) == nullptr) {
-	zip_error_t error;
-	zip_error_init_with_code(&error, err);
-        output.error("error %s zip archive '%s': %s", (contents->flags & ARCHIVE_FL_CREATE ? "creating" : "opening"), name.c_str(), zip_error_strerror(&error));
-	zip_error_fini(&error);
+        zip_error_t error;
+        zip_error_init_with_code(&error, err);
+        output.error("error %s zip archive '%s': %s", (contents->flags & ARCHIVE_FL_CREATE ? "creating" : "opening"),
+                     name.c_str(), zip_error_strerror(&error));
+        zip_error_fini(&error);
 
         if (where == FILE_ROMSET && configuration.fix_romset && std::filesystem::exists(name)) {
             move_broken_archive();
@@ -74,7 +76,7 @@ bool ArchiveZip::ensure_zip() {
             }
         }
 
-	return false;
+        return false;
     }
 
     if (where == FILE_ROMSET && configuration.use_torrentzip) {
@@ -92,13 +94,9 @@ bool ArchiveZip::ensure_zip() {
 }
 
 
-bool ArchiveZip::check() {
-    return ensure_zip();
-}
+bool ArchiveZip::check() { return ensure_zip(); }
 
-static void close_progress(zip_t *za, double progress, void *ud) {
-    Progress::update();
-}
+static void close_progress(zip_t* za, double progress, void* ud) { Progress::update(); }
 
 bool ArchiveZip::close_xxx() {
     if (za == nullptr) {
@@ -108,12 +106,12 @@ bool ArchiveZip::close_xxx() {
     auto progress = Progress::Message("writing '" + name + "'");
     zip_register_progress_callback_with_state(za, 0.1, close_progress, nullptr, nullptr);
     if (zip_close(za) < 0) {
-	/* error closing, so zip is still valid */
-	output.archive_error("error closing zip: %s", zip_strerror(za));
+        /* error closing, so zip is still valid */
+        output.archive_error("error closing zip: %s", zip_strerror(za));
 
-	/* TODO: really do this here? */
-	/* discard all changes and close zipfile */
-	zip_discard(za);
+        /* TODO: really do this here? */
+        /* discard all changes and close zipfile */
+        zip_discard(za);
         za = nullptr;
         return false;
     }
@@ -138,8 +136,8 @@ bool ArchiveZip::commit_xxx() {
     auto ok = true;
 
     for (size_t index = 0; index < files.size(); index++) {
-        auto &file = files[index];
-        auto &change = changes[index];
+        auto& file = files[index];
+        auto& change = changes[index];
 
         Progress::update();
 
@@ -175,7 +173,8 @@ bool ArchiveZip::commit_xxx() {
                     break;
                 }
                 if (zip_file_rename(za, index, file.name.c_str(), 0) < 0) {
-                    output.archive_error("cannot rename '%s' to `%s': %s", change.original_name.c_str(), file.name.c_str(), zip_strerror(za));
+                    output.archive_error("cannot rename '%s' to `%s': %s", change.original_name.c_str(),
+                                         file.name.c_str(), zip_strerror(za));
                     ok = false;
                     break;
                 }
@@ -188,7 +187,8 @@ bool ArchiveZip::commit_xxx() {
                         output.archive_file_error("error adding empty file: %s", zip_strerror(za));
                     }
                     else {
-                        output.archive_file_error("error adding '%s': %s", change.source_name.c_str(), zip_strerror(za));
+                        output.archive_file_error("error adding '%s': %s", change.source_name.c_str(),
+                                                  zip_strerror(za));
                     }
                     ok = false;
                     break;
@@ -208,7 +208,7 @@ bool ArchiveZip::commit_xxx() {
 
 void ArchiveZip::commit_cleanup() {
     if (files.empty()) {
-	return;
+        return;
     }
 
     ensure_zip();
@@ -218,7 +218,7 @@ void ArchiveZip::commit_cleanup() {
         auto sorted_files = std::vector<File>{};
 
         auto index = size_t{0};
-        for (const auto& file: files) {
+        for (const auto& file : files) {
             names[file.name] = index;
             index += 1;
         }
@@ -227,16 +227,16 @@ void ArchiveZip::commit_cleanup() {
             struct zip_stat st;
 
             if (zip_stat_index(za, i, 0, &st) < 0) {
-                    output.set_error_archive(name);
-                    output.archive_error("cannot stat file %" PRIu64 ": %s", i, zip_strerror(za));
-                    continue;
+                output.set_error_archive(name);
+                output.archive_error("cannot stat file %" PRIu64 ": %s", i, zip_strerror(za));
+                continue;
             }
 
             auto it = names.find(st.name);
             if (it == names.end()) {
-                    output.set_error_archive(name);
-                    output.archive_error("unexpected name %s in archive", st.name);
-                    continue;
+                output.set_error_archive(name);
+                output.archive_error("unexpected name %s in archive", st.name);
+                continue;
             }
             sorted_files.push_back(files[names[st.name]]);
 
@@ -250,9 +250,9 @@ void ArchiveZip::commit_cleanup() {
             struct zip_stat st;
 
             if (zip_stat_index(za, i, 0, &st) < 0) {
-                    output.set_error_archive(name);
-                    output.archive_error("cannot stat file %" PRIu64 ": %s", i, zip_strerror(za));
-                    continue;
+                output.set_error_archive(name);
+                output.archive_error("cannot stat file %" PRIu64 ": %s", i, zip_strerror(za));
+                continue;
             }
 
             files[i].mtime = st.mtime;
@@ -290,15 +290,15 @@ bool ArchiveZip::read_infos_xxx() {
 
     for (zip_uint64_t i = 0; i < n; i++) {
         Progress::update();
-	if (zip_stat_index(za, i, 0, &zsb) == -1) {
-	    output.archive_error("error stat()ing index %" PRIu64 ": %s", i, zip_strerror(za));
-	    continue;
-	}
+        if (zip_stat_index(za, i, 0, &zsb) == -1) {
+            output.archive_error("error stat()ing index %" PRIu64 ": %s", i, zip_strerror(za));
+            continue;
+        }
 
         File r;
         r.mtime = zsb.mtime;
-	r.hashes.size = zsb.size;
-	r.name = zsb.name;
+        r.hashes.size = zsb.size;
+        r.name = zsb.name;
         r.broken = false;
         r.hashes.set_crc(zsb.crc);
 
@@ -333,7 +333,7 @@ ZipSourcePtr ArchiveZip::get_source(uint64_t index, uint64_t start, std::optiona
 }
 
 
-bool ArchiveZip::ensure_file_doesnt_exist(const std::string &filename) {
+bool ArchiveZip::ensure_file_doesnt_exist(const std::string& filename) {
     auto index = zip_name_locate(za, filename.c_str(), 0);
 
     if (index >= 0) {

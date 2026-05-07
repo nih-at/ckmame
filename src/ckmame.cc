@@ -38,8 +38,8 @@
 #include <filesystem>
 #include <string>
 
-#include "compat.h"
 #include "config.h"
+#include "compat.h"
 
 #include "CkmameCache.h"
 #include "CkmameDB.h"
@@ -67,60 +67,57 @@ std::filesystem::path rom_dir_normalized;
 std::vector<Commandline::Option> ckmame_options = {
     Commandline::Option("fix", 'F', "fix ROM set"),
     Commandline::Option("game-list", 'T', "file", "read games to check from file", 1),
-    Commandline::Option("only-if-database-updated", 'U', "if dats didn't change, exit; otherwise update database and run"),
-    Commandline::Option("trace", "trace actions, useful for profiling", 1)
-};
+    Commandline::Option("only-if-database-updated", 'U',
+                        "if dats didn't change, exit; otherwise update database and run"),
+    Commandline::Option("trace", "trace actions, useful for profiling", 1)};
 
-std::unordered_set<std::string> ckmame_used_variables = {
-    "complete_games_only",
-    "complete_list",
-    "create_fixdat",
-    "delete_unknown_pattern",
-    "extra_directories",
-    "fixdat_directory",
-    "keep_old_duplicate",
-    "missing_list",
-    "move_from_extra",
-    "no_status_db",
-    "old_db",
-    "report_changes",
-    "report_correct",
-    "report_correct_mia",
-    "report_detailed",
-    "report_fixable",
-    "report_missing",
-    "report_missing_mia",
-    "report_no_good_dump",
-    "report_summary",
-    "rom_db",
-    "rom_directory",
-    "roms_zipped",
-    "saved_directory",
-    "status_db",
-    "status_db_keep_days",
-    "status_db_keep_runs",
-    "unknown_directory",
-    "update_database",
-    "use_torrentzip",
-    "verbose",
-    "warn_file_known",
-    "warn_file_unknown"
-};
+std::unordered_set<std::string> ckmame_used_variables = {"complete_games_only",
+                                                         "complete_list",
+                                                         "create_fixdat",
+                                                         "delete_unknown_pattern",
+                                                         "extra_directories",
+                                                         "fixdat_directory",
+                                                         "keep_old_duplicate",
+                                                         "missing_list",
+                                                         "move_from_extra",
+                                                         "no_status_db",
+                                                         "old_db",
+                                                         "report_changes",
+                                                         "report_correct",
+                                                         "report_correct_mia",
+                                                         "report_detailed",
+                                                         "report_fixable",
+                                                         "report_missing",
+                                                         "report_missing_mia",
+                                                         "report_no_good_dump",
+                                                         "report_summary",
+                                                         "rom_db",
+                                                         "rom_directory",
+                                                         "roms_zipped",
+                                                         "saved_directory",
+                                                         "status_db",
+                                                         "status_db_keep_days",
+                                                         "status_db_keep_runs",
+                                                         "unknown_directory",
+                                                         "update_database",
+                                                         "use_torrentzip",
+                                                         "verbose",
+                                                         "warn_file_known",
+                                                         "warn_file_unknown"};
 
-static bool contains_romdir(const std::string &ame);
+static bool contains_romdir(const std::string& ame);
 static std::string diff_stat(const std::vector<std::string>& old_lines, const std::vector<std::string>& new_lines);
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     auto command = CkMame();
 
     return command.run(argc, argv);
 }
 
-CkMame::CkMame() : Command("ckmame", "[game ...]", ckmame_options, ckmame_used_variables), only_if_updated(false) {
-}
+CkMame::CkMame() : Command("ckmame", "[game ...]", ckmame_options, ckmame_used_variables), only_if_updated(false) {}
 
-void CkMame::global_setup(const ParsedCommandline &commandline) {
-    for (const auto &option : commandline.options) {
+void CkMame::global_setup(const ParsedCommandline& commandline) {
+    for (const auto& option : commandline.options) {
         if (option.name == "fix") {
             configuration.fix_romset = true;
         }
@@ -140,7 +137,7 @@ void CkMame::global_setup(const ParsedCommandline &commandline) {
     }
 }
 
-bool CkMame::execute(const std::vector<std::string> &arguments) {
+bool CkMame::execute(const std::vector<std::string>& arguments) {
     Progress::enable();
 
     int found;
@@ -157,7 +154,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
                 return true;
             }
         }
-        catch (std::exception &e) {
+        catch (std::exception& e) {
             output.error("can't update database '%s': %s", configuration.rom_db.c_str(), e.what());
             return false;
         }
@@ -165,13 +162,15 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 
     try {
         db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
-    } catch (std::exception &e) {
+    }
+    catch (std::exception& e) {
         output.error("can't open database '%s': %s", configuration.rom_db.c_str(), e.what());
         return false;
     }
     try {
         old_db = std::make_unique<RomDB>(configuration.old_db, DBH_READ);
-    } catch (std::exception &e) {
+    }
+    catch (std::exception& e) {
         /* TODO: check for errors other than ENOENT */
     }
 
@@ -195,15 +194,17 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
         ckmame_cache->register_directory(configuration.rom_directory, FILE_ROMSET);
         ckmame_cache->register_directory(configuration.saved_directory, FILE_NEEDED);
         ckmame_cache->register_directory(configuration.unknown_directory, FILE_EXTRA);
-        for (const auto &name : configuration.extra_directories) {
+        for (const auto& name : configuration.extra_directories) {
             if (contains_romdir(name)) {
                 /* TODO: improve error message: also if extra is in ROM directory. */
-                output.error("current ROM directory '%s' is in extra directory '%s'", configuration.rom_directory.c_str(), name.c_str());
+                output.error("current ROM directory '%s' is in extra directory '%s'",
+                             configuration.rom_directory.c_str(), name.c_str());
                 return false;
             }
             ckmame_cache->register_directory(name, FILE_EXTRA);
         }
-    } catch (Exception &exception) {
+    }
+    catch (Exception& exception) {
         // TODO: handle error
         fprintf(stderr, "%s: %s\n", ProgramName::get().c_str(), exception.what());
         return false;
@@ -218,7 +219,8 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 
     try {
         list = db->read_list(DBH_KEY_LIST_GAME);
-    } catch (Exception &e) {
+    }
+    catch (Exception& e) {
         output.error("list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
         return false;
     }
@@ -253,12 +255,12 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     }
     else if (arguments.empty()) {
         checking_all_games = true;
-        for (const auto &name : list) {
+        for (const auto& name : list) {
             check_tree.add(name);
         }
     }
     else {
-        for (const auto &argument : arguments) {
+        for (const auto& argument : arguments) {
             if (strcspn(argument.c_str(), "*?[]{}") == argument.size()) {
                 if (std::binary_search(list.begin(), list.end(), argument)) {
                     check_tree.add(argument);
@@ -269,7 +271,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
             }
             else {
                 found = 0;
-                for (const auto &j : list) {
+                for (const auto& j : list) {
                     if (fnmatch(argument.c_str(), j.c_str(), 0) == 0) {
                         check_tree.add(j);
                         found = 1;
@@ -292,7 +294,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 
     if (checking_all_games && configuration.fix_romset && configuration.status_db != "none") {
         ensure_dir(std::filesystem::path(configuration.status_db), true);
-        status_db = std::make_shared<StatusDB>(configuration.status_db, DBH_WRITE|DBH_CREATE);
+        status_db = std::make_shared<StatusDB>(configuration.status_db, DBH_WRITE | DBH_CREATE);
         status_run = StatusDBRun(status_db, db.get());
     }
 
@@ -400,8 +402,6 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 }
 
 
-
-
 bool CkMame::cleanup() {
     db = nullptr;
     old_db = nullptr;
@@ -412,11 +412,13 @@ bool CkMame::cleanup() {
     if (configuration.fix_romset) {
         std::error_code ec;
         std::filesystem::remove(configuration.saved_directory, ec);
-        // Since we create saved/$set by default, remove saved. This is not entirely clean, since we also do this in the non-default case.
+        // Since we create saved/$set by default, remove saved. This is not entirely clean, since we also do this in the
+        // non-default case.
         std::filesystem::remove(std::filesystem::path(configuration.saved_directory).parent_path(), ec);
 
         std::filesystem::remove(configuration.unknown_directory, ec);
-        // Since we create unknown/$set by default, remove unknown. This is not entirely clean, since we also do this in the non-default case.
+        // Since we create unknown/$set by default, remove unknown. This is not entirely clean, since we also do this in
+        // the non-default case.
         std::filesystem::remove(std::filesystem::path(configuration.unknown_directory).parent_path(), ec);
     }
 
@@ -424,23 +426,22 @@ bool CkMame::cleanup() {
 }
 
 
-static bool
-contains_romdir(const std::string &name) {
+static bool contains_romdir(const std::string& name) {
     std::error_code ec;
     auto normalized = std::filesystem::relative(name, "/", ec);
     if (ec || normalized.empty()) {
-	return false;
+        return false;
     }
 
     auto it_extra = normalized.begin();
     auto it_romdir = rom_dir_normalized.begin();
 
     while (it_romdir != rom_dir_normalized.end() && it_extra != normalized.end()) {
-	if (*it_extra != *it_romdir) {
-	    return false;
-	}
-	it_extra++;
-	it_romdir++;
+        if (*it_extra != *it_romdir) {
+            return false;
+        }
+        it_extra++;
+        it_romdir++;
     }
 
     return it_extra == normalized.end();

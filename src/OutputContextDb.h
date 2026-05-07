@@ -39,19 +39,19 @@
 
 
 class OutputContextDb : public OutputContext {
-public:
-    OutputContextDb(const std::string &fname, int flags);
+  public:
+    OutputContextDb(const std::string& fname, int flags);
     ~OutputContextDb() override;
-    
+
     bool close() override;
-    bool detector(Detector *detector) override;
-    bool game(GamePtr game, const std::string &original_name) override;
-    bool header(DatEntry *dat) override;
+    bool detector(Detector* detector) override;
+    bool game(GamePtr game, const std::string& original_name) override;
+    bool header(DatEntry* dat) override;
     void error_occurred() override { ok = false; }
 
-    RomDB* get_db() const {return db.get();}
+    RomDB* get_db() const { return db.get(); }
 
-private:
+  private:
     std::string file_name;
     std::string temp_file_name;
 
@@ -62,11 +62,11 @@ private:
     std::vector<std::string> lost_children;
 
     bool ok;
-    
-    void familymeeting(Game *parent, Game *child);
+
+    void familymeeting(Game* parent, Game* child);
     std::string get_game_name(const std::string& original_name);
     bool handle_lost();
-    bool lost(Game *);
+    bool lost(Game*);
 
     std::unordered_map<std::string, std::string> renamed_games;
 };

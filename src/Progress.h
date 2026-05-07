@@ -41,13 +41,17 @@ class Progress {
   public:
     class Message {
       public:
-        explicit Message(std::string message) {Progress::push_message(std::move(message));}
-        ~Message() {Progress::pop_message();}
+        explicit Message(std::string message) { Progress::push_message(std::move(message)); }
+        ~Message() { Progress::pop_message(); }
     };
     static void enable();
     static void push_message(std::string message);
     static void pop_message();
-    static void update() { if (siginfo_caught) {print_message(true);}}
+    static void update() {
+        if (siginfo_caught) {
+            print_message(true);
+        }
+    }
 
     static bool trace;
 

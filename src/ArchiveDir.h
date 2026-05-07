@@ -42,12 +42,13 @@
 #include "SharedFile.h"
 
 class ArchiveDir : public Archive {
-public:
-    ArchiveDir(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_DIR, name, filetype, where, flags) { }
-    explicit ArchiveDir(ArchiveContentsPtr contents) : Archive(std::move(contents)) { }
+  public:
+    ArchiveDir(const std::string& name, filetype_t filetype, where_t where, int flags)
+        : Archive(ARCHIVE_DIR, name, filetype, where, flags) {}
+    explicit ArchiveDir(ArchiveContentsPtr contents) : Archive(std::move(contents)) {}
     ~ArchiveDir() override { update_cache(); }
 
-protected:
+  protected:
     bool commit_xxx() override;
     void commit_cleanup() override;
     void get_last_update() override;
@@ -57,49 +58,47 @@ protected:
     std::string get_full_filename(uint64_t index) override;
     std::string get_original_filename(uint64_t index) override;
 
-private:
+  private:
     class Commit {
-    public:
-        explicit Commit(ArchiveDir *archive);
-        
-        void delete_file(const std::filesystem::path &file);
-        void rename_file(const std::filesystem::path &source, const std::filesystem::path &destination);
+      public:
+        explicit Commit(ArchiveDir* archive);
+
+        void delete_file(const std::filesystem::path& file);
+        void rename_file(const std::filesystem::path& source, const std::filesystem::path& destination);
 
         void undo();
         void done();
 
-    private:
+      private:
         class Operation {
-        public:
-            enum Type {
-                DELETE,
-                RENAME
-            };
+          public:
+            enum Type { DELETE, RENAME };
 
-            Operation(std::filesystem::path old_name_, std::filesystem::path new_name_) : type(RENAME), old_name(std::move(old_name_)), new_name(std::move(new_name_)) { }
-            explicit Operation(std::filesystem::path name) : type(DELETE), new_name(std::move(name)) { }
+            Operation(std::filesystem::path old_name_, std::filesystem::path new_name_)
+                : type(RENAME), old_name(std::move(old_name_)), new_name(std::move(new_name_)) {}
+            explicit Operation(std::filesystem::path name) : type(DELETE), new_name(std::move(name)) {}
             Type type;
             std::filesystem::path old_name;
             std::filesystem::path new_name;
         };
 
-        ArchiveDir *archive;
-        
+        ArchiveDir* archive;
+
         std::filesystem::path deleted_directory;
         std::vector<Operation> undos;
         std::unordered_set<std::string> cleanup_directories;
         std::unordered_map<std::string, std::filesystem::path> renamed_files;
 
-        std::filesystem::path get_filename(const std::filesystem::path &filename);
-        void ensure_file_doesnt_exist(const std::filesystem::path &file);
-        void ensure_parent_directory(const std::filesystem::path &file);
-        void rename(const std::filesystem::path &source, const std::filesystem::path &destination);
+        std::filesystem::path get_filename(const std::filesystem::path& filename);
+        void ensure_file_doesnt_exist(const std::filesystem::path& file);
+        void ensure_parent_directory(const std::filesystem::path& file);
+        void rename(const std::filesystem::path& source, const std::filesystem::path& destination);
     };
 
-    static void copy_source(ZipSource *source, const std::filesystem::path &destination);
+    static void copy_source(ZipSource* source, const std::filesystem::path& destination);
     static std::filesystem::path make_added_name(const std::filesystem::path& directory, const std::string& name);
 
-    static time_t get_mtime(const std::string &file);
+    static time_t get_mtime(const std::string& file);
 };
 
 #endif // HAD_ARCHIVE_DIR_H

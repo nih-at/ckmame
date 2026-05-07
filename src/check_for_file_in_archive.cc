@@ -31,8 +31,8 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "check_util.h"
 #include "Exception.h"
+#include "check_util.h"
 #include "find.h"
 
 class ArchiveFileProxy {
@@ -41,7 +41,10 @@ class ArchiveFileProxy {
 
     size_t index;
 
-    ArchivePtr archive() { ensure_archive(); return a; }
+    ArchivePtr archive() {
+        ensure_archive();
+        return a;
+    }
     size_t size(size_t detector_id);
     const Hashes& hashes(size_t detector_id);
 
@@ -61,7 +64,9 @@ class ArchiveFileProxy {
     void find_file();
 };
 
-ArchiveFileProxy::ArchiveFileProxy(filetype_t filetype, const std::string& archive_name, std::string file_name, int hashtypes) : filetype(filetype), file_name(std::move(file_name)), hashtypes(hashtypes) {
+ArchiveFileProxy::ArchiveFileProxy(filetype_t filetype, const std::string& archive_name, std::string file_name,
+                                   int hashtypes)
+    : filetype(filetype), file_name(std::move(file_name)), hashtypes(hashtypes) {
     full_name = findfile(filetype, archive_name);
     if (full_name.empty()) {
         throw Exception();
@@ -119,8 +124,8 @@ const Hashes& ArchiveFileProxy::hashes(size_t detector_id) {
     return file->get_hashes(detector_id);
 }
 
-find_result_t check_for_file_in_archive(filetype_t filetype, size_t detector_id, const std::string &name, const FileData *wanted_file, const FileData *candidate, Match *matches) {
-
+find_result_t check_for_file_in_archive(filetype_t filetype, size_t detector_id, const std::string& name,
+                                        const FileData* wanted_file, const FileData* candidate, Match* matches) {
     try {
         auto found = false;
         ArchiveFileProxy xxx(filetype, name, candidate->name, wanted_file->hashes.get_types());

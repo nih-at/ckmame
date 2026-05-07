@@ -33,14 +33,10 @@
 
 #include "Rom.h"
 
-bool Rom::compare_merged(const FileData &other) const {
-    return merged_name() == other.name;
-}
+bool Rom::compare_merged(const FileData& other) const { return merged_name() == other.name; }
 
 
-bool Rom::compare_merged(const Rom &other) const {
-    return merged_name() == other.merged_name();
-}
+bool Rom::compare_merged(const Rom& other) const { return merged_name() == other.merged_name(); }
 
 
 std::string Rom::filename(filetype_t filetype) const {
@@ -53,7 +49,7 @@ std::string Rom::filename(filetype_t filetype) const {
 }
 
 
-bool Rom::is_mergable(const Rom &other) const {
+bool Rom::is_mergable(const Rom& other) const {
     /* name must be the (merged) name */
     if (merged_name() != other.name) {
         return false;
@@ -71,41 +67,41 @@ bool Rom::is_mergable(const Rom &other) const {
 }
 
 
-Hashes::Compare FileData::compare_hashes(const FileData &other) const {
+Hashes::Compare FileData::compare_hashes(const FileData& other) const {
     auto result = hashes.compare(other.hashes);
-    
+
     if (result == Hashes::MATCH) {
         return result;
     }
-    
+
 #if 0
     // move to version with detector id we're interested in
     if (!hashes.empty() && !other.hashes_detector.empty() && hashes.compare(other.hashes_detector) == Hashes::MATCH) {
         return Hashes::MATCH;
     }
 #endif
-    
+
     return result;
 }
 
 
 std::string Rom::status_name(Status status, bool verbose) {
     switch (status) {
-        case Rom::OK:
-            if (verbose) {
-                return "ok";
-            }
-            else {
-                return "";
-            }
-
-        case Rom::BAD_DUMP:
-            return "baddump";
-
-        case Rom::NO_DUMP:
-            return "nodump";
-
-        default:
+    case Rom::OK:
+        if (verbose) {
+            return "ok";
+        }
+        else {
             return "";
+        }
+
+    case Rom::BAD_DUMP:
+        return "baddump";
+
+    case Rom::NO_DUMP:
+        return "nodump";
+
+    default:
+        return "";
     }
 }

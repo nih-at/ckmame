@@ -51,23 +51,17 @@
 static const std::string unicode_bom = "\xEF\xBB\xBF";
 
 std::unordered_map<std::string, Parser::Format> Parser::format_start = {
-    {"<?xml ",      XML       },
-    {"BEGIN",       CLRMAMEPRO},
-    {"[CREDITS]",   ROMCENTER },
-    {"[DAT]",       ROMCENTER },
-    {"[EMULATOR]",  ROMCENTER },
-    {"clrmamepro ", CLRMAMEPRO},
-    {"emulator ",   CLRMAMEPRO}
-};
+    {"<?xml ", XML},           {"BEGIN", CLRMAMEPRO},       {"[CREDITS]", ROMCENTER}, {"[DAT]", ROMCENTER},
+    {"[EMULATOR]", ROMCENTER}, {"clrmamepro ", CLRMAMEPRO}, {"emulator ", CLRMAMEPRO}};
 
 
-#define CHECK_STATE(s)                                        \
-    do {                                                      \
-        if (state != (s)) {                                   \
+#define CHECK_STATE(s)                                                                                               \
+    do {                                                                                                             \
+        if (state != (s)) {                                                                                          \
             output.line_error(lineno, "state is %s, expected %s", state_name(state).c_str(), state_name(s).c_str()); \
-            error = true;                                     \
-            return false;                                     \
-        }                                                     \
+            error = true;                                                                                            \
+            return false;                                                                                            \
+        }                                                                                                            \
     } while (0)
 
 
@@ -266,7 +260,7 @@ bool Parser::file_merge(filetype_t ft, const std::string& attr) {
 }
 
 
-bool Parser::file_missing(filetype_t ft, bool attr){
+bool Parser::file_missing(filetype_t ft, bool attr) {
     CHECK_STATE(PARSE_IN_FILE);
 
     r[ft]->mia = attr;
@@ -378,7 +372,7 @@ bool Parser::game_end() {
 
         if (options.mia_games.contains(g->name)) {
             // TODO: disks
-            for (auto& rom: g->files[TYPE_ROM]) {
+            for (auto& rom : g->files[TYPE_ROM]) {
                 if (!configuration.delete_unknown_pattern.empty() &&
                     fnmatch(configuration.delete_unknown_pattern.c_str(), rom.name.c_str(), 0) == 0) {
                     continue;
@@ -576,7 +570,8 @@ void Parser::rom_end(filetype_t ft) {
         auto& hashes = r[ft]->hashes;
 
         if (hashes.compare(Hashes::zero) == Hashes::MISMATCH) {
-            output.line_error(lineno, "warning: zero-size ROM '%s' with wrong checksums, corrected", r[ft]->name.c_str());
+            output.line_error(lineno, "warning: zero-size ROM '%s' with wrong checksums, corrected",
+                              r[ft]->name.c_str());
             hashes.set_crc(Hashes::zero.crc);
             if (hashes.has_type(Hashes::TYPE_MD5)) {
                 hashes.set_md5(Hashes::zero.md5);

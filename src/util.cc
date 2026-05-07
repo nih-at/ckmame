@@ -42,32 +42,28 @@
 #include <fstream>
 #include <vector>
 
-#include "CkmameDB.h"
 #include "config.h"
+#include "CkmameDB.h"
 
 #include "compat.h"
 
 #include "DatDb.h"
 #include "Exception.h"
-#include "globals.h"
 #include "SharedFile.h"
+#include "globals.h"
 
 
 #define BIN2HEX(n) ((n) >= 10 ? (n) + 'a' - 10 : (n) + '0')
 
-static bool ichar_equals(char a, char b)
-{
-    return std::tolower(static_cast<unsigned char>(a)) ==
-           std::tolower(static_cast<unsigned char>(b));
+static bool ichar_equals(char a, char b) {
+    return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
 }
 
-bool iequals(const std::string& a, const std::string& b)
-{
-    return a.size() == b.size() &&
-           std::equal(a.begin(), a.end(), b.begin(), ichar_equals);
+bool iequals(const std::string& a, const std::string& b) {
+    return a.size() == b.size() && std::equal(a.begin(), a.end(), b.begin(), ichar_equals);
 }
 
-std::string bin2hex(const std::vector<uint8_t> &bin) {
+std::string bin2hex(const std::vector<uint8_t>& bin) {
     auto hex = std::string(bin.size() * 2, '\0');
 
     for (size_t i = 0; i < bin.size(); i++) {
@@ -79,10 +75,11 @@ std::string bin2hex(const std::vector<uint8_t> &bin) {
 }
 
 
-#define HEX2BIN(c) (((c) >= '0' && (c) <= '9') ? (c) - '0' : ((c) >= 'A' && (c) <= 'F') ? (c) - 'A' + 10 : (c) - 'a' + 10)
+#define HEX2BIN(c) \
+    (((c) >= '0' && (c) <= '9') ? (c) - '0' : ((c) >= 'A' && (c) <= 'F') ? (c) - 'A' + 10 : (c) - 'a' + 10)
 
 
-std::vector<uint8_t> hex2bin(const std::string &hex) {
+std::vector<uint8_t> hex2bin(const std::string& hex) {
     if (hex.size() % 2 != 0) {
         throw Exception("hex string with odd number of digits");
     }
@@ -99,7 +96,7 @@ std::vector<uint8_t> hex2bin(const std::string &hex) {
 
     return bin;
 }
-name_type_t name_type(const std::filesystem::directory_entry &entry) {
+name_type_t name_type(const std::filesystem::directory_entry& entry) {
     if (entry.is_directory()) {
         if (configuration.roms_zipped) {
             return NAME_IMAGES;
@@ -110,7 +107,8 @@ name_type_t name_type(const std::filesystem::directory_entry &entry) {
     }
 
     auto filename = entry.path().filename();
-    if (filename == CkmameDB::db_name || filename == DatDB::db_name || filename == ".DS_Store" || filename.string().substr(0, 2) == "._") {
+    if (filename == CkmameDB::db_name || filename == DatDB::db_name || filename == ".DS_Store" ||
+        filename.string().substr(0, 2) == "._") {
         return NAME_IGNORE;
     }
 
@@ -122,7 +120,7 @@ name_type_t name_type(const std::filesystem::directory_entry &entry) {
 }
 
 
-name_type_t name_type_s(const std::string &name) {
+name_type_t name_type_s(const std::string& name) {
     std::error_code ec;
     auto entry = std::filesystem::directory_entry(name, ec);
 
@@ -138,7 +136,7 @@ bool ensure_dir(const std::filesystem::path& name, bool strip_filename) {
     try {
         ensure_directory(name, strip_filename);
     }
-    catch (Exception &ex) {
+    catch (Exception& ex) {
         output.error("%s", ex.what());
         return false;
     }
@@ -173,7 +171,7 @@ std::filesystem::path home_directory() {
 }
 
 
-bool is_ziplike(const std::filesystem::path &fname) {
+bool is_ziplike(const std::filesystem::path& fname) {
     auto extension = fname.extension();
 
     if (iequals(extension, ".zip")) {
@@ -193,36 +191,40 @@ bool is_ziplike(const std::filesystem::path &fname) {
 std::string human_number(uint64_t value) {
     char s[128];
     if (value > 1024ul * 1024 * 1024 * 1024) {
-	snprintf(s, sizeof(s), "%" PRIi64 ".%02" PRIi64 "TiB", value / (1024ul * 1024 * 1024 * 1024), (((value / (1024ul * 1024 * 1024)) * 10 + 512) / 1024) % 100);
+        snprintf(s, sizeof(s), "%" PRIi64 ".%02" PRIi64 "TiB", value / (1024ul * 1024 * 1024 * 1024),
+                 (((value / (1024ul * 1024 * 1024)) * 10 + 512) / 1024) % 100);
     }
     else if (value > 1024 * 1024 * 1024) {
-	snprintf(s, sizeof(s), "%" PRIi64 ".%02" PRIi64 "GiB", value / (1024 * 1024 * 1024), (((value / (1024 * 1024)) * 10 + 512) / 1024) % 100);
+        snprintf(s, sizeof(s), "%" PRIi64 ".%02" PRIi64 "GiB", value / (1024 * 1024 * 1024),
+                 (((value / (1024 * 1024)) * 10 + 512) / 1024) % 100);
     }
     else if (value > 1024 * 1024) {
-	snprintf(s, sizeof(s), "%" PRIi64 ".%02" PRIi64 "MiB", value / (1024 * 1024), (((value / 1024) * 10 + 512) / 1024) % 100);
+        snprintf(s, sizeof(s), "%" PRIi64 ".%02" PRIi64 "MiB", value / (1024 * 1024),
+                 (((value / 1024) * 10 + 512) / 1024) % 100);
     }
     else {
-	snprintf(s, sizeof(s), "%" PRIi64 " bytes", value);
+        snprintf(s, sizeof(s), "%" PRIi64 " bytes", value);
     }
 
     return s;
 }
 
-bool string_less_case_insensitive(const std::string &lhs, const std::string &rhs) {
-    const auto result = std::mismatch(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend(), [](const unsigned char lhc, const unsigned char rhc) {
-            return tolower(lhc) == tolower(rhc);
-        });
+bool string_less_case_insensitive(const std::string& lhs, const std::string& rhs) {
+    const auto result =
+        std::mismatch(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend(),
+                      [](const unsigned char lhc, const unsigned char rhc) { return tolower(lhc) == tolower(rhc); });
 
-    return result.second != rhs.cend() && (result.first == lhs.cend() || tolower(*result.first) < tolower(*result.second));
+    return result.second != rhs.cend() &&
+           (result.first == lhs.cend() || tolower(*result.first) < tolower(*result.second));
 }
 
 
-void sort_strings_case_insensitive(std::vector<std::string> &strings) {
+void sort_strings_case_insensitive(std::vector<std::string>& strings) {
     std::sort(strings.begin(), strings.end(), string_less_case_insensitive);
 }
 
 
-std::string string_format(const char *format, ...) {
+std::string string_format(const char* format, ...) {
     va_list ap;
     va_start(ap, format);
     auto string = string_format_v(format, ap);
@@ -230,14 +232,14 @@ std::string string_format(const char *format, ...) {
     return string;
 }
 
-std::string string_format_v(const char *format, va_list ap) {
+std::string string_format_v(const char* format, va_list ap) {
     auto size = strlen(format) + 50;
     std::string str;
     va_list ap2;
     while (true) {
         str.resize(size);
         va_copy(ap2, ap);
-        int n = vsnprintf((char *)str.data(), size, format, ap2);
+        int n = vsnprintf((char*)str.data(), size, format, ap2);
         va_end(ap2);
         if (n > -1 && static_cast<size_t>(n) < size) {
             str.resize(static_cast<size_t>(n));
@@ -253,7 +255,7 @@ std::string string_format_v(const char *format, va_list ap) {
 }
 
 
-std::string string_lower(const std::string &s) {
+std::string string_lower(const std::string& s) {
     auto l = std::string(s.size(), ' ');
 
     for (size_t i = 0; i < s.size(); i++) {
@@ -264,8 +266,7 @@ std::string string_lower(const std::string &s) {
 }
 
 
-
-std::string slurp(const std::string &filename) {
+std::string slurp(const std::string& filename) {
     auto f = std::ifstream(filename, std::ios::in | std::ios::binary);
 
     const auto size = std::filesystem::file_size(filename);
@@ -278,7 +279,7 @@ std::string slurp(const std::string &filename) {
 }
 
 
-std::string format_time(const std::string &format, time_t timestamp) {
+std::string format_time(const std::string& format, time_t timestamp) {
     char string[100];
     auto tm = localtime(&timestamp);
 
@@ -288,51 +289,52 @@ std::string format_time(const std::string &format, time_t timestamp) {
 }
 
 
-std::vector<std::string> slurp_lines(const std::string &file_name) {
+std::vector<std::string> slurp_lines(const std::string& file_name) {
     auto file = std::ifstream(file_name, std::ios::in);
 
     auto lines = std::vector<std::string>();
     auto line = std::string();
 
     while (getline(file, line)) {
-	lines.push_back(line);
+        lines.push_back(line);
     }
 
     return lines;
 }
 
 
-bool string_starts_with(const std::string &large, const std::string &small) {
+bool string_starts_with(const std::string& large, const std::string& small) {
     return large.rfind(small, 0) != std::string::npos;
 }
 
 
-std::string pad_string(const std::string &string, size_t width, char c) {
+std::string pad_string(const std::string& string, size_t width, char c) {
     size_t length = string.length();
 
     if (length >= width) {
-	return string;
+        return string;
     }
     return string + std::string(width - length, c);
 }
 
-std::string pad_string_left(const std::string &string, size_t width, char c) {
+std::string pad_string_left(const std::string& string, size_t width, char c) {
     size_t length = string.length();
 
     if (length >= width) {
-	return string;
+        return string;
     }
     return std::string(width - length, c) + string;
 }
 
 void write_lines(const std::string& file_name, const std::vector<std::string>& lines) {
     FILEPtr f = make_shared_file(file_name, "w");
-    for (const auto& line: lines) {
+    for (const auto& line : lines) {
         fprintf(f.get(), "%s\n", line.c_str());
     }
 }
 
-void diff_lines(const std::vector<std::string>& old_lines, const std::vector<std::string>& new_lines, size_t& added, size_t& removed) {
+void diff_lines(const std::vector<std::string>& old_lines, const std::vector<std::string>& new_lines, size_t& added,
+                size_t& removed) {
     auto old_it = old_lines.begin();
     auto new_it = new_lines.begin();
     added = 0;

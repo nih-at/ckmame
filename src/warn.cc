@@ -38,19 +38,19 @@
 #include <cinttypes>
 
 
-void
-warn_archive_file(filetype_t ft, const File *r, const std::string &reason) {
+void warn_archive_file(filetype_t ft, const File* r, const std::string& reason) {
     switch (ft) {
-        case TYPE_ROM:
-	    output.message("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": %s", r->filename().c_str(), r->hashes.size, r->hashes.crc, reason.c_str());
-            break;
-            
-        case TYPE_DISK:
-	    output.message("image %-12s: %s", r->filename().c_str(), reason.c_str());
-            break;
-            
-        default:
-            break;
+    case TYPE_ROM:
+        output.message("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": %s", r->filename().c_str(), r->hashes.size,
+                       r->hashes.crc, reason.c_str());
+        break;
+
+    case TYPE_DISK:
+        output.message("image %-12s: %s", r->filename().c_str(), reason.c_str());
+        break;
+
+    default:
+        break;
     }
 }
 
@@ -60,13 +60,13 @@ void warn_game(filetype_t ft, const Game* game, const std::string& reason) {
 }
 
 
-void warn_game_file(filetype_t ft, const Rom *r, const std::string &reason) {
+void warn_game_file(filetype_t ft, const Rom* r, const std::string& reason) {
     std::string message;
     switch (ft) {
     case TYPE_ROM:
-	message += "rom  " + pad_string(r->name, 12) + "  ";
-	if (r->is_size_known()) {
-	    message += "size " + pad_string_left(std::to_string(r->hashes.size), 7);
+        message += "rom  " + pad_string(r->name, 12) + "  ";
+        if (r->is_size_known()) {
+            message += "size " + pad_string_left(std::to_string(r->hashes.size), 7);
 
             switch (r->status) {
             case Rom::OK:
@@ -80,47 +80,44 @@ void warn_game_file(filetype_t ft, const Rom *r, const std::string &reason) {
             case Rom::NO_DUMP:
                 message += "  no good dump";
             }
-	}
-	break;
+        }
+        break;
 
     case TYPE_DISK: {
-	message += "disk " + pad_string(r->name, 12) + "  ";
+        message += "disk " + pad_string(r->name, 12) + "  ";
 
-	auto &h = r->hashes;
-	if (h.has_type(Hashes::TYPE_SHA1)) {
-	    message += "sha1 " + h.to_string(Hashes::TYPE_SHA1);
-	}
-	else if (h.has_type(Hashes::TYPE_MD5)) {
-	    message += "md5 " + h.to_string(Hashes::TYPE_MD5);
-	}
-	else {
-	    message += "no good dump";
-	}
-	break;
+        auto& h = r->hashes;
+        if (h.has_type(Hashes::TYPE_SHA1)) {
+            message += "sha1 " + h.to_string(Hashes::TYPE_SHA1);
+        }
+        else if (h.has_type(Hashes::TYPE_MD5)) {
+            message += "md5 " + h.to_string(Hashes::TYPE_MD5);
+        }
+        else {
+            message += "no good dump";
+        }
+        break;
     }
 
     default:
-	break;
+        break;
     }
 
     output.message("%s: %s", pad_string(message, 45).c_str(), reason.c_str());
 }
 
 
-void
-warn_set_info(warn_type_t type, const std::string &name) {
+void warn_set_info(warn_type_t type, const std::string& name) {
     /* keep in sync with warn_type_t in warn.h */
     static std::string tname[] = {"archive", "game", "image"};
 
     auto message = "In " + tname[type] + " " + name;
 
     if (type == WARN_TYPE_ARCHIVE && name[name.length() - 1] == '/') {
-	message.pop_back();
+        message.pop_back();
     }
     output.set_subheader(message);
 }
 
 
-void warn_unset_info() {
-    output.set_subheader("");
-}
+void warn_unset_info() { output.set_subheader(""); }

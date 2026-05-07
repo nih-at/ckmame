@@ -40,12 +40,13 @@
 #include "types.h"
 
 class FileLocation {
- public:
-    FileLocation(): filetype(TYPE_ROM), index(0) { }
-    FileLocation(std::string name_, filetype_t filetype_, size_t index_) : name(name_), filetype(filetype_), index(index_) { }
+  public:
+    FileLocation() : filetype(TYPE_ROM), index(0) {}
+    FileLocation(std::string name_, filetype_t filetype_, size_t index_)
+        : name(name_), filetype(filetype_), index(index_) {}
 
-    bool operator<(const FileLocation &other) const;
-    
+    bool operator<(const FileLocation& other) const;
+
     std::string name;
     filetype_t filetype;
     size_t index;

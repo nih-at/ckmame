@@ -45,17 +45,23 @@
 
 #define HEADER_LEN_V5 124
 
-#define GET_UINT32(b) (b += 4, (static_cast<uint32_t>((b)[-4]) << 24) | (static_cast<uint32_t>((b)[-3]) << 16) | (static_cast<uint32_t>((b)[-2]) << 8) | static_cast<uint32_t>((b)[-1]))
-#define GET_UINT64(b) (b += 8, (static_cast<uint64_t>((b)[-8]) << 56) | (static_cast<uint64_t>((b)[-7]) << 48) | (static_cast<uint64_t>((b)[-6]) << 40) | (static_cast<uint64_t>((b)[-5]) << 32) | (static_cast<uint64_t>((b)[-4]) << 24) | (static_cast<uint64_t>((b)[-3]) << 16) | (static_cast<uint64_t>((b)[-2]) << 8) | (static_cast<uint64_t>((b)[-1])))
+#define GET_UINT32(b)                                                                          \
+    (b += 4, (static_cast<uint32_t>((b)[-4]) << 24) | (static_cast<uint32_t>((b)[-3]) << 16) | \
+                 (static_cast<uint32_t>((b)[-2]) << 8) | static_cast<uint32_t>((b)[-1]))
+#define GET_UINT64(b)                                                                              \
+    (b += 8, (static_cast<uint64_t>((b)[-8]) << 56) | (static_cast<uint64_t>((b)[-7]) << 48) |     \
+                 (static_cast<uint64_t>((b)[-6]) << 40) | (static_cast<uint64_t>((b)[-5]) << 32) | \
+                 (static_cast<uint64_t>((b)[-4]) << 24) | (static_cast<uint64_t>((b)[-3]) << 16) | \
+                 (static_cast<uint64_t>((b)[-2]) << 8) | (static_cast<uint64_t>((b)[-1])))
 
 
-Chd::Chd(const std::string &name) {
+Chd::Chd(const std::string& name) {
     unsigned char b[MAX_HEADERLEN];
 
     auto fp = make_shared_file(name, "rb");
 
     if (!fp) {
-	throw Exception("can't open file " + name).append_system_error();
+        throw Exception("can't open file " + name).append_system_error();
     }
 
     if (fread(b, TAG_AND_LEN, 1, fp.get()) != 1) {
@@ -83,7 +89,7 @@ Chd::Chd(const std::string &name) {
 
     if (version >= 5) {
         read_header_v5(b, len);
-	return;
+        return;
     }
 
     /* skip flags */
@@ -100,7 +106,7 @@ Chd::Chd(const std::string &name) {
 
         hashes.set_md5(p);
         p += Hashes::SIZE_MD5;
-	/* skip parent hashes */
+        /* skip parent hashes */
         p += Hashes::SIZE_MD5;
 
         if (version == 1) {
@@ -112,11 +118,11 @@ Chd::Chd(const std::string &name) {
         total_len = static_cast<uint64_t>(hunk_len) * total_hunks;
     }
     else {
-	/* skip total number of hunks */
-	p += 4;
+        /* skip total number of hunks */
+        p += 4;
         total_len = GET_UINT64(p);
-	/* skip meta offset */
-	p += 8;
+        /* skip meta offset */
+        p += 8;
 
         if (version == 3) {
             hashes.set_md5(p);
@@ -125,34 +131,34 @@ Chd::Chd(const std::string &name) {
             p += Hashes::SIZE_MD5;
         }
 
-	/* skip hunk length */
-	p += 4;
+        /* skip hunk length */
+        p += 4;
 
         hashes.set_sha1(p);
         p += Hashes::SIZE_SHA1;
-	/* skip parent hashes */
+        /* skip parent hashes */
         p += Hashes::SIZE_SHA1;
     }
 }
 
 
-void Chd::read_header_v5(const uint8_t *header, uint32_t header_len) {
+void Chd::read_header_v5(const uint8_t* header, uint32_t header_len) {
     /*
     V5 header:
 
     [  0] char   tag[8];        // 'MComprHD'
     [  8] UINT32 length;        // length of header (including tag and
-				// length fields)
+                                // length fields)
     [ 12] UINT32 version;       // drive format version
     [ 16] UINT32 compressors[4];// which custom compressors are used?
     [ 32] UINT64 logicalbytes;  // logical size of the data (in bytes)
     [ 40] UINT64 mapoffset;     // offset to the map
     [ 48] UINT64 metaoffset;    // offset to the first blob of
-				// metadata
+                                // metadata
     [ 56] UINT32 hunkbytes;     // number of bytes per hunk (512k
-				// maximum)
+                                // maximum)
     [ 60] UINT32 unitbytes;     // number of bytes per unit within
-				// each hunk
+                                // each hunk
     [ 64] UINT8  rawsha1[20];   // raw data SHA1
     [ 84] UINT8  sha1[20];      // combined raw+meta SHA1
     [104] UINT8  parentsha1[20];// combined raw+meta SHA1 of parent
@@ -166,8 +172,8 @@ void Chd::read_header_v5(const uint8_t *header, uint32_t header_len) {
     }
 
     for (int i = 0; i < 4; i++) {
-	/* skip compressors */
-	p += 4;
+        /* skip compressors */
+        p += 4;
     }
 
     total_len = GET_UINT64(p);

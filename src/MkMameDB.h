@@ -47,8 +47,8 @@ class MkMameDB : public Command {
     bool global_cleanup() override;
 
   private:
-    bool process_file(const std::string &fname, OutputContext *out);
-    bool process_stdin(OutputContext *out);
+    bool process_file(const std::string& fname, OutputContext* out);
+    bool process_stdin(OutputContext* out);
 
     Parser::Options parser_options{{}};
     std::string dbname, dbname_real;

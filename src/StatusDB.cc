@@ -63,8 +63,7 @@ std::unordered_map<int, std::string> StatusDB::queries = {
     {DELETE_RUN, "delete from run where run_id = :run_id"},
     {DELETE_RUN_BOTH, "delete from run where date < :date and run_id not in (select run_id from run order by date "
                       "desc limit :count)"},
-    {DELETE_RUN_COUNT,
-     "delete from run where run_id not in (select run_id from run order by date desc limit :count)"},
+    {DELETE_RUN_COUNT, "delete from run where run_id not in (select run_id from run order by date desc limit :count)"},
     {DELETE_RUN_DATE, "delete from run where date < :date"},
     {FIND_DAT, "select dat_id from dat where name = :name and version = :version"},
     {INSERT_DAT, "insert into dat (name, version) values (:name, :version)"},
@@ -75,11 +74,16 @@ std::unordered_map<int, std::string> StatusDB::queries = {
     {LIST_RUNS, "select run_id, date from run order by date asc"},
     {QUERY_GAME, "select dat_id, name, checksum, status from game where run_id = :run_id"},
     {QUERY_GAME_BY_STATUS1, "select name from game where run_id = :run_id and status = :status order by name"},
-    {QUERY_GAME_BY_STATUS2, "select name from game where run_id = :run_id and status in (:status1, :status2) order by name"},
-    {QUERY_GAME_BY_STATUS3, "select name from game where run_id = :run_id and status in (:status1, :status2, :status3) order by name"},
-    {QUERY_GAME_BY_STATUS4, "select name from game where run_id = :run_id and status in (:status1, :status2, :status3, :status4) order by name"},
-    {QUERY_GAME_BY_STATUS5, "select name from game where run_id = :run_id and status in (:status1, :status2, :status3, :status4, :status5) order by name"},
-    {QUERY_GAME_BY_STATUS6, "select name from game where run_id = :run_id and status in (:status1, :status2, :status3, :status4, :status5, :status6) order by name"},
+    {QUERY_GAME_BY_STATUS2,
+     "select name from game where run_id = :run_id and status in (:status1, :status2) order by name"},
+    {QUERY_GAME_BY_STATUS3,
+     "select name from game where run_id = :run_id and status in (:status1, :status2, :status3) order by name"},
+    {QUERY_GAME_BY_STATUS4, "select name from game where run_id = :run_id and status in (:status1, :status2, :status3, "
+                            ":status4) order by name"},
+    {QUERY_GAME_BY_STATUS5, "select name from game where run_id = :run_id and status in (:status1, :status2, :status3, "
+                            ":status4, :status5) order by name"},
+    {QUERY_GAME_BY_STATUS6, "select name from game where run_id = :run_id and status in (:status1, :status2, :status3, "
+                            ":status4, :status5, :status6) order by name"},
     {QUERY_GAME_STATUS, "select name, status from game where run_id = :run order by name"},
     {QUERY_RUN_STATUS_COUNTS,
      "select status, count(*) as status_count from game where run_id = :run_id group by status"},

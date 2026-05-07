@@ -1,5 +1,5 @@
 /*
-StatDBRun.cc -- 
+StatDBRun.cc --
 
 Copyright (C) Dieter Baron
 
@@ -31,7 +31,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "StatusDBRun.h"
 
-StatusDBRun::StatusDBRun(std::shared_ptr<StatusDB> db_, RomDB *romdb): db(std::move(db_)), romdb(romdb) {
+StatusDBRun::StatusDBRun(std::shared_ptr<StatusDB> db_, RomDB* romdb) : db(std::move(db_)), romdb(romdb) {
     run_id = db->insert_run(time(nullptr));
     dats = romdb->read_dat();
 }

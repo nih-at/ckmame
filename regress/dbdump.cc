@@ -39,20 +39,19 @@
 #include <sqlite3.h>
 
 #include "Exception.h"
-#include "util.h"
 #include "globals.h"
+#include "util.h"
 
 
-const char *usage = "usage: %s [--ignore table.column] db-file\n";
+const char* usage = "usage: %s [--ignore table.column] db-file\n";
 
-static void dump_db(sqlite3 *);
-static void dump_table(sqlite3 *, const std::string &table_name);
+static void dump_db(sqlite3*);
+static void dump_table(sqlite3*, const std::string& table_name);
 
 std::unordered_map<std::string, std::unordered_set<std::string>> ignored;
 
-int
-main(int argc, char *argv[]) {
-    char *fname;
+int main(int argc, char* argv[]) {
+    char* fname;
 
     ProgramName::set(argv[0]);
 
@@ -62,18 +61,18 @@ main(int argc, char *argv[]) {
         auto ignore_spec = argv[index + 1];
         auto sep = strchr(ignore_spec, '.');
         if (sep == nullptr) {
-	    fprintf(stderr, usage, ProgramName::get().c_str());
+            fprintf(stderr, usage, ProgramName::get().c_str());
             exit(1);
         }
         auto table_name = std::string(ignore_spec, sep - ignore_spec);
         auto column_name = std::string(sep + 1);
         ignored[table_name].insert(column_name);
-        index +=2;
+        index += 2;
     }
 
     if (index != argc - 1) {
-	fprintf(stderr, usage, ProgramName::get().c_str());
-	exit(1);
+        fprintf(stderr, usage, ProgramName::get().c_str());
+        exit(1);
     }
 
     fname = argv[index];
@@ -81,16 +80,16 @@ main(int argc, char *argv[]) {
     output.set_error_file(fname);
 
     if (!std::filesystem::exists(fname)) {
-	output.error_system("database '%s' not found", fname);
-	exit(1);
+        output.error_system("database '%s' not found", fname);
+        exit(1);
     }
 
-    sqlite3 *db;
+    sqlite3* db;
     if (sqlite3_open(fname, &db) != SQLITE_OK) {
-	/* seterrdb(db); */
-	output.error_database("can't open database '%s'", fname);
-	sqlite3_close(db);
-	exit(1);
+        /* seterrdb(db); */
+        output.error_database("can't open database '%s'", fname);
+        sqlite3_close(db);
+        exit(1);
     }
 
     /* seterrdb(db); */
@@ -98,7 +97,7 @@ main(int argc, char *argv[]) {
     try {
         dump_db(db);
     }
-    catch (std::exception &exception) {
+    catch (std::exception& exception) {
         output.error_database("can't dump database '%s': %s", fname, exception.what());
         exit(1);
     }
@@ -109,8 +108,9 @@ main(int argc, char *argv[]) {
 }
 
 
-static void dump_db(sqlite3 *db) {
-    auto stmt = DBStatement(db, "select name from sqlite_master where type='table' and name not like 'sqlite_%' order by name");
+static void dump_db(sqlite3* db) {
+    auto stmt =
+        DBStatement(db, "select name from sqlite_master where type='table' and name not like 'sqlite_%' order by name");
 
     while (stmt.step()) {
         dump_table(db, stmt.get_string("name"));
@@ -118,7 +118,7 @@ static void dump_db(sqlite3 *db) {
 }
 
 
-static void dump_table(sqlite3 *db, const std::string &table_name) {
+static void dump_table(sqlite3* db, const std::string& table_name) {
     int i, ret;
 
     std::unordered_set<int> ignored_columns;
@@ -149,39 +149,39 @@ static void dump_table(sqlite3 *db, const std::string &table_name) {
     printf(")\n");
 
     query += " order by " + order_by;
-    sqlite3_stmt *stmt;
+    sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
         throw Exception("can't select rows for table '" + table_name + "': " + sqlite3_errmsg(db));
     }
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	for (i = 0; i < sqlite3_column_count(stmt); i++) {
-	    if (i > 0)
-		printf("|");
+        for (i = 0; i < sqlite3_column_count(stmt); i++) {
+            if (i > 0)
+                printf("|");
 
-	    if (ignored_columns.contains(i)) {
-	        printf("<ignore>");
-	    }
-	    else {
-	        switch (sqlite3_column_type(stmt, i)) {
-                    case SQLITE_INTEGER:
-                    case SQLITE_FLOAT:
-                    case SQLITE_TEXT:
-                        printf("%s", sqlite3_column_text(stmt, i));
-                        break;
-                    case SQLITE_NULL:
-                        printf("<null>");
-                        break;
-                    case SQLITE_BLOB: {
-                        auto ptr = static_cast<const uint8_t *>(sqlite3_column_blob(stmt, i));
-                        auto bin = std::vector<uint8_t>(ptr, ptr + static_cast<size_t>(sqlite3_column_bytes(stmt, i)));
-                        printf("<%s>", bin2hex(bin).c_str());
-                        break;
-                    }
-	        }
-	    }
-	}
-	printf("\n");
+            if (ignored_columns.contains(i)) {
+                printf("<ignore>");
+            }
+            else {
+                switch (sqlite3_column_type(stmt, i)) {
+                case SQLITE_INTEGER:
+                case SQLITE_FLOAT:
+                case SQLITE_TEXT:
+                    printf("%s", sqlite3_column_text(stmt, i));
+                    break;
+                case SQLITE_NULL:
+                    printf("<null>");
+                    break;
+                case SQLITE_BLOB: {
+                    auto ptr = static_cast<const uint8_t*>(sqlite3_column_blob(stmt, i));
+                    auto bin = std::vector<uint8_t>(ptr, ptr + static_cast<size_t>(sqlite3_column_bytes(stmt, i)));
+                    printf("<%s>", bin2hex(bin).c_str());
+                    break;
+                }
+                }
+            }
+        }
+        printf("\n");
     }
 
     sqlite3_finalize(stmt);

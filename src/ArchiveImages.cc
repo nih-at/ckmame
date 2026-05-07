@@ -33,8 +33,8 @@
 
 #include "ArchiveImages.h"
 
-#include <filesystem>
 #include <cstring>
+#include <filesystem>
 #include <sys/stat.h>
 
 #include "Chd.h"
@@ -44,7 +44,8 @@
 #include "globals.h"
 #include "util.h"
 
-ArchiveImages::ArchiveImages(const std::string &name, filetype_t filetype, where_t where, int flags) : ArchiveDir(name, filetype, where, flags) {
+ArchiveImages::ArchiveImages(const std::string& name, filetype_t filetype, where_t where, int flags)
+    : ArchiveDir(name, filetype, where, flags) {
     contents->archive_type = ARCHIVE_IMAGES;
     contents->filename_extension = ".chd";
 }
@@ -66,12 +67,13 @@ bool ArchiveImages::read_infos_xxx() {
 
         for (const auto& entry : dir) {
             Progress::update();
-            if (name == entry.path() || name_type(entry) == NAME_IGNORE || entry.path().extension() != ".chd" || !entry.is_regular_file()) {
+            if (name == entry.path() || name_type(entry) == NAME_IGNORE || entry.path().extension() != ".chd" ||
+                !entry.is_regular_file()) {
                 continue;
             }
 
             files.emplace_back();
-            auto &f = files[files.size() - 1];
+            auto& f = files[files.size() - 1];
             auto filename = entry.path().string();
             auto start = name.length() + 1;
             f.name = filename.substr(start, filename.length() - start - 4);
@@ -94,7 +96,7 @@ bool ArchiveImages::read_infos_xxx() {
                 f.hashes.size = chd.size();
                 f.hashes.set_hashes(chd.hashes);
             }
-            catch (Exception &e) {
+            catch (Exception& e) {
                 output.error("%s: can't open: %s", filename.c_str(), e.what());
                 f.broken = true;
             }

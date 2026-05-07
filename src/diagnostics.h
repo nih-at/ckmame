@@ -38,7 +38,8 @@
 #include "GameArchives.h"
 #include "Result.h"
 
-void diagnostics(const Game *game, const GameArchives &archives, const Result &res);
-void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, bool warn_needed = true, bool warn_unknown = true);
+void diagnostics(const Game* game, const GameArchives& archives, const Result& res);
+void diagnostics_archive(filetype_t ft, const Archive* a, const Result& result, bool warn_needed = true,
+                         bool warn_unknown = true);
 
 #endif /* _HAD_DIAGNOSTICS_H */

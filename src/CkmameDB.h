@@ -51,16 +51,17 @@ class CkmameDB;
 typedef std::shared_ptr<CkmameDB> CkmameDBPtr;
 
 class CkmameDB : public DB {
-public:
-  class FindResult {
-    public:
-      FindResult(std::string name, size_t index, size_t detector_id, where_t where): name(std::move(name)), index(index), detector_id(detector_id), where(where) {}
+  public:
+    class FindResult {
+      public:
+        FindResult(std::string name, size_t index, size_t detector_id, where_t where)
+            : name(std::move(name)), index(index), detector_id(detector_id), where(where) {}
 
-      std::string name;
-      size_t index;
-      size_t detector_id;
-      where_t where;
-  };
+        std::string name;
+        size_t index;
+        size_t detector_id;
+        where_t where;
+    };
 
     enum Statement {
         DELETE_ARCHIVE,
@@ -77,9 +78,7 @@ public:
         QUERY_HAS_ARCHIVES,
         UPDATE_FILE_HASHES
     };
-    enum ParameterizedStatement {
-        QUERY_FIND_FILE
-    };
+    enum ParameterizedStatement { QUERY_FIND_FILE };
 
     explicit CkmameDB(const std::string& directory, where_t where);
     CkmameDB(const std::string& dbname, std::string directory, where_t where); // used in dbrestore
@@ -88,41 +87,43 @@ public:
     static const DBFormat format;
     static const std::string db_name;
 
-    void delete_archive(const std::string &name, filetype_t filetype);
+    void delete_archive(const std::string& name, filetype_t filetype);
     void delete_archive(int id);
-    int get_archive_id(const std::string &name, filetype_t filetype);
-    void get_last_change(int id, time_t *mtime, off_t *size);
+    int get_archive_id(const std::string& name, filetype_t filetype);
+    void get_last_change(int id, time_t* mtime, off_t* size);
     bool is_empty();
     std::vector<ArchiveLocation> list_archives();
-    int read_files(int archive_id, std::vector<File> *files);
-    void write_archive(ArchiveContents *archive);
+    int read_files(int archive_id, std::vector<File>* files);
+    void write_archive(ArchiveContents* archive);
     void update_file_hashes(int archive_id, size_t file_id, const Hashes& hashes);
     void insert_file_detector_hashes(int archive_id, size_t file_id, size_t detector_id, const Hashes& hashes);
 
-    void find_file(filetype_t filetype, size_t detector_id, const FileData& file, std::vector<FindResult> &results);
+    void find_file(filetype_t filetype, size_t detector_id, const FileData& file, std::vector<FindResult>& results);
     bool compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr>& detectors);
     void refresh();
-    
+
     void seterr();
-    
-protected:
+
+  protected:
     [[nodiscard]] std::string get_query(int name, bool parameterized) const override;
-    
-private:
+
+  private:
     static std::unordered_map<Statement, std::string> queries;
     static std::unordered_map<ParameterizedStatement, std::string> parameterized_queries;
 
     std::string directory;
     where_t where;
     DetectorCollection detector_ids;
-    
-    DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
-    DBStatement *get_statement(ParameterizedStatement name, const Hashes &hashes, bool have_size) { return get_statement_internal(name, hashes, have_size); }
 
-    std::string name_in_db(const std::string &name);
+    DBStatement* get_statement(Statement name) { return get_statement_internal(name); }
+    DBStatement* get_statement(ParameterizedStatement name, const Hashes& hashes, bool have_size) {
+        return get_statement_internal(name, hashes, have_size);
+    }
+
+    std::string name_in_db(const std::string& name);
     void delete_files(int id);
-    int write_archive_header(int id, const std::string &name, filetype_t filetype, time_t mtime, uint64_t size);
-    
+    int write_archive_header(int id, const std::string& name, filetype_t filetype, time_t mtime, uint64_t size);
+
     size_t get_detector_id(size_t global_id);
     size_t get_global_detector_id(size_t id);
 

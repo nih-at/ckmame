@@ -36,39 +36,39 @@
 #include <algorithm>
 
 #include "Archive.h"
+#include "CkmameCache.h"
 #include "CkmameDB.h"
 #include "DeleteList.h"
 #include "Dir.h"
 #include "globals.h"
 #include "util.h"
-#include "CkmameCache.h"
 
 
-std::string findfile(filetype_t filetype, const std::string &name) {
+std::string findfile(filetype_t filetype, const std::string& name) {
     if (filetype == TYPE_FULL_PATH) {
-	if (std::filesystem::exists(name)) {
-	    return name;
-	}
-	else {
-	    return "";
-	}
+        if (std::filesystem::exists(name)) {
+            return name;
+        }
+        else {
+            return "";
+        }
     }
 
     auto fn = make_file_name(filetype, name);
     if (std::filesystem::exists(fn)) {
-	return fn;
+        return fn;
     }
 
     return "";
 }
 
 
-std::string make_file_name(filetype_t filetype, const std::string &name) {
+std::string make_file_name(filetype_t filetype, const std::string& name) {
     std::string result;
 
     result = configuration.rom_directory + "/" + name;
     if (filetype == TYPE_ROM && configuration.roms_zipped) {
-	result += ".zip";
+        result += ".zip";
     }
 
     return result;

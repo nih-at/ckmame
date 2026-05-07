@@ -39,20 +39,21 @@
 #include <zip.h>
 
 class ParserSourceZip : public ParserSource {
-public:
-    ParserSourceZip(const std::string &archive_name, struct zip *za, const std::string &file_name, bool relaxed = false);
+  public:
+    ParserSourceZip(const std::string& archive_name, struct zip* za, const std::string& file_name,
+                    bool relaxed = false);
     ~ParserSourceZip() override;
-    
+
     bool close() override;
-    ParserSourcePtr open(const std::string &name) override;
-    size_t read_xxx(void *data, size_t length) override;
-    time_t get_mtime() override {return mtime;}
-    uint32_t get_crc() override {return crc;}
+    ParserSourcePtr open(const std::string& name) override;
+    size_t read_xxx(void* data, size_t length) override;
+    time_t get_mtime() override { return mtime; }
+    uint32_t get_crc() override { return crc; }
 
   private:
     std::string archive_name;
-    struct zip *za;
-    struct zip_file *zf;
+    struct zip* za;
+    struct zip_file* zf;
     time_t mtime;
     uint32_t crc;
 };

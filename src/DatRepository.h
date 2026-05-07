@@ -41,18 +41,18 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class DatRepository {
   public:
-    explicit DatRepository(const std::vector<std::string> &directories);
+    explicit DatRepository(const std::vector<std::string>& directories);
     ~DatRepository();
 
     static bool is_newer(const std::string& a, const std::string& b);
 
-    std::vector<DatDB::DatInfo> find_dats(const std::string &name);
+    std::vector<DatDB::DatInfo> find_dats(const std::string& name);
     std::vector<std::string> list_dats();
 
   private:
     std::unordered_map<std::string, DatDBPtr> dbs;
 
-    static void update_directory(const std::string &directory, const DatDBPtr& db);
+    static void update_directory(const std::string& directory, const DatDBPtr& db);
 };
 
 

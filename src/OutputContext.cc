@@ -43,45 +43,47 @@
 #include "OutputContextXml.h"
 
 
-OutputContextPtr OutputContext::create(OutputContext::Format format, const std::string &fname, int flags) {
+OutputContextPtr OutputContext::create(OutputContext::Format format, const std::string& fname, int flags) {
     switch (format) {
-        case FORMAT_CM:
-            return std::make_shared<OutputContextCm>(fname, flags);
-            
-        case FORMAT_DB:
-            return std::make_shared<OutputContextDb>(fname, flags);
-            
+    case FORMAT_CM:
+        return std::make_shared<OutputContextCm>(fname, flags);
+
+    case FORMAT_DB:
+        return std::make_shared<OutputContextDb>(fname, flags);
+
 #if defined(HAVE_LIBXML2)
-        case FORMAT_DATAFILE_XML:
-            return std::make_shared<OutputContextXml>(fname, flags);
+    case FORMAT_DATAFILE_XML:
+        return std::make_shared<OutputContextXml>(fname, flags);
 #endif
-            
-        case FORMAT_MTREE:
-            return std::make_shared<OutputContextMtree>(fname, flags);
-            
-        default:
-            return nullptr;
+
+    case FORMAT_MTREE:
+        return std::make_shared<OutputContextMtree>(fname, flags);
+
+    default:
+        return nullptr;
     }
 }
 
 
-void OutputContext::cond_print_string(FILEPtr f, const std::string &pre, const std::string &str, const std::string &post) {
+void OutputContext::cond_print_string(FILEPtr f, const std::string& pre, const std::string& str,
+                                      const std::string& post) {
     if (str.empty()) {
-	return;
+        return;
     }
 
     std::string out;
     if (str.find_first_of(" \t") == std::string::npos) {
-	out = pre + str + post;
+        out = pre + str + post;
     }
     else {
-	out = pre + "\"" + str + "\"" + post;
+        out = pre + "\"" + str + "\"" + post;
     }
 
     fprintf(f.get(), "%s", out.c_str());
 }
 
 
-void OutputContext::cond_print_hash(FILEPtr f, const std::string &pre, int t, const Hashes *h, const std::string &post) {
+void OutputContext::cond_print_hash(FILEPtr f, const std::string& pre, int t, const Hashes* h,
+                                    const std::string& post) {
     cond_print_string(f, pre, h->to_string(t), post);
 }

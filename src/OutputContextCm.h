@@ -37,20 +37,20 @@
 #include "OutputContext.h"
 
 class OutputContextCm : public OutputContext {
-public:
-    OutputContextCm(const std::string &fname, int flags);
+  public:
+    OutputContextCm(const std::string& fname, int flags);
     ~OutputContextCm() override;
-    
+
     bool close() override;
-    bool game(GamePtr game, const std::string &original_name) override;
-    bool header(DatEntry *dat) override;
-    
-private:
+    bool game(GamePtr game, const std::string& original_name) override;
+    bool header(DatEntry* dat) override;
+
+  private:
     FILEPtr f;
     std::string fname;
     std::vector<GamePtr> games;
-    
-    bool write_game(Game *game);
+
+    bool write_game(Game* game);
 };
 
 #endif // HAD_OUTPUT_CM_H

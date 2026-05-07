@@ -39,16 +39,16 @@
 #include "SharedFile.h"
 
 class ParserSourceFile : public ParserSource {
-public:
-    explicit ParserSourceFile(const std::string &fname);
+  public:
+    explicit ParserSourceFile(const std::string& fname);
     ~ParserSourceFile() override;
     bool close() override;
-    ParserSourcePtr open(const std::string &name) override;
-    size_t read_xxx(void *data, size_t length) override;
+    ParserSourcePtr open(const std::string& name) override;
+    size_t read_xxx(void* data, size_t length) override;
     time_t get_mtime() override;
     uint32_t get_crc() override;
-    
-private:
+
+  private:
     std::string file_name;
     FILEPtr f;
 };

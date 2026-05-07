@@ -43,104 +43,105 @@
 #include "StatusDB.h"
 #include "util.h"
 
-bool Configuration::read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional) {
+bool Configuration::read_config_file(std::vector<toml::table>& config_tables, const std::string& file_name,
+                                     bool optional) {
     auto ok = true;
 
     if (!std::filesystem::exists(file_name)) {
-	if (optional) {
-	    return true;
-	}
-	else {
-	    throw Exception("config file '%s' does not exist", file_name.c_str());
-	}
+        if (optional) {
+            return true;
+        }
+        else {
+            throw Exception("config file '%s' does not exist", file_name.c_str());
+        }
     }
 
     try {
-	auto string = slurp(file_name);
-	auto table = toml::parse(string);
-	ok = validate_file(table, file_name);
-	config_tables.push_back(table);
+        auto string = slurp(file_name);
+        auto table = toml::parse(string);
+        ok = validate_file(table, file_name);
+        config_tables.push_back(table);
     }
-    catch (const std::exception &ex) {
-	throw Exception("can't parse '%s': %s", file_name.c_str(), ex.what());
+    catch (const std::exception& ex) {
+        throw Exception("can't parse '%s': %s", file_name.c_str(), ex.what());
     }
 
     return ok;
 }
 
-TomlSchema::TypePtr Configuration::dat_directories_schema = TomlSchema::alternatives({
-	TomlSchema::array(TomlSchema::string()),
-	TomlSchema::table({}, TomlSchema::table({
-            { "use-central-cache-directory", TomlSchema::boolean() } }, {}))
-    }, "array or table");
+TomlSchema::TypePtr Configuration::dat_directories_schema = TomlSchema::alternatives(
+    {TomlSchema::array(TomlSchema::string()),
+     TomlSchema::table({}, TomlSchema::table({{"use-central-cache-directory", TomlSchema::boolean()}}, {}))},
+    "array or table");
 
-TomlSchema::TypePtr Configuration::dats_schema = TomlSchema::alternatives({
-	TomlSchema::array(TomlSchema::string()),
-	TomlSchema::table({}, TomlSchema::table({
-	    { "allow-empty-dat", TomlSchema::boolean()},
-	    { "game-name-suffix", TomlSchema::string() },
-	    { "use-description-as-name", TomlSchema::boolean() } }, {}))
-    }, "array or table");
+TomlSchema::TypePtr Configuration::dats_schema = TomlSchema::alternatives(
+    {TomlSchema::array(TomlSchema::string()),
+     TomlSchema::table({}, TomlSchema::table({{"allow-empty-dat", TomlSchema::boolean()},
+                                              {"game-name-suffix", TomlSchema::string()},
+                                              {"use-description-as-name", TomlSchema::boolean()}},
+                                             {}))},
+    "array or table");
 
-TomlSchema::TypePtr Configuration::extra_directories_schema = TomlSchema::alternatives({
-        TomlSchema::array(TomlSchema::string()),
-        TomlSchema::table({}, TomlSchema::table({
-            { "use-central-cache-directory", TomlSchema::boolean() },
-            { "move-from-extra", TomlSchema::boolean() } }, {}))
-        }, "array or table");
+TomlSchema::TypePtr Configuration::extra_directories_schema = TomlSchema::alternatives(
+    {TomlSchema::array(TomlSchema::string()),
+     TomlSchema::table({}, TomlSchema::table({{"use-central-cache-directory", TomlSchema::boolean()},
+                                              {"move-from-extra", TomlSchema::boolean()}},
+                                             {}))},
+    "array or table");
 
-TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table({
-      { "allow-empty-dat", TomlSchema::boolean()},
-    { "complete-games-only", TomlSchema::boolean() },
-    { "complete-list", TomlSchema::string() },
-    { "create-fixdat",  TomlSchema::boolean() },
-    { "dat-directories", dat_directories_schema },
-    { "dat-directories-append", dat_directories_schema },
-    { "dats", dats_schema },
-    { "delete-unknown-pattern", TomlSchema::string() },
-    { "extra-directories", extra_directories_schema},
-    { "extra-directories-append", extra_directories_schema},
-    { "fixdat-directory",  TomlSchema::string() },
-    { "keep-old-duplicate",  TomlSchema::boolean() },
-    { "mia-games", TomlSchema::string() },
-    { "missing-list", TomlSchema::string() },
-    { "move-from-extra",  TomlSchema::boolean() },
-    { "old-db", TomlSchema::string() },
-    { "profiles", TomlSchema::array(TomlSchema::string()) },
-    { "report-changes",  TomlSchema::boolean() },
-    { "report-correct",  TomlSchema::boolean() },
-    { "report-correct-mia",  TomlSchema::boolean() },
-    { "report-detailed",  TomlSchema::boolean() },
-    { "report-fixable",  TomlSchema::boolean() },
-    { "report-missing",  TomlSchema::boolean() },
-    { "report-missing-mia",  TomlSchema::boolean() },
-    { "report-no-good-dump",  TomlSchema::boolean() },
-    { "report-status",  TomlSchema::boolean() },
-    { "report-summary",  TomlSchema::boolean() },
-    { "rom-directory", TomlSchema::string() },
-    { "rom-db", TomlSchema::string() },
-    { "roms-zipped",  TomlSchema::boolean() },
-    { "saved-directory", TomlSchema::string() },
-    { "sets", TomlSchema::array(TomlSchema::string()) },
-    { "sets-file", TomlSchema::string() },
-    { "status-db", TomlSchema::string() },
-    { "status-db-keep-days", TomlSchema::alternatives({TomlSchema::integer(),TomlSchema::constant("all")}, "integer or 'all'") },
-    { "status-db-keep-runs", TomlSchema::alternatives({TomlSchema::integer(),TomlSchema::constant("all")}, "integer or 'all'") },
-    { "unknown-directory", TomlSchema::string() },
-    { "update-database",  TomlSchema::boolean() },
-    { "use-central-cache-directory", TomlSchema::boolean() },
-    { "use-description-as-name",  TomlSchema::boolean() },
-    { "use-temp-directory",  TomlSchema::boolean() },
-    { "use-torrentzip",  TomlSchema::boolean() },
-    { "verbose",  TomlSchema::boolean() },
-    { "warn-file-known",  TomlSchema::boolean() },
-    { "warn-file-unknown",  TomlSchema::boolean() }
-}, {});
+TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table(
+    {{"allow-empty-dat", TomlSchema::boolean()},
+     {"complete-games-only", TomlSchema::boolean()},
+     {"complete-list", TomlSchema::string()},
+     {"create-fixdat", TomlSchema::boolean()},
+     {"dat-directories", dat_directories_schema},
+     {"dat-directories-append", dat_directories_schema},
+     {"dats", dats_schema},
+     {"delete-unknown-pattern", TomlSchema::string()},
+     {"extra-directories", extra_directories_schema},
+     {"extra-directories-append", extra_directories_schema},
+     {"fixdat-directory", TomlSchema::string()},
+     {"keep-old-duplicate", TomlSchema::boolean()},
+     {"mia-games", TomlSchema::string()},
+     {"missing-list", TomlSchema::string()},
+     {"move-from-extra", TomlSchema::boolean()},
+     {"old-db", TomlSchema::string()},
+     {"profiles", TomlSchema::array(TomlSchema::string())},
+     {"report-changes", TomlSchema::boolean()},
+     {"report-correct", TomlSchema::boolean()},
+     {"report-correct-mia", TomlSchema::boolean()},
+     {"report-detailed", TomlSchema::boolean()},
+     {"report-fixable", TomlSchema::boolean()},
+     {"report-missing", TomlSchema::boolean()},
+     {"report-missing-mia", TomlSchema::boolean()},
+     {"report-no-good-dump", TomlSchema::boolean()},
+     {"report-status", TomlSchema::boolean()},
+     {"report-summary", TomlSchema::boolean()},
+     {"rom-directory", TomlSchema::string()},
+     {"rom-db", TomlSchema::string()},
+     {"roms-zipped", TomlSchema::boolean()},
+     {"saved-directory", TomlSchema::string()},
+     {"sets", TomlSchema::array(TomlSchema::string())},
+     {"sets-file", TomlSchema::string()},
+     {"status-db", TomlSchema::string()},
+     {"status-db-keep-days",
+      TomlSchema::alternatives({TomlSchema::integer(), TomlSchema::constant("all")}, "integer or 'all'")},
+     {"status-db-keep-runs",
+      TomlSchema::alternatives({TomlSchema::integer(), TomlSchema::constant("all")}, "integer or 'all'")},
+     {"unknown-directory", TomlSchema::string()},
+     {"update-database", TomlSchema::boolean()},
+     {"use-central-cache-directory", TomlSchema::boolean()},
+     {"use-description-as-name", TomlSchema::boolean()},
+     {"use-temp-directory", TomlSchema::boolean()},
+     {"use-torrentzip", TomlSchema::boolean()},
+     {"verbose", TomlSchema::boolean()},
+     {"warn-file-known", TomlSchema::boolean()},
+     {"warn-file-unknown", TomlSchema::boolean()}},
+    {});
 
 
-TomlSchema::TypePtr Configuration::file_schema = TomlSchema::table({
-    { "profile", TomlSchema::table({}, section_schema) }
-}, section_schema);
+TomlSchema::TypePtr Configuration::file_schema =
+    TomlSchema::table({{"profile", TomlSchema::table({}, section_schema)}}, section_schema);
 
 
 std::vector<Commandline::Option> Configuration::commandline_options = {
@@ -151,7 +152,10 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("copy-from-extra", "keep used files in extra directories (default)", 1),
     Commandline::Option("create-fixdat", "write fixdat to 'fix_$NAME_OF_SET.dat'", 1),
     Commandline::Option("delete-unknown-pattern", "pattern", "delete unknown files matching 'pattern'", 1),
-    Commandline::Option("extra-directory", 'e', "dir", "search for missing files in directory dir (multiple directories can be specified by repeating this option)", 1),
+    Commandline::Option(
+        "extra-directory", 'e', "dir",
+        "search for missing files in directory dir (multiple directories can be specified by repeating this option)",
+        1),
     Commandline::Option("fixdat-directory", "directory", "create fixdats in directory", 1),
     Commandline::Option("keep-old-duplicate", "keep files in ROM set that are also in old ROMs", 1),
     Commandline::Option("list-sets", "list all known sets"),
@@ -162,23 +166,31 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("no-create-fixdat", "don't create fixdat (default)", 1),
     Commandline::Option("no-report-changes", "don't report changes to correct and missing lists (default)", 1),
     Commandline::Option("no-report-correct", "don't report status of ROMs that are correct (default)", 1),
-    Commandline::Option("no-report-correct-mia", "don't report status of ROMs that are correct but marked as mia in ROM database (default)", 1),
+    Commandline::Option("no-report-correct-mia",
+                        "don't report status of ROMs that are correct but marked as mia in ROM database (default)", 1),
     Commandline::Option("no-report-detailed", "don't report status of every ROM (default)", 1),
     Commandline::Option("no-report-fixable", "don't report status of ROMs that can be fixed", 1),
-    Commandline::Option("no-report-missing", "don't report status of ROMs that are missing and not marked as mia in ROM database", 1),
-    Commandline::Option("no-report-missing-mia", "don't report status of ROMs that are missing and marked as mia in ROM database (default)", 1),
-    Commandline::Option("no-report-no-good-dump", "don't report status of ROMs for which no good dump exists (default)", 1),
+    Commandline::Option("no-report-missing",
+                        "don't report status of ROMs that are missing and not marked as mia in ROM database", 1),
+    Commandline::Option("no-report-missing-mia",
+                        "don't report status of ROMs that are missing and marked as mia in ROM database (default)", 1),
+    Commandline::Option("no-report-no-good-dump", "don't report status of ROMs for which no good dump exists (default)",
+                        1),
     Commandline::Option("no-report-summary", "don't print summary of ROM set status (default)", 1),
     Commandline::Option("no-update-database", "don't update ROM database (default)", 1),
     Commandline::Option("old-db", 'O', "dbfile", "use database dbfile for old ROMs", 1),
     Commandline::Option("report-changes", "report changes to correct and missing lists", 1),
-    Commandline::Option("report-correct", 'c', "report status of ROMs that are correct but marked as mia in ROM database" ,1),
+    Commandline::Option("report-correct", 'c',
+                        "report status of ROMs that are correct but marked as mia in ROM database", 1),
     Commandline::Option("report-correct-mia", "report status of ROMs that are correct", 1),
     Commandline::Option("report-detailed", "report status of every ROM", 1),
     Commandline::Option("report-fixable", "report status of ROMs that can be fixed (default)", 1),
-    Commandline::Option("report-missing", "report status of ROMs that are missing and not marked as mia in ROM database (default)", 1),
-    Commandline::Option("report-missing-mia", "report status of ROMs that are missing and marked as mia in ROM database", 1),
-    Commandline::Option("report-no-good-dump", "don't suppress reporting status of ROMs for which no good dump exists", 1),
+    Commandline::Option("report-missing",
+                        "report status of ROMs that are missing and not marked as mia in ROM database (default)", 1),
+    Commandline::Option("report-missing-mia",
+                        "report status of ROMs that are missing and marked as mia in ROM database", 1),
+    Commandline::Option("report-no-good-dump", "don't suppress reporting status of ROMs for which no good dump exists",
+                        1),
     Commandline::Option("report-summary", "print summary of ROM set status", 1),
     Commandline::Option("rom-db", 'D', "dbfile", "use ROM database dbfile", 1),
     Commandline::Option("rom-directory", 'R', "dir", "ROM set is in directory dir (default: 'roms')", 1),
@@ -187,8 +199,10 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("set", "pattern", "check ROM sets matching pattern"),
     Commandline::Option("no-status-db", "don't save status in dbfile", 1),
     Commandline::Option("status-db", "dbfile", "use status in dbfile (default: '.ckmame-status.db')", 1),
-    Commandline::Option("status-db-keep-days", "n", "remove runs older than n days from status db, 'all' for no time limit (default: 'all')", 1),
-    Commandline::Option("status-db-keep-runs", "n", "keep only n most recent runs in status db, 'all' for no run limit (default: 2)", 1),
+    Commandline::Option("status-db-keep-days", "n",
+                        "remove runs older than n days from status db, 'all' for no time limit (default: 'all')", 1),
+    Commandline::Option("status-db-keep-runs", "n",
+                        "keep only n most recent runs in status db, 'all' for no run limit (default: 2)", 1),
     Commandline::Option("unknown-directory", "directory", "save unknown files in directory (default: 'unknown')", 1),
     Commandline::Option("update-database", "update ROM database if dat files changed"),
     Commandline::Option("use-description-as-name", "use description as name of games in ROM database", 1),
@@ -196,36 +210,32 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("use-torrentzip", "use TORRENTZIP format for zip archives in ROM set", 1),
     Commandline::Option("verbose", 'v', "print fixes made", 1),
     Commandline::Option("warn-file-known", "report status of extra files that are known (default)", 1),
-    Commandline::Option("warn-file-unknown", "report status of extra files that are unknown (default)", 1)
-};
+    Commandline::Option("warn-file-unknown", "report status of extra files that are unknown (default)", 1)};
 
 
 std::unordered_map<std::string, std::string> Configuration::option_to_variable = {
     {"clear-extra-directories", "extra_directories"},
-    { "copy-from-extra", "move_from_extra" },
-    { "extra-directory", "extra_directories" },
-    { "no-complete-games-only", "complete_games_only" },
-    { "no-create-fixdat", "create_fixdat" },
-    { "no-report-changes", "report_changes" },
-    { "no-report-correct", "report_correct" },
-    { "no-report-correct-mia", "report_correct_mia" },
-    { "no-report-detailed", "report_detailed" },
-    { "no-report-fixable", "report_fixable" },
-    { "no-report-missing", "report_missing" },
-    { "no-report-missing-mia", "report_missing_mia" },
-    { "no-report-status", "report_status" },
-    { "no-report-summary", "report_summary" },
-    { "no-report-no-good-dump", "report_no_good_dump" },
-    { "no-update-database", "update_database" },
-    { "no-warn-file-known", "warn-file-known"},
-    { "no-warn-file-unknown", "warn-file-unknown"},
-    { "roms-unzipped", "roms_zipped" }
-};
+    {"copy-from-extra", "move_from_extra"},
+    {"extra-directory", "extra_directories"},
+    {"no-complete-games-only", "complete_games_only"},
+    {"no-create-fixdat", "create_fixdat"},
+    {"no-report-changes", "report_changes"},
+    {"no-report-correct", "report_correct"},
+    {"no-report-correct-mia", "report_correct_mia"},
+    {"no-report-detailed", "report_detailed"},
+    {"no-report-fixable", "report_fixable"},
+    {"no-report-missing", "report_missing"},
+    {"no-report-missing-mia", "report_missing_mia"},
+    {"no-report-status", "report_status"},
+    {"no-report-summary", "report_summary"},
+    {"no-report-no-good-dump", "report_no_good_dump"},
+    {"no-update-database", "update_database"},
+    {"no-warn-file-known", "warn-file-known"},
+    {"no-warn-file-unknown", "warn-file-unknown"},
+    {"roms-unzipped", "roms_zipped"}};
 
 
-std::string Configuration::local_config_file() {
-    return ".ckmamerc";
-}
+std::string Configuration::local_config_file() { return ".ckmamerc"; }
 
 
 std::string Configuration::user_config_file() {
@@ -239,30 +249,28 @@ std::string Configuration::user_config_file() {
 }
 
 
-bool Configuration::option_used(const std::string &option_name, const std::unordered_set<std::string> &used_variables) {
+bool Configuration::option_used(const std::string& option_name, const std::unordered_set<std::string>& used_variables) {
     if (option_name == "config" || option_name == "set" || option_name == "list-sets") {
-	return true;
+        return true;
     }
 
     auto variable_name = option_name;
     std::replace(variable_name.begin(), variable_name.end(), '-', '_');
 
     if (used_variables.find(variable_name) != used_variables.end()) {
-	return true;
+        return true;
     }
 
     auto it = option_to_variable.find(option_name);
     if (it != option_to_variable.end() && used_variables.find(it->second) != used_variables.end()) {
-	return true;
+        return true;
     }
 
     return false;
 }
 
 
-Configuration::Configuration() : fix_romset(false) {
-    reset();
-}
+Configuration::Configuration() : fix_romset(false) { reset(); }
 
 void Configuration::reset() {
     allow_empty_dat = false;
@@ -310,16 +318,16 @@ void Configuration::reset() {
 
     auto value = getenv("MAMEDB");
     if (value != nullptr) {
-	rom_db = value;
+        rom_db = value;
     }
     value = getenv("MAMEDB_OLD");
     if (value != nullptr) {
-	old_db = value;
+        old_db = value;
     }
 }
 
 
-void Configuration::merge_config_file(const toml::table &file) {
+void Configuration::merge_config_file(const toml::table& file) {
     std::string string;
 
     auto global_table = file["global"].as_table();
@@ -337,72 +345,72 @@ void Configuration::merge_config_file(const toml::table &file) {
 }
 
 
-void Configuration::handle_commandline(const ParsedCommandline &args) {
+void Configuration::handle_commandline(const ParsedCommandline& args) {
     auto ok = true;
 
     try {
-	ok = read_config_file(config_files, user_config_file(), true) && ok;
-	ok = read_config_file(config_files, local_config_file(), true) && ok;
+        ok = read_config_file(config_files, user_config_file(), true) && ok;
+        ok = read_config_file(config_files, local_config_file(), true) && ok;
 
 
-	for (const auto &option : args.options) {
-	    if (option.name == "config") {
-		ok = read_config_file(config_files, option.argument, false) && ok;
-	    }
-	}
-    } catch (std::exception &ex) {
-	throw Exception(std::string(ex.what()));
+        for (const auto& option : args.options) {
+            if (option.name == "config") {
+                ok = read_config_file(config_files, option.argument, false) && ok;
+            }
+        }
+    }
+    catch (std::exception& ex) {
+        throw Exception(std::string(ex.what()));
     }
 
     if (!ok) {
-	exit(1);
+        exit(1);
     }
 
-    for (const auto &file : config_files) {
-	auto known_sets = file["global"]["sets"].as_array();
-	if (known_sets != nullptr) {
-	    for (const auto &value : *known_sets) {
-		auto name = value.value<std::string>();
-		if (name.has_value()) {
-		    sets.insert(name.value());
-		}
-	    }
-	}
-	auto sets_file = file["global"]["sets-file"].value<std::string>();
-	if (sets_file.has_value()) {
-	    auto lines = slurp_lines(sets_file.value());
-	    sets.insert(lines.begin(), lines.end());
-	}
+    for (const auto& file : config_files) {
+        auto known_sets = file["global"]["sets"].as_array();
+        if (known_sets != nullptr) {
+            for (const auto& value : *known_sets) {
+                auto name = value.value<std::string>();
+                if (name.has_value()) {
+                    sets.insert(name.value());
+                }
+            }
+        }
+        auto sets_file = file["global"]["sets-file"].value<std::string>();
+        if (sets_file.has_value()) {
+            auto lines = slurp_lines(sets_file.value());
+            sets.insert(lines.begin(), lines.end());
+        }
 
-	for (const auto &entry : file) {
-	    if (entry.first == "global" || entry.first == "profile") {
-		continue;
-	    }
-	    sets.insert(std::string(entry.first));
-	}
+        for (const auto& entry : file) {
+            if (entry.first == "global" || entry.first == "profile") {
+                continue;
+            }
+            sets.insert(std::string(entry.first));
+        }
     }
 
     if (args.find_first("list-sets").has_value()) {
-	for (const auto &set_name : sets) {
-	    printf("%s\n", set_name.c_str());
-	}
+        for (const auto& set_name : sets) {
+            printf("%s\n", set_name.c_str());
+        }
 
-	exit(0);
+        exit(0);
     }
 }
 
 
-
-void Configuration::prepare(const std::string &current_set, const ParsedCommandline &commandline) {
+void Configuration::prepare(const std::string& current_set, const ParsedCommandline& commandline) {
     set = current_set;
 
     reset();
 
     for (const auto& file : config_files) {
-	merge_config_file(file);
+        merge_config_file(file);
     }
 
-    for (const auto &option : commandline.options) {
+    for (const auto& option : commandline.options) {
         if (option.name == "clear-extra-directories") {
             extra_directories.clear();
         }
@@ -523,7 +531,7 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
             report_status = true;
         }
         else if (option.name == "report-summary") {
-          report_summary = true;
+            report_summary = true;
         }
         else if (option.name == "rom-db") {
             rom_db = option.argument;
@@ -584,33 +592,33 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
 }
 
 
-void Configuration::merge_config_table(const toml::table *table_pointer) {
+void Configuration::merge_config_table(const toml::table* table_pointer) {
     const auto& table = *table_pointer;
 
     const auto profiles = table["profiles"].as_array();
     if (profiles != nullptr) {
-	for (const auto &value : *profiles) {
-	    auto profile_value = value.value<std::string>();
-	    if (!profile_value.has_value()) {
-		continue;
-	    }
-	    const auto& profile = profile_value.value();
+        for (const auto& value : *profiles) {
+            auto profile_value = value.value<std::string>();
+            if (!profile_value.has_value()) {
+                continue;
+            }
+            const auto& profile = profile_value.value();
 
-	    auto found = false;
+            auto found = false;
 
-	    for (const auto &file : config_files) {
-		auto profile_table = file["profile"][profile].as_table();
-		if (profile_table == nullptr) {
-		    continue;
-		}
-		merge_config_table(profile_table);
-		found = true;
-	    }
+            for (const auto& file : config_files) {
+                auto profile_table = file["profile"][profile].as_table();
+                if (profile_table == nullptr) {
+                    continue;
+                }
+                merge_config_table(profile_table);
+                found = true;
+            }
 
-	    if (!found) {
-		throw Exception("unknown profile '%s'", profile.c_str());
-	    }
-	}
+            if (!found) {
+                throw Exception("unknown profile '%s'", profile.c_str());
+            }
+        }
     }
 
     set_bool(table, "allow-empty-dat", allow_empty_dat);
@@ -658,47 +666,50 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
 }
 
 
-void Configuration::add_options(Commandline &commandline, const std::unordered_set<std::string> &used_variables) {
-    for (const auto &option : commandline_options) {
-	if (option_used(option.name, used_variables)) {
-	    commandline.add_option(option);
-	}
+void Configuration::add_options(Commandline& commandline, const std::unordered_set<std::string>& used_variables) {
+    for (const auto& option : commandline_options) {
+        if (option_used(option.name, used_variables)) {
+            commandline.add_option(option);
+        }
     }
 }
 
 
 // TODO: exceptions for type mismatch
 
-void Configuration::set_bool(const toml::table &table, const std::string &name, bool &variable) {
+void Configuration::set_bool(const toml::table& table, const std::string& name, bool& variable) {
     auto value = table[name].value<bool>();
     if (value.has_value()) {
-	variable = value.value();
+        variable = value.value();
     }
 }
 
 
-void Configuration::set_bool_optional(const toml::table &table, const std::string &name, std::optional<bool> &variable){
+void Configuration::set_bool_optional(const toml::table& table, const std::string& name,
+                                      std::optional<bool>& variable) {
     auto value = table[name].value<bool>();
     if (value.has_value()) {
-	variable = value.value();
+        variable = value.value();
     }
 }
 
-void Configuration::set_integer(const toml::table &table, const std::string &name, int &variable) {
+void Configuration::set_integer(const toml::table& table, const std::string& name, int& variable) {
     auto value = table[name].value<int>();
     if (value) {
         variable = *value;
     }
 }
 
-void Configuration::set_integer_optional(const toml::table &table, const std::string &name, std::optional<int> &variable) {
+void Configuration::set_integer_optional(const toml::table& table, const std::string& name,
+                                         std::optional<int>& variable) {
     auto value = table[name].value<int>();
     if (value) {
         variable = *value;
     }
 }
 
-void Configuration::set_integer_or_all(const toml::table &table, const std::string &name, std::optional<int> &variable) {
+void Configuration::set_integer_or_all(const toml::table& table, const std::string& name,
+                                       std::optional<int>& variable) {
     auto string_value = table[name].value<std::string>();
     if (string_value && string_value == "all") {
         variable = {};
@@ -711,7 +722,7 @@ void Configuration::set_integer_or_all(const toml::table &table, const std::stri
     }
 }
 
-void Configuration::set_string(const toml::table &table, const std::string &name, std::string &variable) {
+void Configuration::set_string(const toml::table& table, const std::string& name, std::string& variable) {
     auto value = table[name].value<std::string>();
     if (value.has_value()) {
         if (!set.empty() || value.value().find("$set") == std::string::npos) {
@@ -721,7 +732,8 @@ void Configuration::set_string(const toml::table &table, const std::string &name
 }
 
 
-void Configuration::set_string_optional(const toml::table &table, const std::string &name, std::optional<std::string> &variable){
+void Configuration::set_string_optional(const toml::table& table, const std::string& name,
+                                        std::optional<std::string>& variable) {
     auto value = table[name].value<std::string>();
     if (value.has_value()) {
         if (!set.empty() || value.value().find("$set") == std::string::npos) {
@@ -731,13 +743,14 @@ void Configuration::set_string_optional(const toml::table &table, const std::str
 }
 
 
-void Configuration::set_string_vector(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append) {
+void Configuration::set_string_vector(const toml::table& table, const std::string& name,
+                                      std::vector<std::string>& variable, bool append) {
     auto array = table[name].as_array();
     if (array != nullptr) {
         if (!append) {
             variable.clear();
         }
-        for (const auto &element : *array) {
+        for (const auto& element : *array) {
             auto element_value = element.value<std::string>();
             if (element_value.has_value()) {
                 if (!set.empty() || element_value.value().find("$set") == std::string::npos) {
@@ -749,12 +762,13 @@ void Configuration::set_string_vector(const toml::table &table, const std::strin
 }
 
 
-[[maybe_unused]] void Configuration::set_string_vector_from_file(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append) {
+[[maybe_unused]] void Configuration::set_string_vector_from_file(const toml::table& table, const std::string& name,
+                                                                 std::vector<std::string>& variable, bool append) {
     auto file_name = table[name].value<std::string>();
     auto lines = slurp_lines(file_name.value());
 
     if (!append) {
-	variable.clear();
+        variable.clear();
     }
 
     variable.insert(variable.end(), lines.begin(), lines.end());
@@ -764,7 +778,7 @@ void Configuration::set_string_vector(const toml::table &table, const std::strin
 std::string Configuration::replace_variables(std::string string) const {
     auto start = string.find("$set");
     if (start != std::string::npos) {
-	string.replace(start, 4, set);
+        string.replace(start, 4, set);
     }
     return string;
 }
@@ -777,15 +791,15 @@ bool Configuration::validate_file(const toml::table& table, const std::string& f
 }
 
 
-std::string Configuration::dat_game_name_suffix(const std::string &dat) {
+std::string Configuration::dat_game_name_suffix(const std::string& dat) {
     auto it = dat_options.find(dat);
     if (it == dat_options.end() || !it->second.game_name_suffix.has_value()) {
-	return "";
+        return "";
     }
     return it->second.game_name_suffix.value();
 }
 
-bool Configuration::dat_allow_epty_dat(const std::string &dat) {
+bool Configuration::dat_allow_epty_dat(const std::string& dat) {
     auto it = dat_options.find(dat);
     if (it == dat_options.end() || !it->second.game_name_suffix.has_value()) {
         return allow_empty_dat;
@@ -794,7 +808,7 @@ bool Configuration::dat_allow_epty_dat(const std::string &dat) {
 }
 
 
-bool Configuration::dat_directory_use_central_cache_directory(const std::string &directory){
+bool Configuration::dat_directory_use_central_cache_directory(const std::string& directory) {
     auto it = dat_directory_options.find(directory);
     if (it == dat_directory_options.end() || !it->second.use_central_cache_directory.has_value()) {
         return use_central_cache_directory;
@@ -803,25 +817,25 @@ bool Configuration::dat_directory_use_central_cache_directory(const std::string 
 }
 
 
-bool Configuration::dat_use_description_as_name(const std::string &dat){
+bool Configuration::dat_use_description_as_name(const std::string& dat) {
     auto it = dat_options.find(dat);
     if (it == dat_options.end() || !it->second.use_description_as_name.has_value()) {
-	return use_description_as_name;
+        return use_description_as_name;
     }
     return it->second.use_description_as_name.value();
 }
 
 
-bool Configuration::extra_directory_move_from_extra(const std::string &directory){
+bool Configuration::extra_directory_move_from_extra(const std::string& directory) {
     auto it = extra_directory_options.find(directory);
     if (it == extra_directory_options.end() || !it->second.move_from_extra.has_value()) {
-	return move_from_extra;
+        return move_from_extra;
     }
     return it->second.move_from_extra.value();
 }
 
 
-bool Configuration::extra_directory_use_central_cache_directory(const std::string &directory){
+bool Configuration::extra_directory_use_central_cache_directory(const std::string& directory) {
     auto it = extra_directory_options.find(directory);
     if (it == extra_directory_options.end() || !it->second.use_central_cache_directory.has_value()) {
         return use_central_cache_directory;
@@ -830,7 +844,7 @@ bool Configuration::extra_directory_use_central_cache_directory(const std::strin
 }
 
 
-void Configuration::merge_dat_directories(const toml::table &table, const std::string &name, bool append){
+void Configuration::merge_dat_directories(const toml::table& table, const std::string& name, bool append) {
     auto node = table[name];
 
     if (node.is_array()) {
@@ -840,7 +854,7 @@ void Configuration::merge_dat_directories(const toml::table &table, const std::s
         if (!append) {
             dat_directories.clear();
         }
-        for (const auto &pair : (*node.as_table())) {
+        for (const auto& pair : (*node.as_table())) {
             if (set.empty() && pair.first.str().find("$set") != std::string::npos) {
                 continue;
             }
@@ -850,7 +864,8 @@ void Configuration::merge_dat_directories(const toml::table &table, const std::s
             if (options_table != nullptr && !options_table->empty()) {
                 auto parsed_options = DatDirectoryOptions();
 
-                set_bool_optional(*options_table, "use-central-cache-directory", parsed_options.use_central_cache_directory);
+                set_bool_optional(*options_table, "use-central-cache-directory",
+                                  parsed_options.use_central_cache_directory);
                 dat_directory_options[directory] = parsed_options;
             }
         }
@@ -861,54 +876,55 @@ void Configuration::merge_dats(const toml::table& table) {
     auto node = table["dats"];
 
     if (node.is_array()) {
-	set_string_vector(table, "dats", dats, false);
+        set_string_vector(table, "dats", dats, false);
     }
     else if (node.is_table()) {
-	dats.clear();
-	for (const auto &pair : (*node.as_table())) {
+        dats.clear();
+        for (const auto& pair : (*node.as_table())) {
             if (set.empty() && pair.first.str().find("$set") != std::string::npos) {
                 continue;
             }
             auto dat = replace_variables(std::string(pair.first));
-	    dats.emplace_back(dat);
-	    auto options_table = pair.second.as_table();
-	    if (options_table != nullptr && !options_table->empty()) {
-		auto parsed_options = DatOptions();
+            dats.emplace_back(dat);
+            auto options_table = pair.second.as_table();
+            if (options_table != nullptr && !options_table->empty()) {
+                auto parsed_options = DatOptions();
 
-	        set_bool_optional(*options_table, "allow-empty-dat", parsed_options.allow_empty_dat);
-		set_string_optional(*options_table, "game-name-suffix", parsed_options.game_name_suffix);
-		set_bool_optional(*options_table, "use-description-as-name", parsed_options.use_description_as_name);
-		dat_options[dat] = parsed_options;
-	    }
-	}
+                set_bool_optional(*options_table, "allow-empty-dat", parsed_options.allow_empty_dat);
+                set_string_optional(*options_table, "game-name-suffix", parsed_options.game_name_suffix);
+                set_bool_optional(*options_table, "use-description-as-name", parsed_options.use_description_as_name);
+                dat_options[dat] = parsed_options;
+            }
+        }
     }
 }
 
 
-void Configuration::merge_extra_directories(const toml::table &table, const std::string &name, bool append){
+void Configuration::merge_extra_directories(const toml::table& table, const std::string& name, bool append) {
     auto node = table[name];
 
     if (node.is_array()) {
-	set_string_vector(table, name, extra_directories, append);
+        set_string_vector(table, name, extra_directories, append);
     }
     else if (node.is_table()) {
-	if (!append) {
-	    extra_directories.clear();
-	}
-	for (const auto &pair : (*node.as_table())) {
+        if (!append) {
+            extra_directories.clear();
+        }
+        for (const auto& pair : (*node.as_table())) {
             if (set.empty() && pair.first.str().find("$set") != std::string::npos) {
                 continue;
             }
             auto directory = replace_variables(std::string(pair.first));
-	    extra_directories.emplace_back(directory);
-	    auto options_table = pair.second.as_table();
-	    if (options_table != nullptr && !options_table->empty()) {
-		auto parsed_options = ExtraDirectoryOptions();
+            extra_directories.emplace_back(directory);
+            auto options_table = pair.second.as_table();
+            if (options_table != nullptr && !options_table->empty()) {
+                auto parsed_options = ExtraDirectoryOptions();
 
-		set_bool_optional(*options_table, "move-from-extra", parsed_options.move_from_extra);
-                set_bool_optional(*options_table, "use-central-cache-directory", parsed_options.use_central_cache_directory);
-		extra_directory_options[directory] = parsed_options;
-	    }
-	}
+                set_bool_optional(*options_table, "move-from-extra", parsed_options.move_from_extra);
+                set_bool_optional(*options_table, "use-central-cache-directory",
+                                  parsed_options.use_central_cache_directory);
+                extra_directory_options[directory] = parsed_options;
+            }
+        }
     }
 }

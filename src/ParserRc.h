@@ -40,7 +40,9 @@
 
 class ParserRc : public Parser {
   public:
-    ParserRc(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, const Options& options) : Parser(std::move(source), exclude, dat, output, options) {}
+    ParserRc(ParserSourcePtr source, const std::unordered_set<std::string>& exclude, const DatEntry* dat,
+             OutputContext* output, const Options& options)
+        : Parser(std::move(source), exclude, dat, output, options) {}
     ~ParserRc() override = default;
 
     bool parse() override;
@@ -52,24 +54,25 @@ class ParserRc : public Parser {
 
     class Field {
       public:
-        Field(Section section_, const std::string &name_, bool (*cb_)(ParserRc *, const std::string &)) : section(section_), name(name_), cb(cb_) {}
+        Field(Section section_, const std::string& name_, bool (*cb_)(ParserRc*, const std::string&))
+            : section(section_), name(name_), cb(cb_) {}
 
         Section section;
         std::string name;
-        bool (*cb)(ParserRc *, const std::string &);
+        bool (*cb)(ParserRc*, const std::string&);
     };
 
     static std::unordered_map<std::string, Section> sections;
     static std::vector<Field> fields;
 
-    static bool parse_prog_description(ParserRc *ctx, const std::string &attr);
-    static bool parse_prog_name(ParserRc *ctx, const std::string &attr);
-    static bool parse_prog_version(ParserRc *ctx, const std::string &attr);
-    static bool rc_plugin(ParserRc *ctx, const std::string &attr);
+    static bool parse_prog_description(ParserRc* ctx, const std::string& attr);
+    static bool parse_prog_name(ParserRc* ctx, const std::string& attr);
+    static bool parse_prog_version(ParserRc* ctx, const std::string& attr);
+    static bool rc_plugin(ParserRc* ctx, const std::string& attr);
 
     class Tokenizer {
       public:
-        explicit Tokenizer(const std::string &s) : string(s), position(0) {}
+        explicit Tokenizer(const std::string& s) : string(s), position(0) {}
 
         std::string get();
 
@@ -78,7 +81,7 @@ class ParserRc : public Parser {
         size_t position;
     };
 
-    bool process_romline(const std::string &line);
+    bool process_romline(const std::string& line);
     void flush_romline();
 
     std::string gamename;

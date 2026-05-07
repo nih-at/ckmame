@@ -40,37 +40,36 @@
 class Detector;
 
 class DetectorDescriptor {
-public:
+  public:
     DetectorDescriptor() = default;
-    DetectorDescriptor(const std::string &name_, const std::string &version_) : name(name_), version(version_) { }
-    explicit DetectorDescriptor(const Detector *detector);
-    
+    DetectorDescriptor(const std::string& name_, const std::string& version_) : name(name_), version(version_) {}
+    explicit DetectorDescriptor(const Detector* detector);
+
     std::string name;
     std::string version;
-    
-    bool operator==(const DetectorDescriptor &other) const { return name == other.name && version == other.version; }
+
+    bool operator==(const DetectorDescriptor& other) const { return name == other.name && version == other.version; }
 };
 
 namespace std {
-template <>
-struct hash<DetectorDescriptor> {
-    std::size_t operator()(const DetectorDescriptor &k) const {
+template <> struct hash<DetectorDescriptor> {
+    std::size_t operator()(const DetectorDescriptor& k) const {
         return std::hash<std::string>()(k.name) ^ std::hash<std::string>()(k.version);
     }
 };
-}
+} // namespace std
 
 
 class DetectorCollection {
-public:
-    DetectorCollection() : next_id(1) { }
-    
-    const DetectorDescriptor *get_descriptor(size_t id) const;
-    size_t get_id(const DetectorDescriptor &descriptor);
-    void add(const DetectorDescriptor &descriptor, size_t id);
-    bool known(const DetectorDescriptor &descriptor) const;
-    
-private:
+  public:
+    DetectorCollection() : next_id(1) {}
+
+    const DetectorDescriptor* get_descriptor(size_t id) const;
+    size_t get_id(const DetectorDescriptor& descriptor);
+    void add(const DetectorDescriptor& descriptor, size_t id);
+    bool known(const DetectorDescriptor& descriptor) const;
+
+  private:
     size_t next_id;
     std::unordered_map<DetectorDescriptor, size_t> detectors;
     std::unordered_map<size_t, DetectorDescriptor> ids;

@@ -36,7 +36,7 @@
 
 std::string Match::file() const {
     if (source_is_old()) {
-	return old_file;
+        return old_file;
     }
     else {
         return archive->files[index].name;

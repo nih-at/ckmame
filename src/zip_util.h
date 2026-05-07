@@ -41,17 +41,17 @@
 #include <zip.h>
 
 class ZipSource {
-public:
-    explicit ZipSource(zip_source_t *source_) : source(source_) { }
+  public:
+    explicit ZipSource(zip_source_t* source_) : source(source_) {}
     ~ZipSource();
-    
+
     void open() const;
     void close() const;
-    uint64_t read(void *data, uint64_t length) const;
-    
+    uint64_t read(void* data, uint64_t length) const;
+
     std::string error() const;
-    
-    zip_source_t *source;
+
+    zip_source_t* source;
 };
 
 

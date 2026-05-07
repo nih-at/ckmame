@@ -36,9 +36,9 @@
 
 #include <set>
 #include <string>
-#include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 #ifdef HAVE_TOMLPLUSPLUS
 #include <toml++/toml.h>
@@ -50,7 +50,7 @@
 #include "TomlSchema.h"
 
 class Configuration {
-public:
+  public:
     Configuration();
 
     /*
@@ -75,9 +75,9 @@ public:
     static std::string user_config_file();
     static std::string local_config_file();
 
-    static void add_options(Commandline &commandline, const std::unordered_set<std::string> &used_variables);
+    static void add_options(Commandline& commandline, const std::unordered_set<std::string>& used_variables);
 
-    void handle_commandline(const ParsedCommandline &commandline);
+    void handle_commandline(const ParsedCommandline& commandline);
     void prepare(const std::string& set, const ParsedCommandline& commandline);
 
     bool dat_allow_epty_dat(const std::string& dat);
@@ -102,18 +102,20 @@ public:
     bool keep_old_duplicate;
     std::string mia_games;
     std::string missing_list;
-    bool move_from_extra; // remove files taken from extra directories, otherwise copy them and don't change extra directory.
+    bool move_from_extra; // remove files taken from extra directories, otherwise copy them and don't change extra
+                          // directory.
     std::string old_db;
-    bool report_changes; /* report changes to complete or missing lists */
-    bool report_correct; /* report ROMs that are correct */
+    bool report_changes;     /* report changes to complete or missing lists */
+    bool report_correct;     /* report ROMs that are correct */
     bool report_correct_mia; /* report ROMs that are correct but marked as mia in ROM db. */
-    bool report_detailed; /* one line for each ROM */
-    bool report_fixable; /* report ROMs that are not correct but can be fixed */
-    bool report_missing; /* report missing ROMs with good dumps that are not marked as mia in ROM db, one line per game if no own ROM found */
-    bool report_missing_mia; /* report missing ROMs that are marked as mia in ROM db. */
+    bool report_detailed;    /* one line for each ROM */
+    bool report_fixable;     /* report ROMs that are not correct but can be fixed */
+    bool report_missing; /* report missing ROMs with good dumps that are not marked as mia in ROM db, one line per game
+                            if no own ROM found */
+    bool report_missing_mia;  /* report missing ROMs that are marked as mia in ROM db. */
     bool report_no_good_dump; /* report ROMs that are not correct and can not be fixed */
-    bool report_status; /* report status of set in ckstatus --all-sets */
-    bool report_summary; /* print statistics about ROM set at end of run */
+    bool report_status;       /* report status of set in ckstatus --all-sets */
+    bool report_summary;      /* print statistics about ROM set at end of run */
     std::string rom_db;
     std::string rom_directory;
     bool roms_zipped;
@@ -124,11 +126,11 @@ public:
     std::string unknown_directory;
     bool update_database;
     bool use_central_cache_directory; // create CkmameDB and DatDB in $HOME/.cache/ckmame
-    bool use_description_as_name; // in ROM database
-    bool use_temp_directory; // create RomDB in temporary directory, then move into place
-    bool use_torrentzip; // use TORRENTZIP format for zip archives in ROM set.
-    bool verbose; // print all actions taken to fix ROM set
-    bool allow_empty_dat; // Update RomDB even if dat is empty.
+    bool use_description_as_name;     // in ROM database
+    bool use_temp_directory;          // create RomDB in temporary directory, then move into place
+    bool use_torrentzip;              // use TORRENTZIP format for zip archives in ROM set.
+    bool verbose;                     // print all actions taken to fix ROM set
+    bool allow_empty_dat;             // Update RomDB even if dat is empty.
 
     // TODO: Are these needed? They have no command line options.
     /* file_correct */
@@ -138,7 +140,7 @@ public:
     // not in config files, per invocation
     bool fix_romset; // actually fix, otherwise no archive is changed
 
-private:
+  private:
     class DatDirectoryOptions {
       public:
         std::optional<bool> use_central_cache_directory;
@@ -148,12 +150,12 @@ private:
       public:
         std::optional<bool> allow_empty_dat; // Update RomDB even if dat is empty.
         std::optional<std::string> game_name_suffix;
-	std::optional<bool> use_description_as_name;
+        std::optional<bool> use_description_as_name;
     };
 
     class ExtraDirectoryOptions {
       public:
-	std::optional<bool> move_from_extra;
+        std::optional<bool> move_from_extra;
         std::optional<bool> use_central_cache_directory;
     };
 
@@ -166,21 +168,23 @@ private:
     static std::vector<Commandline::Option> commandline_options;
     static std::unordered_map<std::string, std::string> option_to_variable;
 
-    static bool option_used(const std::string &option_name, const std::unordered_set<std::string> &used_variables);
-    static bool read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional);
+    static bool option_used(const std::string& option_name, const std::unordered_set<std::string>& used_variables);
+    static bool read_config_file(std::vector<toml::table>& config_tables, const std::string& file_name, bool optional);
     void reset();
-    static void set_bool(const toml::table &table, const std::string &name, bool &variable);
-    static void set_bool_optional(const toml::table &table, const std::string &name, std::optional<bool>& variable);
-    static void set_integer(const toml::table &table, const std::string &name, int& variable);
-    static void set_integer_optional(const toml::table &table, const std::string &name, std::optional<int>& variable);
-    static void set_integer_or_all(const toml::table &table, const std::string &name, std::optional<int>& variable);
-    void set_string(const toml::table &table, const std::string &name, std::string &variable);
-    void set_string_optional(const toml::table &table, const std::string &name, std::optional<std::string>& variable);
-    void set_string_vector(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append);
-    [[maybe_unused]] static void set_string_vector_from_file(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append);
+    static void set_bool(const toml::table& table, const std::string& name, bool& variable);
+    static void set_bool_optional(const toml::table& table, const std::string& name, std::optional<bool>& variable);
+    static void set_integer(const toml::table& table, const std::string& name, int& variable);
+    static void set_integer_optional(const toml::table& table, const std::string& name, std::optional<int>& variable);
+    static void set_integer_or_all(const toml::table& table, const std::string& name, std::optional<int>& variable);
+    void set_string(const toml::table& table, const std::string& name, std::string& variable);
+    void set_string_optional(const toml::table& table, const std::string& name, std::optional<std::string>& variable);
+    void set_string_vector(const toml::table& table, const std::string& name, std::vector<std::string>& variable,
+                           bool append);
+    [[maybe_unused]] static void set_string_vector_from_file(const toml::table& table, const std::string& name,
+                                                             std::vector<std::string>& variable, bool append);
 
-    void merge_config_file(const toml::table &file);
-    void merge_config_table(const toml::table *table);
+    void merge_config_file(const toml::table& file);
+    void merge_config_table(const toml::table* table);
 
     void merge_dat_directories(const toml::table& table, const std::string& name, bool append);
     void merge_dats(const toml::table& table);

@@ -39,12 +39,12 @@
 
 bool Garbage::add(uint64_t index, bool copy) {
     if (!open()) {
-	return false;
+        return false;
     }
 
     std::string source_name = sa->files[index].name;
     std::string destination_name = source_name;
-    
+
     if (da->file_index_by_name(source_name) >= 0) {
         destination_name = da->make_unique_name_in_archive(source_name);
     }
@@ -55,19 +55,19 @@ bool Garbage::add(uint64_t index, bool copy) {
 
 bool Garbage::close() {
     if (!da) {
-	return true;
+        return true;
     }
 
     if (!da->is_empty()) {
         if (!ensure_dir(da->name, true)) {
-	    return false;
+            return false;
         }
     }
 
     if (!da->close()) {
-	return false;
+        return false;
     }
-    
+
     return true;
 }
 
@@ -84,11 +84,11 @@ bool Garbage::commit() {
 bool Garbage::open() {
     if (!opened) {
         opened = true;
-	auto name = make_garbage_name(sa->name, 0);
+        auto name = make_garbage_name(sa->name, 0);
         da = Archive::open(name, sa->contents->filetype, FILE_NOWHERE, ARCHIVE_FL_CREATE);
         if (!da->check()) {
             da = nullptr;
-	}
+        }
     }
 
     return !!da;

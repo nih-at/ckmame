@@ -34,8 +34,8 @@
 #include "ArchiveLibarchive.h"
 
 #include <archive_entry.h>
-#include <cstring>
 #include <cerrno>
+#include <cstring>
 
 #include "Exception.h"
 #include "Progress.h"
@@ -47,7 +47,8 @@ ArchiveLibarchive::~ArchiveLibarchive() {
     try {
         close();
     }
-    catch (...) { }
+    catch (...) {
+    }
 }
 
 
@@ -63,7 +64,8 @@ bool ArchiveLibarchive::ensure_la() {
 
     auto error = archive_read_open_filename(la, name.c_str(), 10240);
     if (error < ARCHIVE_WARN) {
-        output.error("error %s archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), archive_error_string(la));
+        output.error("error %s archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(),
+                     archive_error_string(la));
         archive_read_free(la);
         la = nullptr;
         return false;
@@ -77,9 +79,7 @@ bool ArchiveLibarchive::ensure_la() {
 }
 
 
-bool ArchiveLibarchive::check() {
-    return ensure_la();
-}
+bool ArchiveLibarchive::check() { return ensure_la(); }
 
 bool ArchiveLibarchive::close_xxx() {
     if (la == nullptr) {
@@ -123,10 +123,10 @@ bool ArchiveLibarchive::commit_xxx() {
     }
 
     auto writer = archive_write_new();
-    struct archive_entry *entry = nullptr;
+    struct archive_entry* entry = nullptr;
 
     if (writer == nullptr) {
-	output.archive_error("can't create archive: %s", strerror(ENOMEM));
+        output.archive_error("can't create archive: %s", strerror(ENOMEM));
         return false;
     }
 
@@ -142,10 +142,10 @@ bool ArchiveLibarchive::commit_xxx() {
 
         for (uint64_t index = 0; index < files.size(); index++) {
             Progress::update();
-            auto &file = files[index];
-            auto &change = changes[index];
+            auto& file = files[index];
+            auto& change = changes[index];
 
-	    output.set_error_archive(name, file.name);
+            output.set_error_archive(name, file.name);
 
             if (change.status == Change::DELETED) {
                 continue;
@@ -200,7 +200,7 @@ bool ArchiveLibarchive::commit_xxx() {
             }
         }
     }
-    catch (Exception &e) {
+    catch (Exception& e) {
         if (entry != nullptr) {
             archive_entry_free(entry);
         }
@@ -220,11 +220,11 @@ bool ArchiveLibarchive::commit_xxx() {
 }
 
 
-void ArchiveLibarchive::write_file(struct archive *writer, const ZipSourcePtr& source) {
+void ArchiveLibarchive::write_file(struct archive* writer, const ZipSourcePtr& source) {
     try {
         source->open();
     }
-    catch (Exception &e) {
+    catch (Exception& e) {
         throw Exception("can't open file: %s", e.what());
     }
 
@@ -236,7 +236,7 @@ void ArchiveLibarchive::write_file(struct archive *writer, const ZipSourcePtr& s
         try {
             n = source->read(buffer, sizeof(buffer));
         }
-        catch (Exception &e) {
+        catch (Exception& e) {
             source->close();
             throw Exception("can't read file: %s", e.what());
         }
@@ -286,7 +286,7 @@ bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
         }
     }
 
-    struct archive_entry *entry;
+    struct archive_entry* entry;
     while (current_index <= index) {
         if (!header_read) {
             if (archive_read_next_header(la, &entry) != ARCHIVE_OK) {
@@ -322,10 +322,9 @@ bool ArchiveLibarchive::read_infos_xxx() {
     output.set_error_archive(name);
 
     current_index = 0;
-    struct archive_entry *entry;
+    struct archive_entry* entry;
     int ret;
     while ((ret = archive_read_next_header(la, &entry)) == ARCHIVE_OK) {
-
         File r;
         r.mtime = archive_entry_mtime(entry);
         r.hashes.size = static_cast<uint64_t>(archive_entry_size(entry));
@@ -362,12 +361,14 @@ ZipSourcePtr ArchiveLibarchive::get_source(uint64_t index, uint64_t start, std::
     return std::make_shared<ZipSource>(source->get_source());
 }
 
-ArchiveLibarchive::Source::Source(ArchiveLibarchive *archive_, uint64_t index_, uint64_t start_, uint64_t length_, uint64_t file_length) : archive(archive_), index(index_), start(start_), length(length_) {
+ArchiveLibarchive::Source::Source(ArchiveLibarchive* archive_, uint64_t index_, uint64_t start_, uint64_t length_,
+                                  uint64_t file_length)
+    : archive(archive_), index(index_), start(start_), length(length_) {
     zip_error_init(&error);
     complete_file = (start == 0 && length == file_length);
 }
 
-zip_source_t *ArchiveLibarchive::Source::get_source() {
+zip_source_t* ArchiveLibarchive::Source::get_source() {
     auto source = zip_source_function_create(callback_c, this, nullptr);
     if (!complete_file) {
         auto window_source = zip_source_window_create(source, start, (zip_int64_t)length, nullptr);
@@ -381,63 +382,63 @@ zip_source_t *ArchiveLibarchive::Source::get_source() {
     return source;
 }
 
-zip_int64_t ArchiveLibarchive::Source::callback_c(void *userdata, void *data, zip_uint64_t len, zip_source_cmd_t cmd) {
-    return static_cast<ArchiveLibarchive::Source *>(userdata)->callback(data, len, cmd);
+zip_int64_t ArchiveLibarchive::Source::callback_c(void* userdata, void* data, zip_uint64_t len, zip_source_cmd_t cmd) {
+    return static_cast<ArchiveLibarchive::Source*>(userdata)->callback(data, len, cmd);
 }
 
-zip_int64_t ArchiveLibarchive::Source::callback(void *data, zip_uint64_t len, zip_source_cmd_t cmd) {
+zip_int64_t ArchiveLibarchive::Source::callback(void* data, zip_uint64_t len, zip_source_cmd_t cmd) {
     switch (cmd) {
-        case ZIP_SOURCE_OPEN:
-            if (!open()) {
-                zip_error_set(&error, ZIP_ER_OPEN, errno);
-                return -1;
-            }
-            return 0;
-
-        case ZIP_SOURCE_READ: {
-            Progress::update();
-            auto ret = archive_read_data(archive->la, data, len);
-            if (ret < 0) {
-                zip_error_set(&error, ZIP_ER_READ, errno);
-                return -1;
-            }
-            return ret;
-        }
-
-        case ZIP_SOURCE_CLOSE:
-            if (archive_read_data_skip(archive->la) != ARCHIVE_OK) {
-                zip_error_set(&error, ZIP_ER_READ, errno);
-                return -1;
-            }
-            archive->current_index += 1;
-            archive->have_open_file = false;
-            archive->header_read = false;
-            return 0;
-
-        case ZIP_SOURCE_STAT: {
-            auto st = static_cast<zip_stat_t *>(data);
-
-            st->valid = ZIP_STAT_SIZE | ZIP_STAT_COMP_SIZE | ZIP_STAT_COMP_METHOD;
-            st->comp_method = ZIP_CM_STORE;
-            st->comp_size = length;
-            st->size = length;
-
-            return 0;
-        }
-
-        case ZIP_SOURCE_ERROR:
-            return zip_error_to_data(&error, data, len);
-
-        case ZIP_SOURCE_FREE:
-            delete this;
-            return 0;
-
-        case ZIP_SOURCE_SUPPORTS:
-            return ZIP_SOURCE_SUPPORTS_READABLE;
-
-        default:
-            zip_error_set(&error, ZIP_ER_OPNOTSUPP, 0);
+    case ZIP_SOURCE_OPEN:
+        if (!open()) {
+            zip_error_set(&error, ZIP_ER_OPEN, errno);
             return -1;
+        }
+        return 0;
+
+    case ZIP_SOURCE_READ: {
+        Progress::update();
+        auto ret = archive_read_data(archive->la, data, len);
+        if (ret < 0) {
+            zip_error_set(&error, ZIP_ER_READ, errno);
+            return -1;
+        }
+        return ret;
+    }
+
+    case ZIP_SOURCE_CLOSE:
+        if (archive_read_data_skip(archive->la) != ARCHIVE_OK) {
+            zip_error_set(&error, ZIP_ER_READ, errno);
+            return -1;
+        }
+        archive->current_index += 1;
+        archive->have_open_file = false;
+        archive->header_read = false;
+        return 0;
+
+    case ZIP_SOURCE_STAT: {
+        auto st = static_cast<zip_stat_t*>(data);
+
+        st->valid = ZIP_STAT_SIZE | ZIP_STAT_COMP_SIZE | ZIP_STAT_COMP_METHOD;
+        st->comp_method = ZIP_CM_STORE;
+        st->comp_size = length;
+        st->size = length;
+
+        return 0;
+    }
+
+    case ZIP_SOURCE_ERROR:
+        return zip_error_to_data(&error, data, len);
+
+    case ZIP_SOURCE_FREE:
+        delete this;
+        return 0;
+
+    case ZIP_SOURCE_SUPPORTS:
+        return ZIP_SOURCE_SUPPORTS_READABLE;
+
+    default:
+        zip_error_set(&error, ZIP_ER_OPNOTSUPP, 0);
+        return -1;
     }
 }
 

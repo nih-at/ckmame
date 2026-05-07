@@ -59,12 +59,16 @@ std::vector<Commandline::Option> dumpgame_options = {
 
 std::unordered_set<std::string> dumpgame_used_variables = {"rom_db"};
 
-Dumpgame::Dumpgame() : Command("dumpgame", "[game|checksum ...]", dumpgame_options, dumpgame_used_variables), brief_mode(false), find_checksum(false), first(true) {}
+Dumpgame::Dumpgame()
+    : Command("dumpgame", "[game|checksum ...]", dumpgame_options, dumpgame_used_variables),
+      brief_mode(false),
+      find_checksum(false),
+      first(true) {}
 
-static const char *where_name[] = {"game", "cloneof", "grand-cloneof"};
+static const char* where_name[] = {"game", "cloneof", "grand-cloneof"};
 
 
-std::string Dumpgame::format_checksums(const Hashes *hashes) {
+std::string Dumpgame::format_checksums(const Hashes* hashes) {
     std::string result;
     for (int i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
         if (hashes->has_type(i)) {
@@ -75,8 +79,9 @@ std::string Dumpgame::format_checksums(const Hashes *hashes) {
 }
 
 
-void Dumpgame::print_diskline(Rom *disk) {
-    auto message = "\t\tdisk " + disk->name + " " + format_checksums(&disk->hashes) + " status " + disk->status_name(true) + " in " + where_name[disk->where];
+void Dumpgame::print_diskline(Rom* disk) {
+    auto message = "\t\tdisk " + disk->name + " " + format_checksums(&disk->hashes) + " status " +
+                   disk->status_name(true) + " in " + where_name[disk->where];
     if (!disk->merge.empty() && disk->name != disk->merge) {
         message += " (" + disk->merge + ")";
     }
@@ -84,7 +89,7 @@ void Dumpgame::print_diskline(Rom *disk) {
 }
 
 
-void Dumpgame::print_romline(Rom *rom) {
+void Dumpgame::print_romline(Rom* rom) {
     auto message = "\t\tfile " + rom->name + "  size ";
     if (rom->is_size_known()) {
         message += std::to_string(rom->hashes.size);
@@ -121,12 +126,12 @@ void Dumpgame::print_match(const GamePtr& game, filetype_t ft, size_t i) {
 }
 
 
-void Dumpgame::print_matches(const Hashes *hash) {
+void Dumpgame::print_matches(const Hashes* hash) {
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         auto filetype = static_cast<filetype_t>(ft);
         auto matches = db->read_file_by_hash(filetype, *hash);
 
-        for (const auto &match : matches) {
+        for (const auto& match : matches) {
             if ((match.rom.hashes.get_types() & hash->get_types()) != hash->get_types()) {
                 continue;
             }
@@ -143,25 +148,25 @@ void Dumpgame::print_matches(const Hashes *hash) {
 }
 
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     auto command = Dumpgame();
 
     return command.run(argc, argv);
 }
 
 
-void Dumpgame::global_setup(const ParsedCommandline &commandline) {
-    for (const auto &argument : commandline.arguments) {
+void Dumpgame::global_setup(const ParsedCommandline& commandline) {
+    for (const auto& argument : commandline.arguments) {
         arguments.insert(argument);
     }
 
-    for (const auto &option : commandline.options) {
+    for (const auto& option : commandline.options) {
         if (option.name == "brief") {
             brief_mode = true;
         }
         else if (option.name == "checksum") {
             find_checksum = true;
-            for (const auto &argument : arguments) {
+            for (const auto& argument : arguments) {
                 Hashes hashes;
                 if (hashes.set_from_string(argument) == -1) {
                     output.error("error parsing checksum '%s'", argument.c_str());
@@ -197,10 +202,11 @@ void Dumpgame::global_setup(const ParsedCommandline &commandline) {
 }
 
 
-bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
+bool Dumpgame::execute(const std::vector<std::string>& arguments_) {
     try {
         db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
-    } catch (std::exception &e) {
+    }
+    catch (std::exception& e) {
         // TODO: catch exception for unsupported database version and report differently
         output.error("can't open database '%s': %s", configuration.rom_db.c_str(), strerror(errno));
         return false;
@@ -211,7 +217,8 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
 
     try {
         list = db->read_list(DBH_KEY_LIST_GAME);
-    } catch (Exception &e) {
+    }
+    catch (Exception& e) {
         output.error("list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
         return false;
     }
@@ -219,47 +226,47 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
 
     for (auto key : specials) {
         switch (key) {
-            case DATS:
-                dump_dats();
-                break;
+        case DATS:
+            dump_dats();
+            break;
 
-            case DETECTOR:
-                dump_detector();
-                break;
+        case DETECTOR:
+            dump_detector();
+            break;
 
-            case DISKS:
-                dump_list(DBH_KEY_LIST_DISK);
-                break;
+        case DISKS:
+            dump_list(DBH_KEY_LIST_DISK);
+            break;
 
-            case GAMES:
-                dump_list(DBH_KEY_LIST_GAME);
-                break;
+        case GAMES:
+            dump_list(DBH_KEY_LIST_GAME);
+            break;
 
-            case HASH_TYPES:
-                dump_hash_types();
-                break;
+        case HASH_TYPES:
+            dump_hash_types();
+            break;
 
-            case MIA:
-                dump_list(DBH_KEY_LIST_MIA);
-                break;
+        case MIA:
+            dump_list(DBH_KEY_LIST_MIA);
+            break;
 
-            case SUMMARY:
-                dump_stats();
-                break;
+        case SUMMARY:
+            dump_stats();
+            break;
         }
     }
 
 
     /* find matches for ROMs */
     if (find_checksum) {
-        for (const auto &match : checksum_arguments) {
+        for (const auto& match : checksum_arguments) {
             print_matches(&match);
         }
         return true;
     }
 
     size_t index = 0;
-    for (const auto &argument : arguments) {
+    for (const auto& argument : arguments) {
         if (!is_pattern(argument)) {
             if (first) {
                 first = false;
@@ -273,7 +280,7 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
             }
         }
         else {
-            for (const auto &name : list) {
+            for (const auto& name : list) {
                 if (fnmatch(argument.c_str(), name.c_str(), 0) == 0) {
                     if (first) {
                         first = false;
@@ -300,7 +307,7 @@ bool Dumpgame::global_cleanup() {
 
     if (!find_checksum) {
         size_t index = 0;
-        for (const std::string &argument : arguments) {
+        for (const std::string& argument : arguments) {
             if (!found[index]) {
                 if (is_pattern(argument)) {
                     output.error("no game matching '%s' found", argument.c_str());
@@ -346,7 +353,7 @@ void Dumpgame::print_clones(const GamePtr& game) {
 }
 
 
-bool Dumpgame::dump_game(const std::string &name) const {
+bool Dumpgame::dump_game(const std::string& name) const {
     GamePtr game;
 
     auto dat = db->read_dat();
@@ -381,14 +388,14 @@ bool Dumpgame::dump_game(const std::string &name) const {
 
         if (!game->files[TYPE_ROM].empty()) {
             output.message("ROMs:");
-            for (auto &file : game->files[TYPE_ROM]) {
+            for (auto& file : game->files[TYPE_ROM]) {
                 print_romline(&file);
             }
         }
 
         if (!game->files[TYPE_DISK].empty()) {
             output.message("Disks:");
-            for (auto &file : game->files[TYPE_DISK]) {
+            for (auto& file : game->files[TYPE_DISK]) {
                 print_diskline(&file);
             }
         }
@@ -409,10 +416,11 @@ bool Dumpgame::dump_list(int type) {
         auto list = db->read_list(static_cast<enum dbh_list>(type));
         sort_strings_case_insensitive(list);
 
-        for (const auto &name : list) {
+        for (const auto& name : list) {
             output.message(name);
         }
-    } catch (Exception &e) {
+    }
+    catch (Exception& e) {
         output.error_database("db error reading list: %s", e.what());
         return false;
     }
@@ -464,7 +472,7 @@ void Dumpgame::dump_stats() {
 }
 
 
-std::string Dumpgame::format_dat(const DatEntry &de) {
+std::string Dumpgame::format_dat(const DatEntry& de) {
     return ((de.name.empty() ? "unknown" : de.name) + " (" + (de.version.empty() ? "unknown" : de.version) + ")");
 }
 
@@ -490,6 +498,4 @@ std::string Dumpgame::format_hash_types(int ht) {
 }
 
 
-bool Dumpgame::is_pattern(const std::string &string) {
-    return strcspn(string.c_str(), "*?[]{}") != string.length();
-}
+bool Dumpgame::is_pattern(const std::string& string) { return strcspn(string.c_str(), "*?[]{}") != string.length(); }

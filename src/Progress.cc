@@ -33,12 +33,12 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Progress.h"
 
-//#include <chrono>
+// #include <chrono>
 #include <csignal>
 #include <iostream>
 
-#include "globals.h"
 #include "ProgramName.h"
+#include "globals.h"
 
 std::vector<std::string> Progress::messages;
 volatile bool Progress::siginfo_caught = false;
@@ -57,7 +57,7 @@ void Progress::pop_message() {
         // TODO: warning?
         return;
     }
-    if (trace){
+    if (trace) {
         print_message(false);
     }
     messages.pop_back();

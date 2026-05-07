@@ -42,49 +42,53 @@
 
 class XmlProcessor {
   public:
-    enum CallbackStatus {
-	OK,
-	ERROR,
-	END
-    };
+    enum CallbackStatus { OK, ERROR, END };
 
-    typedef void (*LineNumberCallback)(void *context, size_t line_number);
-    typedef CallbackStatus (*AttributeCallback)(void *context, const void *arguments, const std::string &value);
-    typedef CallbackStatus (*TagCallback)(void *context, const void *arguments);
-    typedef CallbackStatus (*TextCallback)(void *context, const void *arguments, const std::string &value);
+    typedef void (*LineNumberCallback)(void* context, size_t line_number);
+    typedef CallbackStatus (*AttributeCallback)(void* context, const void* arguments, const std::string& value);
+    typedef CallbackStatus (*TagCallback)(void* context, const void* arguments);
+    typedef CallbackStatus (*TextCallback)(void* context, const void* arguments, const std::string& value);
 
     class Attribute {
       public:
-	Attribute(AttributeCallback callback, const void *arguments);
+        Attribute(AttributeCallback callback, const void* arguments);
 
-	AttributeCallback cb_attr;
-	const void *arguments;
+        AttributeCallback cb_attr;
+        const void* arguments;
     };
 
     class Entity {
       public:
-	explicit Entity(std::unordered_map<std::string, Attribute> attributes_, TagCallback cb_open_ = nullptr, TagCallback cb_close_ = nullptr, const void *arguments_ = nullptr) : attr(std::move(attributes_)), cb_open(cb_open_), cb_close(cb_close_), cb_text(nullptr), arguments(arguments_) { }
-	explicit Entity(TextCallback cb_text_ = nullptr, const void *arguments_ = nullptr) : cb_open(nullptr), cb_close(nullptr), cb_text(cb_text_), arguments(arguments_) { }
-	std::unordered_map<std::string, Attribute> attr;
-	TagCallback cb_open;
-	TagCallback cb_close;
-	TextCallback cb_text;
-	const void *arguments;
+        explicit Entity(std::unordered_map<std::string, Attribute> attributes_, TagCallback cb_open_ = nullptr,
+                        TagCallback cb_close_ = nullptr, const void* arguments_ = nullptr)
+            : attr(std::move(attributes_)),
+              cb_open(cb_open_),
+              cb_close(cb_close_),
+              cb_text(nullptr),
+              arguments(arguments_) {}
+        explicit Entity(TextCallback cb_text_ = nullptr, const void* arguments_ = nullptr)
+            : cb_open(nullptr), cb_close(nullptr), cb_text(cb_text_), arguments(arguments_) {}
+        std::unordered_map<std::string, Attribute> attr;
+        TagCallback cb_open;
+        TagCallback cb_close;
+        TextCallback cb_text;
+        const void* arguments;
     };
 
-    XmlProcessor(LineNumberCallback line_number_callback, const std::unordered_map<std::string, Entity> &entities, void *context);
+    XmlProcessor(LineNumberCallback line_number_callback, const std::unordered_map<std::string, Entity>& entities,
+                 void* context);
 
-    bool parse(ParserSource *parser_source);
+    bool parse(ParserSource* parser_source);
 
   private:
     class ReaderSource {
       public:
-        explicit ReaderSource(ParserSource *source) : source(source), buffer_length(0), position(0), eof(false) { }
+        explicit ReaderSource(ParserSource* source) : source(source), buffer_length(0), position(0), eof(false) {}
 
-        int read(char *b, int len);
+        int read(char* b, int len);
 
       private:
-        ParserSource *source;
+        ParserSource* source;
         char buffer[8192];
         int buffer_length;
         int position;
@@ -92,18 +96,18 @@ class XmlProcessor {
     };
 
     LineNumberCallback line_number_callback;
-    const std::unordered_map<std::string, Entity> &entities;
-    void *context;
+    const std::unordered_map<std::string, Entity>& entities;
+    void* context;
 
     bool ok;
     bool stop_parsing;
 
-    static int read(void *source, char *b, int len);
-    static int close([[maybe_unused]] void *source);
+    static int read(void* source, char* b, int len);
+    static int close([[maybe_unused]] void* source);
 
-    [[nodiscard]] const Entity *find(const std::string &path) const;
+    [[nodiscard]] const Entity* find(const std::string& path) const;
     void handle_callback_status(CallbackStatus status);
-    void process_tree(void *reader); // to avoid leaking libxml header
+    void process_tree(void* reader); // to avoid leaking libxml header
 };
 
 

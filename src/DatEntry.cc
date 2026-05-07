@@ -36,7 +36,7 @@
 #define de_copy_string(X) (X = (high && !high->X.empty() ? high->X : low && !low->X.empty() ? low->X : ""))
 #define de_copy_uint32(X) (X = (high && high->X != 0 ? high->X : low && low->X != 0 ? low->X : 0))
 
-void DatEntry::merge(const DatEntry *high, const DatEntry *low) {
+void DatEntry::merge(const DatEntry* high, const DatEntry* low) {
     de_copy_string(name);
     de_copy_string(description);
     de_copy_string(version);

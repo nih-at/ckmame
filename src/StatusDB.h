@@ -39,7 +39,7 @@
 #include "Game.h"
 #include "Result.h"
 
-class StatusDB: public DB {
+class StatusDB : public DB {
   public:
     enum Statement {
         CLEANUP_DAT,
@@ -83,7 +83,7 @@ class StatusDB: public DB {
 
     static const DBFormat format;
 
-    StatusDB(const std::string &name, int mode) : DB(format, name, mode) {}
+    StatusDB(const std::string& name, int mode) : DB(format, name, mode) {}
     ~StatusDB() override = default;
 
     std::optional<int> latest_run_id(bool second = false);
@@ -91,13 +91,14 @@ class StatusDB: public DB {
     void delete_runs(std::optional<int> keep_days, std::optional<int> keep_runs);
     [[nodiscard]] std::vector<Run> list_runs();
     [[nodiscard]] std::vector<GameInfo> get_games(int64_t run_id);
-    [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, const std::unordered_set<GameStatus>& status);
+    [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id,
+                                                               const std::unordered_set<GameStatus>& status);
     [[nodiscard]] std::unordered_map<GameStatus, std::vector<std::string>> get_run_status_names(int64_t run_id);
     [[nodiscard]] std::unordered_map<GameStatus, uint64_t> get_run_status_counts(int64_t run_id);
     [[nodiscard]] int64_t find_dat(const DatEntry& dat);
     void insert_game(int64_t run_id, const Game& game, int64_t dat_id, GameStatus status);
     [[nodiscard]] int64_t insert_run(time_t date);
-  [[nodiscard]] int64_t insert_dat(const DatEntry& dat);
+    [[nodiscard]] int64_t insert_dat(const DatEntry& dat);
 
 
   protected:
@@ -105,19 +106,18 @@ class StatusDB: public DB {
 
   private:
     class DatInfo {
-    public:
-      explicit DatInfo(const DatEntry& dat): name(dat.name), version(dat.version) {}
-      std::string name;
-      std::string version;
+      public:
+        explicit DatInfo(const DatEntry& dat) : name(dat.name), version(dat.version) {}
+        std::string name;
+        std::string version;
     };
 
     static std::unordered_map<int, std::string> queries;
 
-    DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
+    DBStatement* get_statement(Statement name) { return get_statement_internal(name); }
 
     void delete_runs_execute(DBStatement* stmt);
     static void compute_combined_checksum(const Game& game, std::vector<uint8_t>& checksum);
-
 };
 
 extern std::shared_ptr<StatusDB> status_db;

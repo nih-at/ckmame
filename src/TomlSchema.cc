@@ -41,68 +41,73 @@ bool TomlSchema::validate(const toml::node& node, const std::string& file_name_)
 }
 
 
-std::string TomlSchema::path_append(const std::string &path, const std::string &element) {
+std::string TomlSchema::path_append(const std::string& path, const std::string& element) {
     if (path.empty()) {
-	return element;
+        return element;
     }
     else {
-	return path + "." + element;
+        return path + "." + element;
     }
 }
 
 
 void TomlSchema::print(const std::string& path, const std::string& message, bool quiet) {
     if (!quiet) {
-	fprintf(stderr, "%s:%s%s %s\n", file_name.c_str(), path.c_str(), path.empty() ? "" : ":", message.c_str());
-	warned = true;
+        fprintf(stderr, "%s:%s%s %s\n", file_name.c_str(), path.c_str(), path.empty() ? "" : ":", message.c_str());
+        warned = true;
     }
 }
 
 
-bool TomlSchema::Boolean::validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const {
+bool TomlSchema::Boolean::validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                   bool quiet) const {
     if (!node.is_boolean()) {
-	schema.print(path, "expected boolean", quiet);
-	return false;
+        schema.print(path, "expected boolean", quiet);
+        return false;
     }
 
     return true;
 }
 
 
-bool TomlSchema::Integer::validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const {
+bool TomlSchema::Integer::validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                   bool quiet) const {
     if (!node.is_integer()) {
-	schema.print(path, "expected integer", quiet);
-	return false;
+        schema.print(path, "expected integer", quiet);
+        return false;
     }
 
     return true;
 }
 
 
-bool TomlSchema::Number::validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const {
+bool TomlSchema::Number::validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                  bool quiet) const {
     if (!node.is_number()) {
-	schema.print(path, "expected number", quiet);
-	return false;
+        schema.print(path, "expected number", quiet);
+        return false;
     }
 
     return true;
 }
 
 
-bool TomlSchema::String::validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const {
+bool TomlSchema::String::validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                  bool quiet) const {
     if (!node.is_string()) {
-	schema.print(path, "expected string", quiet);
-	return false;
+        schema.print(path, "expected string", quiet);
+        return false;
     }
 
     return true;
 }
 
 
-bool TomlSchema::Array::validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const {
+bool TomlSchema::Array::validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                 bool quiet) const {
     if (!node.is_array()) {
-	schema.print(path, "expected array", quiet);
-	return false;
+        schema.print(path, "expected array", quiet);
+        return false;
     }
 
     const auto& array = *(node.as_array());
@@ -111,18 +116,19 @@ bool TomlSchema::Array::validate(const toml::node& node, TomlSchema& schema, con
 
     auto i = 0;
     for (const auto& element : array) {
-	ok = elements->validate(element, schema, path_append(path, i), false) && ok;
-	i++;
+        ok = elements->validate(element, schema, path_append(path, i), false) && ok;
+        i++;
     }
 
     return true;
 }
 
 
-bool TomlSchema::Table::validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const {
+bool TomlSchema::Table::validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                 bool quiet) const {
     if (!node.is_table()) {
-	schema.print(path, "expected array", quiet);
-	return false;
+        schema.print(path, "expected array", quiet);
+        return false;
     }
 
     const auto& table = *(node.as_table());
@@ -130,38 +136,39 @@ bool TomlSchema::Table::validate(const toml::node& node, TomlSchema& schema, con
     auto ok = true;
 
     for (auto pair : table) {
-	auto it = members.find(std::string(pair.first));
-	Type *type;
+        auto it = members.find(std::string(pair.first));
+        Type* type;
 
-	if (it != members.end()) {
-	    type = it->second.get();
-	}
-	else {
-	    type = other_members.get();
-	}
+        if (it != members.end()) {
+            type = it->second.get();
+        }
+        else {
+            type = other_members.get();
+        }
 
-	if (type == nullptr) {
-	    schema.print(path_append(path, std::string(pair.first)), "unknown variable", false);
-	    ok = false;
-	}
-	else {
-	    ok = type->validate(pair.second, schema, path_append(path, std::string(pair.first)), false) && ok;
-	}
+        if (type == nullptr) {
+            schema.print(path_append(path, std::string(pair.first)), "unknown variable", false);
+            ok = false;
+        }
+        else {
+            ok = type->validate(pair.second, schema, path_append(path, std::string(pair.first)), false) && ok;
+        }
     }
 
     return ok;
 }
 
 
-bool TomlSchema::Alternatives::validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const {
+bool TomlSchema::Alternatives::validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                        bool quiet) const {
     for (const auto& type : alternatives) {
-	if (type->validate(node, schema, path, true)) {
-	    return true;
-	}
+        if (type->validate(node, schema, path, true)) {
+            return true;
+        }
     }
 
     if (!schema.warned) {
-	schema.print(path, std::string("expected ") + name, quiet);
+        schema.print(path, std::string("expected ") + name, quiet);
     }
     return false;
 }

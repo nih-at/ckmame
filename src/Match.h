@@ -40,25 +40,25 @@
 #include "types.h"
 
 class Match {
-public:
+  public:
     enum Quality {
-        MISSING, /* ROM is missing */
-        UNCHECKED, /* complete only and previous ROM is missing */
-        NO_HASH,  /* disk and file have no common checksums */
-        LONG,    /* long ROM with valid subsection */
+        MISSING,    /* ROM is missing */
+        UNCHECKED,  /* complete only and previous ROM is missing */
+        NO_HASH,    /* disk and file have no common checksums */
+        LONG,       /* long ROM with valid subsection */
         NAME_ERROR, /* wrong name */
-        COPIED,  /* copied from elsewhere */
-        IN_ZIP,   /* is in zip, should be in ancestor */
-        OK,      /* name/size/crc match */
+        COPIED,     /* copied from elsewhere */
+        IN_ZIP,     /* is in zip, should be in ancestor */
+        OK,         /* name/size/crc match */
         OK_AND_OLD, /* exists in ROM set and old */
-        OLD,      /* exists in old */
+        OLD,        /* exists in old */
     };
-    
-    Match() : quality(MISSING), where(FILE_NOWHERE), index(0), offset(0) { }
-    
+
+    Match() : quality(MISSING), where(FILE_NOWHERE), index(0), offset(0) {}
+
     Quality quality;
     where_t where;
-    
+
     ArchivePtr archive;
     uint64_t index;
 
@@ -70,7 +70,7 @@ public:
 
     uint64_t offset; /* offset of correct part if quality == LONG */
 
-    [[nodiscard]] bool could_be_fixable() const {return quality_is_usable(quality) || !candidates.empty();}
+    [[nodiscard]] bool could_be_fixable() const { return quality_is_usable(quality) || !candidates.empty(); }
     [[nodiscard]] std::string game() const;
     [[nodiscard]] bool source_is_old() const { return where == FILE_OLD; }
     [[nodiscard]] std::string file() const;

@@ -47,23 +47,23 @@ bool ParserDir::parse() {
     // TODO: set name from directory name?
 
     if (header_only) {
-	return true;
+        return true;
     }
 
     try {
-	Dir dir(directory_name, false);
+        Dir dir(directory_name, false);
 
-	if (configuration.roms_zipped) {
+        if (configuration.roms_zipped) {
             auto have_loose_chds = false;
 
-	    for (const auto& entry : dir) {
-	        auto filepath = entry.path();
+            for (const auto& entry : dir) {
+                auto filepath = entry.path();
                 if (std::filesystem::is_directory(filepath)) {
                     auto dir_empty = true;
-                    
+
                     {
                         auto images = Archive::open(filepath, TYPE_DISK, FILE_NOWHERE, 0);
-                    
+
                         if (images && !images->is_empty()) {
                             dir_empty = false;
                             std::sort(images->files.begin(), images->files.end());
@@ -79,9 +79,9 @@ bool ParserDir::parse() {
 
                         if (files && !files->is_empty()) {
                             dir_empty = false;
-                            for (auto &file : files->files) {
+                            for (auto& file : files->files) {
                                 auto extension = std::filesystem::path(file.name).extension();
-                                
+
                                 if (extension == ".chd") {
                                     continue;
                                 }
@@ -104,51 +104,51 @@ bool ParserDir::parse() {
                             }
                         }
                     }
-                    
+
                     if (dir_empty) {
                         output.error("skipping empty directory '%s'", filepath.c_str());
                     }
                 }
                 else {
                     switch (name_type(entry)) {
-                        case NAME_ZIP: {
-                            /* TODO: handle errors */
-                            auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, 0);
-                            if (a) {
-                                auto name = a->name;
-                                if (!runtest) {
-                                    auto extension = std::filesystem::path(name).extension();
-                                    name = name.substr(0, name.length() - extension.string().length());
-                                }
-                                start_game(name, directory_name);
-                                parse_archive(TYPE_ROM, a.get());
-                                end_game();
+                    case NAME_ZIP: {
+                        /* TODO: handle errors */
+                        auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, 0);
+                        if (a) {
+                            auto name = a->name;
+                            if (!runtest) {
+                                auto extension = std::filesystem::path(name).extension();
+                                name = name.substr(0, name.length() - extension.string().length());
                             }
-                            break;
+                            start_game(name, directory_name);
+                            parse_archive(TYPE_ROM, a.get());
+                            end_game();
                         }
-                            
-                            
-                        case NAME_IMAGES:
-                        case NAME_IGNORE:
-                            // ignore
-                            break;
-                            
-                        case NAME_UNKNOWN:
-                            if (filepath.extension() == ".chd") {
-                                if (runtest) {
-                                    have_loose_chds = true;
-                                }
-                                else {
-                                    output.error("skipping top level disk image '%s'", filepath.c_str());
-                                }
+                        break;
+                    }
+
+
+                    case NAME_IMAGES:
+                    case NAME_IGNORE:
+                        // ignore
+                        break;
+
+                    case NAME_UNKNOWN:
+                        if (filepath.extension() == ".chd") {
+                            if (runtest) {
+                                have_loose_chds = true;
                             }
                             else {
-                                output.error("skipping unknown file '%s'", filepath.c_str());
+                                output.error("skipping top level disk image '%s'", filepath.c_str());
                             }
-                            break;
+                        }
+                        else {
+                            output.error("skipping unknown file '%s'", filepath.c_str());
+                        }
+                        break;
                     }
                 }
-        }
+            }
 
             end_game();
 
@@ -160,13 +160,12 @@ bool ParserDir::parse() {
                     parse_archive(TYPE_DISK, a.get());
                     end_game();
                 }
-
             }
-	}
-	else {
+        }
+        else {
             auto have_loose_files = false;
 
-	    for (const auto& entry : dir) {
+            for (const auto& entry : dir) {
                 if (entry.is_directory()) {
                     /* TODO: handle errors */
                     auto a = Archive::open(entry.path(), TYPE_ROM, FILE_NOWHERE, 0);
@@ -188,10 +187,10 @@ bool ParserDir::parse() {
                     }
                 }
             }
-            
+
             if (have_loose_files) {
                 auto a = Archive::open_toplevel(directory_name, TYPE_ROM, FILE_NOWHERE, 0);
-                
+
                 if (a) {
                     start_game(".", "");
                     parse_archive(TYPE_ROM, a.get());
@@ -199,24 +198,24 @@ bool ParserDir::parse() {
                 }
             }
         }
-        
+
         eof();
     }
     catch (...) {
-	return false;
+        return false;
     }
 
     return true;
 }
 
 
-bool ParserDir::parse_archive(filetype_t filetype, Archive *a) {
+bool ParserDir::parse_archive(filetype_t filetype, Archive* a) {
     std::string name;
-    
+
     int wanted_hashtypes = filetype == TYPE_ROM ? hashtypes : Hashes::TYPE_ALL;
 
     for (size_t i = 0; i < a->files.size(); i++) {
-        auto &file = a->files[i];
+        auto& file = a->files[i];
 
         if (filetype == TYPE_ROM) {
             a->file_ensure_hashes(i, wanted_hashtypes);
@@ -228,27 +227,27 @@ bool ParserDir::parse_archive(filetype_t filetype, Archive *a) {
         file_mtime(filetype, file.mtime);
         if (file.broken) {
             file_status(filetype, "baddump");
-	}
+        }
         for (int ht = 1; ht <= Hashes::TYPE_MAX; ht <<= 1) {
             if ((wanted_hashtypes & ht) && file.hashes.has_type(ht)) {
                 file_hash(filetype, ht, file.hashes.to_string(ht));
-	    }
-	}
+            }
+        }
         file_end(filetype);
     }
 
     return true;
 }
 
-void ParserDir::start_game(const std::string &name, const std::string &top_directory) {
+void ParserDir::start_game(const std::string& name, const std::string& top_directory) {
     if (current_game == name) {
         return;
     }
-    
+
     if (!current_game.empty()) {
         game_end();
     }
-    
+
     game_start();
     game_name(top_directory.empty() ? name : name.substr(top_directory.length() + 1));
     current_game = name;

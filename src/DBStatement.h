@@ -4,10 +4,10 @@
 /*
  DBStatement.h -- mame.db sqlite3 data base
  Copyright (C) 1999-2024 Dieter Baron and Thomas Klausner
- 
+
  This file is part of ckmame, a program to check rom sets for MAME.
  The authors can be contacted at <ckmame@nih.at>
- 
+
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
@@ -20,7 +20,7 @@
  3. The name of the author may not be used to endorse or promote
  products derived from this software without specific prior
  written permission.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
  OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,44 +42,48 @@
 #include "Hashes.h"
 
 class DBStatement {
-public:
-    DBStatement(sqlite3 *db, const std::string &sql_query);
+  public:
+    DBStatement(sqlite3* db, const std::string& sql_query);
     ~DBStatement();
-        
+
     void execute();
     bool step();
     void reset();
 
-    std::vector<uint8_t> get_blob(const std::string &name);
+    std::vector<uint8_t> get_blob(const std::string& name);
     bool get_bool(const std::string& name);
     Hashes get_hashes();
-    int get_int(const std::string &name);
-    int get_int(const std::string &name, int default_value);
-    int64_t get_int64(const std::string &name);
-    int64_t get_int64(const std::string &name, int64_t default_value);
+    int get_int(const std::string& name);
+    int get_int(const std::string& name, int default_value);
+    int64_t get_int64(const std::string& name);
+    int64_t get_int64(const std::string& name, int64_t default_value);
     int64_t get_rowid();
-    std::string get_string(const std::string &name);
-    uint64_t get_uint64(const std::string &name) { return static_cast<uint64_t>(get_int64(name)); }
-    uint64_t get_uint64(const std::string &name, uint64_t default_value) { return static_cast<uint64_t>(get_int64(name, static_cast<int64_t>(default_value))); }
+    std::string get_string(const std::string& name);
+    uint64_t get_uint64(const std::string& name) { return static_cast<uint64_t>(get_int64(name)); }
+    uint64_t get_uint64(const std::string& name, uint64_t default_value) {
+        return static_cast<uint64_t>(get_int64(name, static_cast<int64_t>(default_value)));
+    }
 
     void set_bool(const std::string& name, bool value);
-    void set_blob(const std::string &name, const std::vector<uint8_t> &data);
-    void set_hashes(const Hashes &hashes, bool set_null);
-    void set_int(const std::string &name, int value);
-    void set_int(const std::string &name, int value, int default_value);
-    void set_int64(const std::string &name, int64_t value);
-    void set_int64(const std::string &name, int64_t value, int64_t default_value);
-    void set_null(const std::string &name);
-    void set_string(const std::string &name, const std::string &value, bool store_empty_string = false);
-    void set_uint64(const std::string &name, uint64_t value) { set_int64(name, static_cast<int64_t>(value)); }
-    void set_uint64(const std::string &name, uint64_t value, uint64_t default_value) { set_int64(name, static_cast<int64_t>(value), static_cast<int64_t>(default_value)); }
-    
-private:
-    int get_column_index(const std::string &name);
-    int get_parameter_index(const std::string &name);
-    
-    sqlite3 *db;
-    sqlite3_stmt *stmt;
+    void set_blob(const std::string& name, const std::vector<uint8_t>& data);
+    void set_hashes(const Hashes& hashes, bool set_null);
+    void set_int(const std::string& name, int value);
+    void set_int(const std::string& name, int value, int default_value);
+    void set_int64(const std::string& name, int64_t value);
+    void set_int64(const std::string& name, int64_t value, int64_t default_value);
+    void set_null(const std::string& name);
+    void set_string(const std::string& name, const std::string& value, bool store_empty_string = false);
+    void set_uint64(const std::string& name, uint64_t value) { set_int64(name, static_cast<int64_t>(value)); }
+    void set_uint64(const std::string& name, uint64_t value, uint64_t default_value) {
+        set_int64(name, static_cast<int64_t>(value), static_cast<int64_t>(default_value));
+    }
+
+  private:
+    int get_column_index(const std::string& name);
+    int get_parameter_index(const std::string& name);
+
+    sqlite3* db;
+    sqlite3_stmt* stmt;
     std::unordered_map<std::string, int> column_names;
     std::unordered_map<std::string, int> parameter_names;
 };

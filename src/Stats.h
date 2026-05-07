@@ -7,7 +7,7 @@
 
  This file is part of ckmame, a program to check rom sets for MAME.
  The authors can be contacted at <ckmame@nih.at>
- 
+
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
@@ -20,7 +20,7 @@
  3. The name of the author may not be used to endorse or promote
  products derived from this software without specific prior
  written permission.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
  OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,8 +40,8 @@
 #include "types.h"
 
 class StatsFiles {
- public:
-    StatsFiles() : files_total(0), files_good(0), bytes_total(0), bytes_good(0) { }
+  public:
+    StatsFiles() : files_total(0), files_good(0), bytes_total(0), bytes_good(0) {}
     uint64_t files_total;
     uint64_t files_good;
     uint64_t bytes_total;
@@ -49,7 +49,7 @@ class StatsFiles {
 };
 
 class Stats {
- public:
+  public:
     Stats() : games_total(0), games_good(0), games_partial(0) {}
     uint64_t games_total;
     uint64_t games_good;
@@ -57,10 +57,10 @@ class Stats {
     StatsFiles files[TYPE_MAX];
 
     void add_game(GameStatus status);
-    void add_rom(enum filetype type, const FileData *rom, Match::Quality status);
-    void print(FILE *f, bool total_only);
+    void add_rom(enum filetype type, const FileData* rom, Match::Quality status);
+    void print(FILE* f, bool total_only);
 
- private:
+  private:
     void add_file(enum filetype type, uint64_t size, Match::Quality status);
 };
 

@@ -40,22 +40,24 @@
 #include "XmlProcessor.h"
 
 class ParserXml : public Parser {
-public:
-    ParserXml(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, const Options& options) : Parser(std::move(source), exclude, dat, output, options) { }
+  public:
+    ParserXml(ParserSourcePtr source, const std::unordered_set<std::string>& exclude, const DatEntry* dat,
+              OutputContext* output, const Options& options)
+        : Parser(std::move(source), exclude, dat, output, options) {}
     ~ParserXml() override = default;
-     
+
     bool parse() override;
 
 
   private:
-    static void line_number_callback(void *context, size_t line_number);
+    static void line_number_callback(void* context, size_t line_number);
 
     class Arguments {
       public:
-	explicit Arguments(filetype_t file_type, int hash_type = 0) : file_type(file_type), hash_type(hash_type) { }
+        explicit Arguments(filetype_t file_type, int hash_type = 0) : file_type(file_type), hash_type(hash_type) {}
 
-	filetype_t file_type;
-	int hash_type;
+        filetype_t file_type;
+        int hash_type;
     };
 
     static const Arguments arguments_rom;
@@ -77,27 +79,36 @@ public:
     static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_rom;
     static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_softwarelist;
 
-    static XmlProcessor::CallbackStatus parse_file_end(void *ctx, const void *args);
-    static XmlProcessor::CallbackStatus parse_file_hash(void *ctx, const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_file_loadflag(void *ctx, const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_file_merge(void *ctx, const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_file_mia(void *ctx, const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_file_name(void *ctx, const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_file_start(void *ctx, const void *args);
-    static XmlProcessor::CallbackStatus parse_file_status(void *ctx, const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_file_size(void *ctx, const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_game_cloneof(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_game_description(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_game_end(void *ctx, [[maybe_unused]] const void *args);
-    static XmlProcessor::CallbackStatus parse_game_name(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_game_start(void *ctx, [[maybe_unused]] const void *args);
-    static XmlProcessor::CallbackStatus parse_header_end(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args);
-    static XmlProcessor::CallbackStatus parse_mame_build(void *context, const void *arguments, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_prog_description(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_prog_header(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_prog_name(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_prog_version(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_softwarelist_name(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_file_end(void* ctx, const void* args);
+    static XmlProcessor::CallbackStatus parse_file_hash(void* ctx, const void* args, const std::string& value);
+    static XmlProcessor::CallbackStatus parse_file_loadflag(void* ctx, const void* args, const std::string& value);
+    static XmlProcessor::CallbackStatus parse_file_merge(void* ctx, const void* args, const std::string& value);
+    static XmlProcessor::CallbackStatus parse_file_mia(void* ctx, const void* args, const std::string& value);
+    static XmlProcessor::CallbackStatus parse_file_name(void* ctx, const void* args, const std::string& value);
+    static XmlProcessor::CallbackStatus parse_file_start(void* ctx, const void* args);
+    static XmlProcessor::CallbackStatus parse_file_status(void* ctx, const void* args, const std::string& value);
+    static XmlProcessor::CallbackStatus parse_file_size(void* ctx, const void* args, const std::string& value);
+    static XmlProcessor::CallbackStatus parse_game_cloneof(void* ctx, [[maybe_unused]] const void* args,
+                                                           const std::string& value);
+    static XmlProcessor::CallbackStatus parse_game_description(void* ctx, [[maybe_unused]] const void* args,
+                                                               const std::string& value);
+    static XmlProcessor::CallbackStatus parse_game_end(void* ctx, [[maybe_unused]] const void* args);
+    static XmlProcessor::CallbackStatus parse_game_name(void* ctx, [[maybe_unused]] [[maybe_unused]] const void* args,
+                                                        const std::string& value);
+    static XmlProcessor::CallbackStatus parse_game_start(void* ctx, [[maybe_unused]] const void* args);
+    static XmlProcessor::CallbackStatus parse_header_end(void* ctx, [[maybe_unused]] [[maybe_unused]] const void* args);
+    static XmlProcessor::CallbackStatus parse_mame_build(void* context, const void* arguments,
+                                                         const std::string& value);
+    static XmlProcessor::CallbackStatus
+    parse_prog_description(void* ctx, [[maybe_unused]] [[maybe_unused]] const void* args, const std::string& value);
+    static XmlProcessor::CallbackStatus parse_prog_header(void* ctx, [[maybe_unused]] [[maybe_unused]] const void* args,
+                                                          const std::string& value);
+    static XmlProcessor::CallbackStatus parse_prog_name(void* ctx, [[maybe_unused]] [[maybe_unused]] const void* args,
+                                                        const std::string& value);
+    static XmlProcessor::CallbackStatus
+    parse_prog_version(void* ctx, [[maybe_unused]] [[maybe_unused]] const void* args, const std::string& value);
+    static XmlProcessor::CallbackStatus
+    parse_softwarelist_name(void* ctx, [[maybe_unused]] [[maybe_unused]] const void* args, const std::string& value);
 
     static XmlProcessor::CallbackStatus status(bool ok) { return ok ? XmlProcessor::OK : XmlProcessor::ERROR; }
 };

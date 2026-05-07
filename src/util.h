@@ -47,28 +47,29 @@ enum name_type { NAME_ZIP, NAME_IMAGES, NAME_IGNORE, NAME_UNKNOWN };
 
 typedef enum name_type name_type_t;
 
-std::vector<uint8_t> hex2bin(const std::string &hex);
-std::string bin2hex(const std::vector<uint8_t> &bin);
-bool string_less_case_insensitive(const std::string &lhs, const std::string &rhs);
-std::string string_lower(const std::string &s);
-bool string_starts_with(const std::string &large, const std::string &small);
-name_type_t name_type(const std::filesystem::directory_entry &entry);
-name_type_t name_type_s(const std::string &name);
-void diff_lines(const std::vector<std::string>& old_lines, const std::vector<std::string>& new_lines, size_t& added, size_t& removed);
+std::vector<uint8_t> hex2bin(const std::string& hex);
+std::string bin2hex(const std::vector<uint8_t>& bin);
+bool string_less_case_insensitive(const std::string& lhs, const std::string& rhs);
+std::string string_lower(const std::string& s);
+bool string_starts_with(const std::string& large, const std::string& small);
+name_type_t name_type(const std::filesystem::directory_entry& entry);
+name_type_t name_type_s(const std::string& name);
+void diff_lines(const std::vector<std::string>& old_lines, const std::vector<std::string>& new_lines, size_t& added,
+                size_t& removed);
 bool ensure_dir(const std::filesystem::path& name, bool strip_filename); // TODO: replace with ensure_directory
 void ensure_directory(const std::filesystem::path& name, bool strip_filename = false);
 bool iequals(const std::string& a, const std::string& b);
-bool is_ziplike(const std::filesystem::path &fname);
+bool is_ziplike(const std::filesystem::path& fname);
 std::filesystem::path home_directory();
 std::string human_number(uint64_t value);
-std::string format_time(const std::string &format, time_t timestamp);
-void sort_strings_case_insensitive(std::vector<std::string> &strings);
-std::string string_format(const char *format, ...) PRINTF_LIKE(1, 2);
-std::string string_format_v(const char *format, va_list ap);
-std::string slurp(const std::string &fname);
+std::string format_time(const std::string& format, time_t timestamp);
+void sort_strings_case_insensitive(std::vector<std::string>& strings);
+std::string string_format(const char* format, ...) PRINTF_LIKE(1, 2);
+std::string string_format_v(const char* format, va_list ap);
+std::string slurp(const std::string& fname);
 std::string pad_string(const std::string& string, size_t width, char c = ' ');
 std::string pad_string_left(const std::string& string, size_t width, char c = ' ');
-std::vector<std::string> slurp_lines(const std::string &file_name);
+std::vector<std::string> slurp_lines(const std::string& file_name);
 void write_lines(const std::string& file_name, const std::vector<std::string>& lines);
 
 #endif

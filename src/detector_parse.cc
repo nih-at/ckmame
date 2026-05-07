@@ -36,12 +36,13 @@
 
 #include "ParserSourceFile.h"
 
-DetectorPtr Detector::parse(const std::string &filename) {
+DetectorPtr Detector::parse(const std::string& filename) {
     try {
         auto ps = ParserSourceFile(filename);
 
         return Detector::parse(&ps);
-    } catch (...) {
+    }
+    catch (...) {
         // TODO: report error
         return nullptr;
     }

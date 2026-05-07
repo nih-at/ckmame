@@ -34,7 +34,7 @@ effort (for example the reengineering of a great many Capstone chips).
 
 /*
   Adapted for ckmame 2005 by Dieter Baron <dillo@giga.or.at>
-			     Thomas Klausner <wiz@gatalith.at>
+                             Thomas Klausner <wiz@gatalith.at>
 */
 
 #include <string.h>
@@ -45,19 +45,20 @@ effort (for example the reengineering of a great many Capstone chips).
 
 #include "sha1_own.h"
 
-#define EXTRACT_UCHAR(p) (*(unsigned char *)(p))
-#define STRING2INT(s) (static_cast<uint32_t>((((((EXTRACT_UCHAR(s) << 8) | EXTRACT_UCHAR(s + 1)) << 8) | EXTRACT_UCHAR(s + 2)) << 8) | EXTRACT_UCHAR(s + 3)))
+#define EXTRACT_UCHAR(p) (*(unsigned char*)(p))
+#define STRING2INT(s)                                                                                                \
+    (static_cast<uint32_t>((((((EXTRACT_UCHAR(s) << 8) | EXTRACT_UCHAR(s + 1)) << 8) | EXTRACT_UCHAR(s + 2)) << 8) | \
+                           EXTRACT_UCHAR(s + 3)))
 
-void
-sha_copy(struct sha_ctx *dest, struct sha_ctx *src) {
+void sha_copy(struct sha_ctx* dest, struct sha_ctx* src) {
     unsigned int i;
 
     dest->count_l = src->count_l;
     dest->count_h = src->count_h;
     for (i = 0; i < SHA_DIGESTLEN; i++)
-	dest->digest[i] = src->digest[i];
+        dest->digest[i] = src->digest[i];
     for (i = 0; i < src->index; i++)
-	dest->block[i] = src->block[i];
+        dest->block[i] = src->block[i];
     dest->index = src->index;
 }
 
@@ -73,14 +74,14 @@ sha_copy(struct sha_ctx *dest, struct sha_ctx *src) {
 #define f3(x, y, z) ((x & y) | (z & (x | y))) /* Rounds 40-59 */
 #define f4(x, y, z) (x ^ y ^ z)               /* Rounds 60-79 */
 
-    /* The SHA Mysterious Constants */
+/* The SHA Mysterious Constants */
 
 #define K1 0x5A827999L /* Rounds  0-19 */
 #define K2 0x6ED9EBA1L /* Rounds 20-39 */
 #define K3 0x8F1BBCDCL /* Rounds 40-59 */
 #define K4 0xCA62C1D6L /* Rounds 60-79 */
 
-    /* SHA initial values */
+/* SHA initial values */
 
 #define h0init 0x67452301L
 #define h1init 0xEFCDAB89L
@@ -88,46 +89,45 @@ sha_copy(struct sha_ctx *dest, struct sha_ctx *src) {
 #define h3init 0x10325476L
 #define h4init 0xC3D2E1F0L
 
-    /* 32-bit rotate left - kludged with shifts */
+/* 32-bit rotate left - kludged with shifts */
 
 #define ROTL(n, X) (((X) << (n)) | ((X) >> (32 - (n))))
 
-    /* The initial expanding function.  The hash function is defined over an
-       80-word expanded input array W, where the first 16 are copies of the input
-       data, and the remaining 64 are defined by
+/* The initial expanding function.  The hash function is defined over an
+   80-word expanded input array W, where the first 16 are copies of the input
+   data, and the remaining 64 are defined by
 
-	    W[ i ] = W[ i - 16 ] ^ W[ i - 14 ] ^ W[ i - 8 ] ^ W[ i - 3 ]
+        W[ i ] = W[ i - 16 ] ^ W[ i - 14 ] ^ W[ i - 8 ] ^ W[ i - 3 ]
 
-       This implementation generates these values on the fly in a circular
-       buffer - thanks to Colin Plumb, colin@nyx10.cs.du.edu for this
-       optimization.
+   This implementation generates these values on the fly in a circular
+   buffer - thanks to Colin Plumb, colin@nyx10.cs.du.edu for this
+   optimization.
 
-       The updated SHA changes the expanding function by adding a rotate of 1
-       bit.  Thanks to Jim Gillogly, jim@rand.org, and an anonymous contributor
-       for this information */
+   The updated SHA changes the expanding function by adding a rotate of 1
+   bit.  Thanks to Jim Gillogly, jim@rand.org, and an anonymous contributor
+   for this information */
 
 #define expand(W, i) (W[i & 15] = ROTL(1, (W[i & 15] ^ W[(i - 14) & 15] ^ W[(i - 8) & 15] ^ W[(i - 3) & 15])))
 
 
-    /* The prototype SHA sub-round.  The fundamental sub-round is:
+/* The prototype SHA sub-round.  The fundamental sub-round is:
 
-	    a' = e + ROTL( 5, a ) + f( b, c, d ) + k + data;
-	    b' = a;
-	    c' = ROTL( 30, b );
-	    d' = c;
-	    e' = d;
+        a' = e + ROTL( 5, a ) + f( b, c, d ) + k + data;
+        b' = a;
+        c' = ROTL( 30, b );
+        d' = c;
+        e' = d;
 
-       but this is implemented by unrolling the loop 5 times and renaming the
-       variables ( e, a, b, c, d ) = ( a', b', c', d', e' ) each iteration.
-       This code is then replicated 20 times for each of the 4 functions, using
-       the next 20 values from the W[] array each time */
+   but this is implemented by unrolling the loop 5 times and renaming the
+   variables ( e, a, b, c, d ) = ( a', b', c', d', e' ) each iteration.
+   This code is then replicated 20 times for each of the 4 functions, using
+   the next 20 values from the W[] array each time */
 
 #define subRound(a, b, c, d, e, f, k, data) (e += ROTL(5, a) + f(b, c, d) + k + data, b = ROTL(30, b))
 
 /* Initialize the SHA values */
 
-void
-SHA1Init(SHA1_CTX *ctx) {
+void SHA1Init(SHA1_CTX* ctx) {
     /* Set the h-vars to their initial values */
     ctx->digest[0] = h0init;
     ctx->digest[1] = h1init;
@@ -149,8 +149,7 @@ SHA1Init(SHA1_CTX *ctx) {
 
    Note that this function destroys the data area */
 
-static void
-sha_transform(struct sha_ctx *ctx, uint32_t *data) {
+static void sha_transform(struct sha_ctx* ctx, uint32_t* data) {
     uint32_t A, B, C, D, E; /* Local vars */
 
     /* Set up first buffer and local data buffer */
@@ -254,53 +253,50 @@ sha_transform(struct sha_ctx *ctx, uint32_t *data) {
 }
 
 
-static void
-sha_block(struct sha_ctx *ctx, const unsigned char *block) {
+static void sha_block(struct sha_ctx* ctx, const unsigned char* block) {
     uint32_t data[SHA_DATALEN];
     int i;
 
     /* Update block count */
     if (!++ctx->count_l)
-	++ctx->count_h;
+        ++ctx->count_h;
 
     /* Endian independent conversion */
     for (i = 0; i < SHA_DATALEN; i++, block += 4)
-	data[i] = STRING2INT(block);
+        data[i] = STRING2INT(block);
 
     sha_transform(ctx, data);
 }
 
-void
-SHA1Update(SHA1_CTX *ctx, const unsigned char *buffer, unsigned int len) {
+void SHA1Update(SHA1_CTX* ctx, const unsigned char* buffer, unsigned int len) {
     if (ctx->index) { /* Try to fill partial block */
-	unsigned left = SHA_DATASIZE - ctx->index;
-	if (len < left) {
-	    memcpy(ctx->block + ctx->index, buffer, len);
-	    ctx->index += len;
-	    return; /* Finished */
-	}
-	else {
-	    memcpy(ctx->block + ctx->index, buffer, left);
-	    sha_block(ctx, ctx->block);
-	    buffer += left;
-	    len -= left;
-	}
+        unsigned left = SHA_DATASIZE - ctx->index;
+        if (len < left) {
+            memcpy(ctx->block + ctx->index, buffer, len);
+            ctx->index += len;
+            return; /* Finished */
+        }
+        else {
+            memcpy(ctx->block + ctx->index, buffer, left);
+            sha_block(ctx, ctx->block);
+            buffer += left;
+            len -= left;
+        }
     }
     while (len >= SHA_DATASIZE) {
-	sha_block(ctx, buffer);
-	buffer += SHA_DATASIZE;
-	len -= SHA_DATASIZE;
+        sha_block(ctx, buffer);
+        buffer += SHA_DATASIZE;
+        len -= SHA_DATASIZE;
     }
     if ((ctx->index = len)) /* This assignment is intended */
-	/* Buffer leftovers */
-	memcpy(ctx->block, buffer, len);
+        /* Buffer leftovers */
+        memcpy(ctx->block, buffer, len);
 }
 
 /* Final wrapup - pad to SHA_DATASIZE-byte boundary with the bit pattern
    1 0* (64-bit count of bits processed, MSB-first) */
 
-void
-SHA1Final(unsigned char digest[20], SHA1_CTX *ctx) {
+void SHA1Final(unsigned char digest[20], SHA1_CTX* ctx) {
     uint32_t data[SHA_DATALEN];
     unsigned int i;
     unsigned int words;
@@ -312,48 +308,47 @@ SHA1Final(unsigned char digest[20], SHA1_CTX *ctx) {
 
     /* Fill rest of word */
     for (; i & 3; i++)
-	ctx->block[i] = 0;
+        ctx->block[i] = 0;
 
     /* i is now a multiple of the word size 4 */
     words = i >> 2;
     for (i = 0; i < words; i++)
-	data[i] = STRING2INT(ctx->block + 4 * i);
+        data[i] = STRING2INT(ctx->block + 4 * i);
 
     if (words > (SHA_DATALEN - 2)) { /* No room for length in this block. Process it and
-				      * pad with another one */
-	for (i = words; i < SHA_DATALEN; i++)
-	    data[i] = 0;
-	sha_transform(ctx, data);
-	for (i = 0; i < (SHA_DATALEN - 2); i++)
-	    data[i] = 0;
+                                      * pad with another one */
+        for (i = words; i < SHA_DATALEN; i++)
+            data[i] = 0;
+        sha_transform(ctx, data);
+        for (i = 0; i < (SHA_DATALEN - 2); i++)
+            data[i] = 0;
     }
     else
-	for (i = words; i < SHA_DATALEN - 2; i++)
-	    data[i] = 0;
+        for (i = words; i < SHA_DATALEN - 2; i++)
+            data[i] = 0;
     /* There's 512 = 2^9 bits in one block */
     data[SHA_DATALEN - 2] = (ctx->count_h << 9) | (ctx->count_l >> 23);
     data[SHA_DATALEN - 1] = (ctx->count_l << 9) | (ctx->index << 3);
     sha_transform(ctx, data);
 
     for (i = 0; i < SHA_DIGESTLEN; i++) {
-	digest[i * 4] = ctx->digest[i] >> 24;
-	digest[i * 4 + 1] = (ctx->digest[i] >> 16) & 0xff;
-	digest[i * 4 + 2] = (ctx->digest[i] >> 8) & 0xff;
-	digest[i * 4 + 3] = ctx->digest[i] & 0xff;
+        digest[i * 4] = ctx->digest[i] >> 24;
+        digest[i * 4 + 1] = (ctx->digest[i] >> 16) & 0xff;
+        digest[i * 4 + 2] = (ctx->digest[i] >> 8) & 0xff;
+        digest[i * 4 + 3] = ctx->digest[i] & 0xff;
     }
 }
 
-void
-sha_digest(struct sha_ctx *ctx, unsigned char *s) {
+void sha_digest(struct sha_ctx* ctx, unsigned char* s) {
     int i;
 
     if (s != NULL)
-	for (i = 0; i < SHA_DIGESTLEN; i++) {
-	    *s++ = ctx->digest[i] >> 24;
-	    *s++ = 0xff & (ctx->digest[i] >> 16);
-	    *s++ = 0xff & (ctx->digest[i] >> 8);
-	    *s++ = 0xff & ctx->digest[i];
-	}
+        for (i = 0; i < SHA_DIGESTLEN; i++) {
+            *s++ = ctx->digest[i] >> 24;
+            *s++ = 0xff & (ctx->digest[i] >> 16);
+            *s++ = 0xff & (ctx->digest[i] >> 8);
+            *s++ = 0xff & ctx->digest[i];
+        }
 }
 
 #endif /* ENABLE_SHA1 */

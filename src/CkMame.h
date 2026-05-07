@@ -39,9 +39,9 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class CkMame : public Command {
   public:
     CkMame();
-    
-    void global_setup(const ParsedCommandline &commandline) override;
-    bool execute(const std::vector<std::string> &arguments) override;
+
+    void global_setup(const ParsedCommandline& commandline) override;
+    bool execute(const std::vector<std::string>& arguments) override;
     bool cleanup() override;
 
   private:

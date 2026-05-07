@@ -26,7 +26,7 @@
 typedef struct Sha_256 {
     uint8_t hash[SIZE_OF_SHA_256_HASH];
     uint8_t chunk[SIZE_OF_SHA_256_CHUNK];
-    uint8_t *chunk_pos;
+    uint8_t* chunk_pos;
     size_t space_left;
     uint64_t total_len;
     uint32_t h[8];
@@ -44,7 +44,7 @@ typedef struct Sha_256 {
  *
  * @note If either of the passed pointers is NULL, the results are unpredictable.
  */
-void SHA256Init(SHA256_CTX *sha_256);
+void SHA256Init(SHA256_CTX* sha_256);
 
 /*
  * @brief Stream more input data for an on-going SHA-256 calculation.
@@ -61,7 +61,7 @@ void SHA256Init(SHA256_CTX *sha_256);
  *
  * @note If either of the passed pointers is NULL, the results are unpredictable.
  */
-void SHA256Update(SHA256_CTX *sha_256, const unsigned char *data, unsigned int len);
+void SHA256Update(SHA256_CTX* sha_256, const unsigned char* data, unsigned int len);
 
 /*
  * @brief Conclude a SHA-256 streaming calculation, making the hash value available.
@@ -77,6 +77,6 @@ void SHA256Update(SHA256_CTX *sha_256, const unsigned char *data, unsigned int l
  * @note Invoking this function for a calculation with no data (the writing function has never been invoked, or it only
  * has been invoked with empty data) is legal. It will calculate the SHA-256 value of the empty string.
  */
-void SHA256Final(unsigned char[SIZE_OF_SHA_256_HASH], SHA256_CTX *sha_256);
+void SHA256Final(unsigned char[SIZE_OF_SHA_256_HASH], SHA256_CTX* sha_256);
 
 #endif

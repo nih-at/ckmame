@@ -37,36 +37,34 @@
 #include <cinttypes>
 #include <filesystem>
 
-#include "check_util.h"
+#include "CkmameCache.h"
 #include "DeleteList.h"
+#include "RomDB.h"
+#include "check_util.h"
 #include "file_util.h"
 #include "find.h"
 #include "globals.h"
-#include "RomDB.h"
 #include "util.h"
-#include "CkmameCache.h"
 
 
-std::string
-make_garbage_name(const std::string &name, int unique) {
+std::string make_garbage_name(const std::string& name, int unique) {
     auto s = std::filesystem::path(name).filename();
 
     auto t = std::filesystem::path(configuration.unknown_directory) / s;
-    
+
     if (unique && std::filesystem::exists(t)) {
-	/* skip '.' */
-	auto ext = s.extension();
-	/* path and filename, but no extension */
-	auto t_no_ext = t.parent_path() / t.stem();
-	return make_unique_name(t_no_ext, ext);
+        /* skip '.' */
+        auto ext = s.extension();
+        /* path and filename, but no extension */
+        auto t_no_ext = t.parent_path() / t.stem();
+        return make_unique_name(t_no_ext, ext);
     }
 
     return t;
 }
 
 
-static std::string
-make_needed_name(filetype_t filetype, const FileData *r) {
+static std::string make_needed_name(filetype_t filetype, const FileData* r) {
     /* <configuration.saved_directory>/<crc>-nnn.zip */
 
     auto hash = r->hashes.to_string(filetype == TYPE_ROM ? Hashes::TYPE_CRC : Hashes::TYPE_SHA1);
@@ -76,8 +74,7 @@ make_needed_name(filetype_t filetype, const FileData *r) {
 }
 
 
-int
-move_image_to_garbage(const std::string &fname) {
+int move_image_to_garbage(const std::string& fname) {
     int ret;
 
     auto to_name = make_garbage_name(fname, 1);
@@ -88,55 +85,58 @@ move_image_to_garbage(const std::string &fname) {
 }
 
 
-void remove_empty_archive(Archive *archive) {
+void remove_empty_archive(Archive* archive) {
     bool quiet = archive->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY;
-    
+
     if (!quiet) {
-	output.message_verbose("remove empty archive");
+        output.message_verbose("remove empty archive");
     }
     if (ckmame_cache->superfluous_delete_list) {
-	ckmame_cache->superfluous_delete_list->remove_archive(archive);
+        ckmame_cache->superfluous_delete_list->remove_archive(archive);
     }
 }
 
 
-bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uint64_t start, std::optional<uint64_t> length, FileData *f) {
+bool save_needed_part(Archive* sa, size_t sidx, const std::string& gamename, uint64_t start,
+                      std::optional<uint64_t> length, FileData* f) {
     bool needed = true;
 
     if (!sa->file_ensure_hashes(sidx, db->hashtypes(sa->filetype))) {
         return false;
     }
-    
+
     if (find_in_romset(sa->filetype, 0, f, sa, gamename, "", nullptr) == FIND_EXISTS) {
         needed = false;
     }
     else {
-	ckmame_cache->ensure_needed_maps();
+        ckmame_cache->ensure_needed_maps();
         if (find_in_archives(sa->filetype, 0, f, nullptr, true) == FIND_EXISTS) {
             needed = false;
         }
     }
-    
+
     if (needed) {
-	if (!length.has_value()) {
-	    output.message_verbose("save needed file '%s'", sa->files[sidx].filename().c_str());
-	}
-	else {
-	    output.message_verbose("extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed", start, length.value(), sa->files[sidx].filename().c_str());
-	}
+        if (!length.has_value()) {
+            output.message_verbose("save needed file '%s'", sa->files[sidx].filename().c_str());
+        }
+        else {
+            output.message_verbose("extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed", start,
+                                   length.value(), sa->files[sidx].filename().c_str());
+        }
 
         auto tmp = make_needed_name(sa->filetype, f);
         if (tmp.empty()) {
             output.error("cannot create needed file name");
             return false;
         }
-        
-        ArchivePtr da  = Archive::open(tmp, sa->filetype, FILE_NEEDED, ARCHIVE_FL_CREATE | (configuration.fix_romset ? 0 : ARCHIVE_FL_RDONLY));
-        
+
+        ArchivePtr da = Archive::open(tmp, sa->filetype, FILE_NEEDED,
+                                      ARCHIVE_FL_CREATE | (configuration.fix_romset ? 0 : ARCHIVE_FL_RDONLY));
+
         if (!da) {
             return false;
         }
-        
+
         if (!da->file_copy_part(sa, sidx, sa->files[sidx].name, start, length, &f->hashes) || !da->commit()) {
             da->rollback();
             return false;
@@ -144,10 +144,10 @@ bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uin
     }
     else {
         if (!length.has_value()) {
-	    output.message_verbose("delete unneeded file '%s'", sa->files[sidx].filename().c_str());
+            output.message_verbose("delete unneeded file '%s'", sa->files[sidx].filename().c_str());
         }
     }
-    
+
     if (configuration.fix_romset && !length.has_value()) {
         if (sa->where == FILE_ROMSET) {
             return sa->file_delete(sidx);
@@ -156,11 +156,10 @@ bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uin
             ckmame_cache->used(sa, sidx);
         }
     }
-    
+
     return true;
 }
 
-bool
-save_needed(Archive *sa, size_t sidx, const std::string &gamename) {
+bool save_needed(Archive* sa, size_t sidx, const std::string& gamename) {
     return save_needed_part(sa, sidx, gamename, 0, {}, &sa->files[sidx]);
 }

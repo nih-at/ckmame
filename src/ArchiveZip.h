@@ -41,9 +41,10 @@
 #include "Archive.h"
 
 class ArchiveZip : public Archive {
-public:
-    ArchiveZip(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_ZIP, name, filetype, where, flags), za(nullptr) { }
-    explicit ArchiveZip(ArchiveContentsPtr contents) : Archive(std::move(contents)), za(nullptr) { }
+  public:
+    ArchiveZip(const std::string& name, filetype_t filetype, where_t where, int flags)
+        : Archive(ARCHIVE_ZIP, name, filetype, where, flags), za(nullptr) {}
+    explicit ArchiveZip(ArchiveContentsPtr contents) : Archive(std::move(contents)), za(nullptr) {}
 
     ~ArchiveZip() override;
 
@@ -54,13 +55,13 @@ public:
     void get_last_update() override;
     bool read_infos_xxx() override;
 
-protected:
-    zip_t *za;
-    
+  protected:
+    zip_t* za;
+
     ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) override;
     bool ensure_zip();
-    
-    bool ensure_file_doesnt_exist(const std::string &name);
+
+    bool ensure_file_doesnt_exist(const std::string& name);
 };
 
 #endif // _HAD_ARCHIVE_ZIP_H

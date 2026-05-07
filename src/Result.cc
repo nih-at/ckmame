@@ -34,7 +34,7 @@
 #include "Result.h"
 
 
-Result::Result(const Game *game, const GameArchives &a) : game(GS_MISSING) {
+Result::Result(const Game* game, const GameArchives& a) : game(GS_MISSING) {
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         if (game) {
             game_files[ft].resize(game->files[ft].size());

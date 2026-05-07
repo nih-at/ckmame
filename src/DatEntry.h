@@ -37,13 +37,13 @@
 #include <string>
 
 class DatEntry {
-public:
+  public:
     std::string name;
     std::string description;
     std::string version;
     uint32_t crc{};
-    
-    void merge(const DatEntry *high, const DatEntry *low);
+
+    void merge(const DatEntry* high, const DatEntry* low);
 };
 
 #endif // HAD_DAT_H

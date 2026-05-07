@@ -47,7 +47,7 @@
 #include "globals.h"
 
 
-static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo> &dats_to_use) {
+static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo>& dats_to_use) {
     auto repository = DatRepository(configuration.dat_directories);
 
     auto up_to_date = true;
@@ -55,47 +55,49 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo> &dats_to_use) {
     std::vector<DatEntry> db_dat_list;
 
     try {
-	auto existing_db = RomDB(configuration.rom_db, DBH_READ);
-	db_dat_list = existing_db.read_dat();
+        auto existing_db = RomDB(configuration.rom_db, DBH_READ);
+        db_dat_list = existing_db.read_dat();
     }
-    catch (...) { }
+    catch (...) {
+    }
 
     std::unordered_map<std::string, const DatEntry*> db_dats;
 
-    for (const auto &db_dat : db_dat_list) {
-	db_dats[db_dat.name] = &db_dat;
+    for (const auto& db_dat : db_dat_list) {
+        db_dats[db_dat.name] = &db_dat;
     }
 
     // TODO: remove duplicates from dats
 
-    for (const auto &dat_name : configuration.dats) {
-	auto it = db_dats.find(dat_name);
-	auto fs_dats = repository.find_dats(dat_name);
-	if (fs_dats.empty()) {
-	    throw Exception("can't find dat '" + dat_name + "'");
-	}
-        else if (fs_dats.size() > 1) {
-            throw Exception("multiple different dats found for '" + dat_name + "' with version '" + fs_dats[0].version + "'");
+    for (const auto& dat_name : configuration.dats) {
+        auto it = db_dats.find(dat_name);
+        auto fs_dats = repository.find_dats(dat_name);
+        if (fs_dats.empty()) {
+            throw Exception("can't find dat '" + dat_name + "'");
         }
-	const auto& fs_dat = fs_dats[0];
+        else if (fs_dats.size() > 1) {
+            throw Exception("multiple different dats found for '" + dat_name + "' with version '" + fs_dats[0].version +
+                            "'");
+        }
+        const auto& fs_dat = fs_dats[0];
 
-	dats_to_use.push_back(fs_dat);
+        dats_to_use.push_back(fs_dat);
 
-	if (it == db_dats.end()) {
-	    output.message("%s (-> %s)", dat_name.c_str(), fs_dat.version.c_str());
-	    up_to_date = false;
-	    continue;
-	}
-	const auto& db_dat = it->second;
+        if (it == db_dats.end()) {
+            output.message("%s (-> %s)", dat_name.c_str(), fs_dat.version.c_str());
+            up_to_date = false;
+            continue;
+        }
+        const auto& db_dat = it->second;
 
         if (fs_dat.version == db_dat->version && fs_dat.crc != db_dat->crc) {
             output.message("%s (%s %x -> %x)", dat_name.c_str(), db_dat->version.c_str(), db_dat->crc, fs_dat.crc);
             up_to_date = false;
         }
-	else if (DatRepository::is_newer(fs_dat.version, db_dat->version)) {
-	    output.message("%s (%s -> %s)", dat_name.c_str(), db_dat->version.c_str(), fs_dat.version.c_str());
-	    up_to_date = false;
-	}
+        else if (DatRepository::is_newer(fs_dat.version, db_dat->version)) {
+            output.message("%s (%s -> %s)", dat_name.c_str(), db_dat->version.c_str(), fs_dat.version.c_str());
+            up_to_date = false;
+        }
     }
 
     // TODO: check that no additional dats are in db
@@ -106,13 +108,13 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo> &dats_to_use) {
 
 bool update_romdb(bool force) {
     if (configuration.dats.empty() || configuration.dat_directories.empty()) {
-	return false;
+        return false;
     }
 
     std::vector<DatDB::DatInfo> dats_to_use;
 
     if (is_romdb_up_to_date(dats_to_use) && !force) {
-	return false;
+        return false;
     }
 
     OutputContextPtr output;
@@ -122,63 +124,63 @@ bool update_romdb(bool force) {
         if (!configuration.use_temp_directory) {
             filename = make_unique_path(filename);
         }
-	output = OutputContext::create(OutputContext::FORMAT_DB, filename, 0);
+        output = OutputContext::create(OutputContext::FORMAT_DB, filename, 0);
         auto new_db = dynamic_cast<OutputContextDb*>(output.get())->get_db();
 
         size_t dat_idx = 0;
-	for (const auto &dat : dats_to_use) {
-	    ParserSourcePtr source;
+        for (const auto& dat : dats_to_use) {
+            ParserSourcePtr source;
 
-	    if (dat.entry_name.empty()) {
-		source = std::make_shared<ParserSourceFile>(dat.file_name);
-	    }
-	    else {
-		int error_code;
-		auto zip_archive = zip_open(dat.file_name.c_str(), 0, &error_code);
-		if (zip_archive == nullptr) {
-		    zip_error_t error;
-		    zip_error_init_with_code(&error, error_code);
-		    auto message = "can't open '" + dat.file_name + "': " + zip_error_strerror(&error);
-		    zip_error_fini(&error);
-		    throw Exception(message);
-		}
-		source = std::make_shared<ParserSourceZip>(dat.file_name, zip_archive, dat.entry_name);
-	    }
+            if (dat.entry_name.empty()) {
+                source = std::make_shared<ParserSourceFile>(dat.file_name);
+            }
+            else {
+                int error_code;
+                auto zip_archive = zip_open(dat.file_name.c_str(), 0, &error_code);
+                if (zip_archive == nullptr) {
+                    zip_error_t error;
+                    zip_error_init_with_code(&error, error_code);
+                    auto message = "can't open '" + dat.file_name + "': " + zip_error_strerror(&error);
+                    zip_error_fini(&error);
+                    throw Exception(message);
+                }
+                source = std::make_shared<ParserSourceZip>(dat.file_name, zip_archive, dat.entry_name);
+            }
 
-	    auto options = Parser::Options(dat.name);
-	    if (!Parser::parse(source, {}, nullptr, output.get(), options)) {
-		auto message = "can't parse '" + dat.file_name + "'";
-		if (!dat.entry_name.empty()) {
-		    message += "/" + dat.entry_name;
-		}
-		throw Exception(message);
-	    }
+            auto options = Parser::Options(dat.name);
+            if (!Parser::parse(source, {}, nullptr, output.get(), options)) {
+                auto message = "can't parse '" + dat.file_name + "'";
+                if (!dat.entry_name.empty()) {
+                    message += "/" + dat.entry_name;
+                }
+                throw Exception(message);
+            }
 
-	    if (new_db->games_from_dat(dat_idx) == 0 && !configuration.dat_allow_epty_dat(dat.name)) {
-	        throw Exception("dat '" + dat.name + "' is empty");
-	    }
+            if (new_db->games_from_dat(dat_idx) == 0 && !configuration.dat_allow_epty_dat(dat.name)) {
+                throw Exception("dat '" + dat.name + "' is empty");
+            }
 
-	    dat_idx++;
-	}
+            dat_idx++;
+        }
 
-	auto ok = output->close();
-	output.reset();
-	if (!ok) {
-	    if (!configuration.use_temp_directory) {
-	        std::filesystem::remove(filename);
-	    }
-	    throw Exception("can't write database");
-	}
+        auto ok = output->close();
+        output.reset();
+        if (!ok) {
+            if (!configuration.use_temp_directory) {
+                std::filesystem::remove(filename);
+            }
+            throw Exception("can't write database");
+        }
         if (!configuration.use_temp_directory) {
             std::filesystem::rename(filename, configuration.rom_db);
         }
     }
-    catch (std::exception &ex) {
-	if (output) {
-	    output->error_occurred();
-	    output->close();
-	}
-	throw Exception(std::string(ex.what()));
+    catch (std::exception& ex) {
+        if (output) {
+            output->error_occurred();
+            output->close();
+        }
+        throw Exception(std::string(ex.what()));
     }
 
     return true;

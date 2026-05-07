@@ -37,20 +37,20 @@
 #include "OutputContext.h"
 
 class OutputContextMtree : public OutputContext {
-public:
-    OutputContextMtree(const std::string &fname, int flags);
+  public:
+    OutputContextMtree(const std::string& fname, int flags);
     ~OutputContextMtree() override;
-    
+
     bool close() override;
-    bool game(GamePtr game, const std::string &original_name) override;
-    bool header(DatEntry *dat) override;
-    
-private:
+    bool game(GamePtr game, const std::string& original_name) override;
+    bool header(DatEntry* dat) override;
+
+  private:
     std::string fname;
     bool runtest;
     FILEPtr f;
-    
-    void write_files(const std::string &dirname, const std::vector<Rom> &files);
+
+    void write_files(const std::string& dirname, const std::vector<Rom>& files);
 };
 
 #endif // HAD_OUTPUT_MTREE_H

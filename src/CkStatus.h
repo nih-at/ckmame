@@ -42,42 +42,32 @@
 #include "util.h"
 
 namespace std {
-template <>
-struct hash<std::vector<uint8_t>> {
-  std::size_t operator()(const std::vector<unsigned char>& vec) const {
-    std::size_t hash = 0;
-    for (auto& byte : vec) {
-      hash ^= std::hash<uint8_t>{}(byte) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+template <> struct hash<std::vector<uint8_t>> {
+    std::size_t operator()(const std::vector<unsigned char>& vec) const {
+        std::size_t hash = 0;
+        for (auto& byte : vec) {
+            hash ^= std::hash<uint8_t>{}(byte) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+        }
+        return hash;
     }
-    return hash;
-  }
 };
-}
+} // namespace std
 
 
 class CkStatus : public Command {
   public:
     CkStatus();
 
-    void global_setup(const ParsedCommandline &commandline) override;
-    bool execute(const std::vector<std::string> &arguments) override;
+    void global_setup(const ParsedCommandline& commandline) override;
+    bool execute(const std::vector<std::string>& arguments) override;
     bool cleanup() override;
 
   private:
-    enum Special {
-        ALL_MISSING,
-        CHANGES,
-        CORRECT,
-        DELETE_RUN,
-        LIST_MIA,
-        MISSING,
-        RUNS,
-        SUMMARY
-    };
+    enum Special { ALL_MISSING, CHANGES, CORRECT, DELETE_RUN, LIST_MIA, MISSING, RUNS, SUMMARY };
 
     class RunDiff {
       public:
-        RunDiff(int run_from, int run_to): run_from(run_from), run_to(run_to) {}
+        RunDiff(int run_from, int run_to) : run_from(run_from), run_to(run_to) {}
 
         void compute();
 
@@ -87,7 +77,7 @@ class CkStatus : public Command {
             std::string name;
             std::vector<uint8_t> checksum;
 
-            bool operator<(const GameChecksum &other) const {return string_less_case_insensitive(name, other.name);}
+            bool operator<(const GameChecksum& other) const { return string_less_case_insensitive(name, other.name); }
         };
 
         class GameDiff {
@@ -96,7 +86,7 @@ class CkStatus : public Command {
             std::optional<StatusDB::GameInfo> new_info;
         };
 
-        static bool is_complete(GameStatus status) {return status == GS_CORRECT || status == GS_CORRECT_MIA;}
+        static bool is_complete(GameStatus status) { return status == GS_CORRECT || status == GS_CORRECT_MIA; }
         void insert_run(bool old);
 
         int run_from;
@@ -115,7 +105,7 @@ class CkStatus : public Command {
     int get_run_to();
     void delete_run();
     void list_games(const std::unordered_set<GameStatus>& status);
-    void list_games(const std::vector<std::string> &games);
+    void list_games(const std::vector<std::string>& games);
     void list_runs();
     void list_summary();
     void print_changes();

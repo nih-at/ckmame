@@ -38,68 +38,64 @@
 #include <cinttypes>
 #include <cstring>
 
-#include "util.h"
 #include "globals.h"
+#include "util.h"
 
 
 static struct {
-    bool operator()(GamePtr a, GamePtr b) const {
-        return a->name < b->name;
-    }
+    bool operator()(GamePtr a, GamePtr b) const { return a->name < b->name; }
 } cmp_game;
 
 typedef struct output_context_cm output_context_cm_t;
 
 
-OutputContextCm::OutputContextCm(const std::string &fname_, int flags_) : fname(fname_) {
+OutputContextCm::OutputContextCm(const std::string& fname_, int flags_) : fname(fname_) {
     if (fname.empty()) {
         f = make_shared_stdout();
-	fname = "*stdout*";
+        fname = "*stdout*";
     }
     else {
-	f = make_shared_file(fname, "w");
-	if (!f) {
+        f = make_shared_file(fname, "w");
+        if (!f) {
             output.error("cannot create '%s': %s", fname.c_str(), strerror(errno));
             throw std::exception();
-	}
+        }
     }
 }
 
-OutputContextCm::~OutputContextCm() {
-    close();
-}
+OutputContextCm::~OutputContextCm() { close(); }
 
 bool OutputContextCm::close() {
     if (f == nullptr) {
         return false;
     }
-    
+
     std::sort(games.begin(), games.end(), cmp_game);
 
-    for (auto &game : games) {
+    for (auto& game : games) {
         write_game(game.get());
     }
 
     auto ok = true;
-    
+
     if (f) {
         ok = fflush(f.get()) == 0;
     }
-    
+
     f = nullptr;
 
     return ok;
 }
 
 
-bool OutputContextCm::game(GamePtr game, const std::string &original_name) {
+bool OutputContextCm::game(GamePtr game, const std::string& original_name) {
     games.push_back(game);
 
     return true;
 }
 
 
-bool OutputContextCm::header(DatEntry *dat) {
+bool OutputContextCm::header(DatEntry* dat) {
     fputs("clrmamepro (\n", f.get());
     cond_print_string(f, "\tname ", dat->name, "\n");
     cond_print_string(f, "\tdescription ", (dat->description.empty() ? dat->name : dat->description), "\n");
@@ -110,14 +106,14 @@ bool OutputContextCm::header(DatEntry *dat) {
 }
 
 
-bool OutputContextCm::write_game(Game *game) {
+bool OutputContextCm::write_game(Game* game) {
     fputs("game (\n", f.get());
     cond_print_string(f, "\tname ", game->name, "\n");
     cond_print_string(f, "\tdescription ", game->description.empty() ? game->name : game->description, "\n");
     cond_print_string(f, "\tcloneof ", game->cloneof[0], "\n");
     cond_print_string(f, "\tromof ", game->cloneof[0], "\n");
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        for (auto &rom : game->files[ft]) {
+        for (auto& rom : game->files[ft]) {
             fprintf(f.get(), "\t%s ( ", ft == TYPE_ROM ? "rom" : "disk");
             cond_print_string(f, "name ", rom.name, " ");
             if (rom.where != FILE_INGAME) {

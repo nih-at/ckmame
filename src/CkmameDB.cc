@@ -40,8 +40,8 @@
 #include "Detector.h"
 #include "Dir.h"
 #include "Exception.h"
-#include "fix.h"
 #include "Progress.h"
+#include "fix.h"
 #include "util.h"
 
 const std::string CkmameDB::db_name = ".ckmame.db";
@@ -84,8 +84,7 @@ create index file_md5 on file (md5);\n\
 create index file_sha1 on file (sha1);\n\
 create index file_sha256 on file (sha256);",
 
-    {
-        { MigrationVersions(2, 3), "\
+    {{MigrationVersions(2, 3), "\
     create table detector (\n\
     detector_id integer primary key autoincrement,\n\
     name text not null,\n\
@@ -97,48 +96,60 @@ create index file_sha256 on file (sha256);",
     create index file_crc on file (crc);\n\
     create index file_md5 on file (md5);\n\
     create index file_sha1 on file (sha1);\n\
-    " },
-        { MigrationVersions(3, 4), "\
-alter table archive add column file_type integer not null default " + std::to_string(TYPE_ROM) + ";\n\
-update archive set file_type=" + std::to_string(TYPE_DISK) + " where exists(select * from file f where f.archive_id = archive.archive_id and f.crc is null);\
-    " },
-        { MigrationVersions(4, 5), "\
+    "},
+     {MigrationVersions(3, 4),
+      "\
+alter table archive add column file_type integer not null default " +
+          std::to_string(TYPE_ROM) + ";\n\
+update archive set file_type=" +
+          std::to_string(TYPE_DISK) +
+          " where exists(select * from file f where f.archive_id = archive.archive_id and f.crc is null);\
+    "},
+     {MigrationVersions(4, 5), "\
 alter table file add column sha256 binary;\n\
 create index file_sha256 on file (sha256);\n\
-    " }
+    "}
 
-    }
-};
+    }};
 
 
 std::unordered_map<CkmameDB::Statement, std::string> CkmameDB::queries = {
-    { DELETE_ARCHIVE, "delete from archive where archive_id = :archive_id" },
-    { DELETE_FILE, "delete from file where archive_id = :archive_id" },
-    { INSERT_ARCHIVE, "insert into archive (name, file_type, mtime, size) values (:name, :file_type, :mtime, :size)" },
-    { INSERT_ARCHIVE_ID, "insert into archive (name, archive_id, file_type, mtime, size) values (:name, :archive_id, :file_type, :mtime, :size)" },
-    { INSERT_DETECTOR, "insert into detector (detector_id, name, version) values (:detector_id, :name, :version)" },
-    { INSERT_FILE, "insert into file (archive_id, file_idx, detector_id, name, mtime, status, size, crc, md5, sha1, sha256) values (:archive_id, :file_idx, :detector_id, :name, :mtime, :status, :size, :crc, :md5, :sha1, :sha256)" },
-    { LIST_ARCHIVES, "select name, file_type from archive" },
-    { LIST_DETECTORS, "select detector_id, name, version from detector" },
-    { QUERY_ARCHIVE_ID, "select archive_id from archive where name = :name and file_type = :file_type" },
-    { QUERY_ARCHIVE_LAST_CHANGE, "select mtime, size from archive where archive_id = :archive_id" },
-    { QUERY_FILE, "select file_idx, detector_id, name, mtime, status, size, crc, md5, sha1, sha256 from file where archive_id = :archive_id order by file_idx, detector_id" },
-    { QUERY_HAS_ARCHIVES, "select archive_id from archive limit 1" },
-    { UPDATE_FILE_HASHES, "update file set crc = :crc, md5 = :md5, sha1 = :sha1, sha256 = :sha256 where archive_id = :archive_id and file_idx = :file_idx and detector_id = 0" }
-};
+    {DELETE_ARCHIVE, "delete from archive where archive_id = :archive_id"},
+    {DELETE_FILE, "delete from file where archive_id = :archive_id"},
+    {INSERT_ARCHIVE, "insert into archive (name, file_type, mtime, size) values (:name, :file_type, :mtime, :size)"},
+    {INSERT_ARCHIVE_ID, "insert into archive (name, archive_id, file_type, mtime, size) values (:name, :archive_id, "
+                        ":file_type, :mtime, :size)"},
+    {INSERT_DETECTOR, "insert into detector (detector_id, name, version) values (:detector_id, :name, :version)"},
+    {INSERT_FILE,
+     "insert into file (archive_id, file_idx, detector_id, name, mtime, status, size, crc, md5, sha1, sha256) values "
+     "(:archive_id, :file_idx, :detector_id, :name, :mtime, :status, :size, :crc, :md5, :sha1, :sha256)"},
+    {LIST_ARCHIVES, "select name, file_type from archive"},
+    {LIST_DETECTORS, "select detector_id, name, version from detector"},
+    {QUERY_ARCHIVE_ID, "select archive_id from archive where name = :name and file_type = :file_type"},
+    {QUERY_ARCHIVE_LAST_CHANGE, "select mtime, size from archive where archive_id = :archive_id"},
+    {QUERY_FILE, "select file_idx, detector_id, name, mtime, status, size, crc, md5, sha1, sha256 from file where "
+                 "archive_id = :archive_id order by file_idx, detector_id"},
+    {QUERY_HAS_ARCHIVES, "select archive_id from archive limit 1"},
+    {UPDATE_FILE_HASHES, "update file set crc = :crc, md5 = :md5, sha1 = :sha1, sha256 = :sha256 where archive_id = "
+                         ":archive_id and file_idx = :file_idx and detector_id = 0"}};
 
 std::unordered_map<CkmameDB::ParameterizedStatement, std::string> CkmameDB::parameterized_queries = {
-    { QUERY_FIND_FILE, "select archive.name as archive_name, file_idx, detector_id from archive, file f where archive.file_type = :file_type and archive.archive_id = f.archive_id and (f.detector_id = 0 or f.detector_id = :detector_id) @SIZE@ @HASH@ order by archive_name" }
-};
+    {QUERY_FIND_FILE, "select archive.name as archive_name, file_idx, detector_id from archive, file f where "
+                      "archive.file_type = :file_type and archive.archive_id = f.archive_id and (f.detector_id = 0 or "
+                      "f.detector_id = :detector_id) @SIZE@ @HASH@ order by archive_name"}};
 
-CkmameDB::CkmameDB(const std::string& directory, where_t where) : CkmameDB(make_db_file_name(directory, db_name, configuration.extra_directory_use_central_cache_directory(directory)), directory, where) {
-}
+CkmameDB::CkmameDB(const std::string& directory, where_t where)
+    : CkmameDB(
+          make_db_file_name(directory, db_name, configuration.extra_directory_use_central_cache_directory(directory)),
+          directory, where) {}
 
-CkmameDB::CkmameDB(const std::string &dbname, std::string directory_, where_t where) : DB(format, dbname, DBH_CREATE | DBH_WRITE), directory(std::move(directory_)), where(where) {
+CkmameDB::CkmameDB(const std::string& dbname, std::string directory_, where_t where)
+    : DB(format, dbname, DBH_CREATE | DBH_WRITE), directory(std::move(directory_)), where(where) {
     auto stmt = get_statement(LIST_DETECTORS);
 
     while (stmt->step()) {
-        detector_ids.add(DetectorDescriptor(stmt->get_string("name"), stmt->get_string("version")), stmt->get_uint64("detector_id"));
+        detector_ids.add(DetectorDescriptor(stmt->get_string("name"), stmt->get_string("version")),
+                         stmt->get_uint64("detector_id"));
     }
 }
 
@@ -171,7 +182,7 @@ void CkmameDB::delete_archive(int id) {
 }
 
 
-void CkmameDB::delete_archive(const std::string &name, filetype_t filetype) {
+void CkmameDB::delete_archive(const std::string& name, filetype_t filetype) {
     auto id = get_archive_id(name, filetype);
 
     delete_archive(id);
@@ -186,10 +197,10 @@ void CkmameDB::delete_files(int id) {
 }
 
 
-int CkmameDB::get_archive_id(const std::string &name, filetype_t filetype) {
+int CkmameDB::get_archive_id(const std::string& name, filetype_t filetype) {
     auto archive_name = name_in_db(name);
     if (archive_name.empty()) {
-    return 0;
+        return 0;
     }
 
     auto stmt = get_statement(QUERY_ARCHIVE_ID);
@@ -205,7 +216,7 @@ int CkmameDB::get_archive_id(const std::string &name, filetype_t filetype) {
 }
 
 
-void CkmameDB::get_last_change(int id, time_t *mtime, off_t *size) {
+void CkmameDB::get_last_change(int id, time_t* mtime, off_t* size) {
     auto stmt = get_statement(QUERY_ARCHIVE_LAST_CHANGE);
 
     stmt->set_int("archive_id", id);
@@ -241,7 +252,7 @@ std::vector<ArchiveLocation> CkmameDB::list_archives() {
 }
 
 
-int CkmameDB::read_files(int archive_id, std::vector<File> *files) {
+int CkmameDB::read_files(int archive_id, std::vector<File>* files) {
     if (archive_id == 0) {
         return 0;
     }
@@ -282,12 +293,10 @@ int CkmameDB::read_files(int archive_id, std::vector<File> *files) {
 }
 
 
-void CkmameDB::seterr() {
-    output.set_error_database(this);
-}
+void CkmameDB::seterr() { output.set_error_database(this); }
 
 
-void CkmameDB::write_archive(ArchiveContents *archive) {
+void CkmameDB::write_archive(ArchiveContents* archive) {
     auto id = archive->cache_id;
 
     if (id == 0) {
@@ -303,12 +312,13 @@ void CkmameDB::write_archive(ArchiveContents *archive) {
         throw Exception();
     }
 
-    id = write_archive_header(id, name, archive->filetype, archive->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? 0 : archive->mtime, archive->size);
+    id = write_archive_header(id, name, archive->filetype,
+                              archive->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? 0 : archive->mtime, archive->size);
 
     auto stmt = get_statement(INSERT_FILE);
 
     for (size_t i = 0; i < archive->files.size(); i++) {
-        const auto &file = archive->files[i];
+        const auto& file = archive->files[i];
 
         stmt->set_int("archive_id", id);
         stmt->set_int("file_idx", static_cast<int>(i));
@@ -322,7 +332,7 @@ void CkmameDB::write_archive(ArchiveContents *archive) {
         stmt->execute();
         stmt->reset();
 
-        for (auto &pair : file.detector_hashes) {
+        for (auto& pair : file.detector_hashes) {
             auto detector_id = get_detector_id(pair.first);
 
             stmt->set_int("archive_id", id);
@@ -343,7 +353,7 @@ void CkmameDB::write_archive(ArchiveContents *archive) {
 }
 
 
-std::string CkmameDB::name_in_db(const std::string &name) {
+std::string CkmameDB::name_in_db(const std::string& name) {
     if (name == directory) {
         return ".";
     }
@@ -355,7 +365,7 @@ std::string CkmameDB::name_in_db(const std::string &name) {
 }
 
 
-int CkmameDB::write_archive_header(int id, const std::string &name, filetype_t filetype, time_t mtime, uint64_t size) {
+int CkmameDB::write_archive_header(int id, const std::string& name, filetype_t filetype, time_t mtime, uint64_t size) {
     auto stmt = get_statement(INSERT_ARCHIVE_ID);
 
     stmt->set_string("name", name);
@@ -410,7 +420,8 @@ size_t CkmameDB::get_global_detector_id(size_t id) {
 }
 
 
-void CkmameDB::find_file(filetype_t filetype, size_t detector_id, const FileData& file, std::vector<FindResult>& results) {
+void CkmameDB::find_file(filetype_t filetype, size_t detector_id, const FileData& file,
+                         std::vector<FindResult>& results) {
     auto stmt = get_statement(QUERY_FIND_FILE, file.hashes, file.is_size_known());
 
     if (file.is_size_known()) {
@@ -469,7 +480,8 @@ void CkmameDB::refresh_unzipped() {
         }
         Progress::pop_message();
     }
-    catch (...) {}
+    catch (...) {
+    }
 }
 
 void CkmameDB::refresh_zipped() {
@@ -517,7 +529,7 @@ bool CkmameDB::compute_detector_hashes(const std::unordered_map<size_t, Detector
 
     auto got_new_hashes = false;
 
-    for (const auto& location: list_archives()) {
+    for (const auto& location : list_archives()) {
         auto contents = ArchiveContents::by_name(location.filetype, directory + "/" + location.name);
         if (contents == nullptr || contents->has_all_detector_hashes(detectors)) {
             continue;

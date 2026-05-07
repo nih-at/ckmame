@@ -38,13 +38,13 @@
 
 #include "ArchiveDir.h"
 
-class ArchiveImages: public ArchiveDir {
-public:
-    ArchiveImages(const std::string &name, filetype_t filetype, where_t where, int flags);
-    explicit ArchiveImages(ArchiveContentsPtr contents) : ArchiveDir(std::move(contents)) { }
+class ArchiveImages : public ArchiveDir {
+  public:
+    ArchiveImages(const std::string& name, filetype_t filetype, where_t where, int flags);
+    explicit ArchiveImages(ArchiveContentsPtr contents) : ArchiveDir(std::move(contents)) {}
     ~ArchiveImages() override { update_cache(); }
-    
-protected:
+
+  protected:
     bool file_ensure_hashes(uint64_t idx, int hashtypes) override { return true; }
     bool read_infos_xxx() override;
     [[nodiscard]] bool want_crc() const override { return false; }

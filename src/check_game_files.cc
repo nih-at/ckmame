@@ -256,7 +256,7 @@ void update_game_status(const Game* game, Result* result) {
     auto has_own = false;
     auto have_mia = false;
 
-    for (auto filetype: db->filetypes()) {
+    for (auto filetype : db->filetypes()) {
         for (size_t i = 0; i < game->files[filetype].size(); i++) {
             auto match = &result->game_files[filetype][i];
             auto& rom = game->files[filetype][i];

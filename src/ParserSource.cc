@@ -38,28 +38,26 @@
 
 #define PSBLKSIZE 1024
 
-ParserSource::ParserSource() : current(nullptr), available(0) { }
+ParserSource::ParserSource() : current(nullptr), available(0) {}
 
-ParserSource::~ParserSource() {
-    close();
-}
+ParserSource::~ParserSource() { close(); }
 
 
 std::optional<std::string> ParserSource::getline() {
     for (;;) {
-        char *p;
-        if (available > 0 && (p = reinterpret_cast<char *>(memchr(current, '\n', available))) != nullptr) {
-            auto line = reinterpret_cast<char *>(current);
+        char* p;
+        if (available > 0 && (p = reinterpret_cast<char*>(memchr(current, '\n', available))) != nullptr) {
+            auto line = reinterpret_cast<char*>(current);
             auto line_length = static_cast<size_t>(p - line);
             if (line_length > 0 && line[line_length - 1] == '\r') {
-		line[line_length - 1] = '\0';
+                line[line_length - 1] = '\0';
             }
             else {
-		line[line_length] = '\0';
+                line[line_length] = '\0';
             }
             buffer_consume(line_length + 1);
             return line;
-	}
+        }
 
         auto old_remaining = available;
         buffer_fill((available / PSBLKSIZE + 1) * PSBLKSIZE);
@@ -69,11 +67,11 @@ std::optional<std::string> ParserSource::getline() {
                 return {};
             }
 
-            auto line = reinterpret_cast<char *>(current);
+            auto line = reinterpret_cast<char*>(current);
             line[available] = '\0';
             buffer_consume(available);
             return line;
-	}
+        }
     }
 }
 
@@ -82,7 +80,7 @@ int ParserSource::peek() {
     buffer_fill(1);
 
     if (available == 0) {
-	return EOF;
+        return EOF;
     }
 
     return current[0];
@@ -92,21 +90,21 @@ int ParserSource::peek() {
 std::string ParserSource::peek(size_t n) {
     buffer_fill(n);
 
-    return std::string(reinterpret_cast<char *>(current), std::min(n, available));
+    return std::string(reinterpret_cast<char*>(current), std::min(n, available));
 }
 
 
-size_t ParserSource::read(void *data, size_t length) {
-    auto buffer = reinterpret_cast<uint8_t *>(data);
+size_t ParserSource::read(void* data, size_t length) {
+    auto buffer = reinterpret_cast<uint8_t*>(data);
 
     size_t done = 0;
-    
+
     if (available > 0) {
-        done = std::min(available,  length);
-	memcpy(buffer, current, done);
+        done = std::min(available, length);
+        memcpy(buffer, current, done);
         buffer_consume(done);
         buffer += done;
-	length -= done;
+        length -= done;
     }
 
     return done + read_xxx(buffer, length);
@@ -115,7 +113,7 @@ size_t ParserSource::read(void *data, size_t length) {
 
 void ParserSource::buffer_consume(size_t length) {
     length = std::min(length, available);
-    
+
     available -= length;
     current += length;
 
@@ -127,7 +125,7 @@ void ParserSource::buffer_consume(size_t length) {
 // make N bytes available
 void ParserSource::buffer_fill(size_t n) {
     if (available >= n) {
-	return;
+        return;
     }
 
     buffer_allocate(n);

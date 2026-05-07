@@ -41,61 +41,78 @@
 
 
 class DetectorParserContext {
-public:
-    DetectorParserContext() : detector(std::make_shared<Detector>()), lineno(0), rule(nullptr), test(nullptr) { }
+  public:
+    DetectorParserContext() : detector(std::make_shared<Detector>()), lineno(0), rule(nullptr), test(nullptr) {}
 
-    bool parse(ParserSource *source);
-    
+    bool parse(ParserSource* source);
+
     DetectorPtr detector;
 
   private:
     size_t lineno;
 
-    Detector::Rule *rule;
-    Detector::Test *test;
-    
+    Detector::Rule* rule;
+    Detector::Test* test;
+
     class Arguments {
       public:
-	explicit Arguments(Detector::TestType test) : test(test) { }
-	Detector::TestType test;
+        explicit Arguments(Detector::TestType test) : test(test) {}
+        Detector::TestType test;
     };
-    
+
     static Arguments arguments_and;
     static Arguments arguments_data;
     static Arguments arguments_or;
     static Arguments arguments_xor;
 
-    static void line_number_callback(void *context, size_t line_number);
+    static void line_number_callback(void* context, size_t line_number);
 
-    [[nodiscard]] std::optional<int> parse_enum(const std::string &value, const std::unordered_map<std::string, int> &enums, const std::string &field_name) const;
-    XmlProcessor::CallbackStatus parse_hex(std::vector<uint8_t> *result, const std::string &value, const std::string &field_name);
-    XmlProcessor::CallbackStatus parse_number(int64_t *result, const std::string &value, const std::string &field_name) const;
-    XmlProcessor::CallbackStatus parse_offset(int64_t *result, const std::string &value, const std::string &field_name);
-    XmlProcessor::CallbackStatus parse_size(int64_t *result, const std::string &value, const std::string &field_name);
+    [[nodiscard]] std::optional<int> parse_enum(const std::string& value,
+                                                const std::unordered_map<std::string, int>& enums,
+                                                const std::string& field_name) const;
+    XmlProcessor::CallbackStatus parse_hex(std::vector<uint8_t>* result, const std::string& value,
+                                           const std::string& field_name);
+    XmlProcessor::CallbackStatus parse_number(int64_t* result, const std::string& value,
+                                              const std::string& field_name) const;
+    XmlProcessor::CallbackStatus parse_offset(int64_t* result, const std::string& value, const std::string& field_name);
+    XmlProcessor::CallbackStatus parse_size(int64_t* result, const std::string& value, const std::string& field_name);
 
-    static XmlProcessor::CallbackStatus rule_close(void *ctx, [[maybe_unused]] const void *args);
-    static XmlProcessor::CallbackStatus rule_end_offset(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus rule_open(void *ctx, [[maybe_unused]] const void *args);
-    static XmlProcessor::CallbackStatus rule_operation(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus rule_start_offset(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus rule_close(void* ctx, [[maybe_unused]] const void* args);
+    static XmlProcessor::CallbackStatus rule_end_offset(void* ctx, [[maybe_unused]] const void* args,
+                                                        const std::string& value);
+    static XmlProcessor::CallbackStatus rule_open(void* ctx, [[maybe_unused]] const void* args);
+    static XmlProcessor::CallbackStatus rule_operation(void* ctx, [[maybe_unused]] const void* args,
+                                                       const std::string& value);
+    static XmlProcessor::CallbackStatus rule_start_offset(void* ctx, [[maybe_unused]] const void* args,
+                                                          const std::string& value);
 
-    static XmlProcessor::CallbackStatus test_close(void *ctx, [[maybe_unused]] [[maybe_unused]] [[maybe_unused]] [[maybe_unused]] const void *args);
-    static XmlProcessor::CallbackStatus test_mask(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus test_offset(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus test_open(void *ctx, [[maybe_unused]] const void *args);
-    static XmlProcessor::CallbackStatus test_operator(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus test_result(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus test_size(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus test_value(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus text_author(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus text_name(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus text_version(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
-    
+    static XmlProcessor::CallbackStatus
+    test_close(void* ctx, [[maybe_unused]] [[maybe_unused]] [[maybe_unused]] [[maybe_unused]] const void* args);
+    static XmlProcessor::CallbackStatus test_mask(void* ctx, [[maybe_unused]] const void* args,
+                                                  const std::string& value);
+    static XmlProcessor::CallbackStatus test_offset(void* ctx, [[maybe_unused]] const void* args,
+                                                    const std::string& value);
+    static XmlProcessor::CallbackStatus test_open(void* ctx, [[maybe_unused]] const void* args);
+    static XmlProcessor::CallbackStatus test_operator(void* ctx, [[maybe_unused]] const void* args,
+                                                      const std::string& value);
+    static XmlProcessor::CallbackStatus test_result(void* ctx, [[maybe_unused]] const void* args,
+                                                    const std::string& value);
+    static XmlProcessor::CallbackStatus test_size(void* ctx, [[maybe_unused]] const void* args,
+                                                  const std::string& value);
+    static XmlProcessor::CallbackStatus test_value(void* ctx, [[maybe_unused]] const void* args,
+                                                   const std::string& value);
+    static XmlProcessor::CallbackStatus text_author(void* ctx, [[maybe_unused]] const void* args,
+                                                    const std::string& value);
+    static XmlProcessor::CallbackStatus text_name(void* ctx, [[maybe_unused]] const void* args,
+                                                  const std::string& value);
+    static XmlProcessor::CallbackStatus text_version(void* ctx, [[maybe_unused]] const void* args,
+                                                     const std::string& value);
+
     static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_bit;
     static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_data;
     static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_file;
     static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_rule;
-	
+
     static const std::unordered_map<std::string, XmlProcessor::Entity> entities;
 };
 
@@ -105,66 +122,63 @@ DetectorParserContext::Arguments DetectorParserContext::arguments_or(Detector::T
 DetectorParserContext::Arguments DetectorParserContext::arguments_xor(Detector::TEST_XOR);
 
 const std::unordered_map<std::string, XmlProcessor::Attribute> DetectorParserContext::attributes_bit = {
-    { "offset", XmlProcessor::Attribute(test_offset, nullptr) },
-    { "mask", XmlProcessor::Attribute(test_mask, nullptr) },
-    { "value", XmlProcessor::Attribute(test_value, nullptr) },
-    { "result", XmlProcessor::Attribute(test_result, nullptr) }
-};
+    {"offset", XmlProcessor::Attribute(test_offset, nullptr)},
+    {"mask", XmlProcessor::Attribute(test_mask, nullptr)},
+    {"value", XmlProcessor::Attribute(test_value, nullptr)},
+    {"result", XmlProcessor::Attribute(test_result, nullptr)}};
 
 const std::unordered_map<std::string, XmlProcessor::Attribute> DetectorParserContext::attributes_data = {
-    { "offset", XmlProcessor::Attribute(test_offset, nullptr) },
-    { "value", XmlProcessor::Attribute(test_value, nullptr) },
-    { "result", XmlProcessor::Attribute(test_result, nullptr) }
-};
+    {"offset", XmlProcessor::Attribute(test_offset, nullptr)},
+    {"value", XmlProcessor::Attribute(test_value, nullptr)},
+    {"result", XmlProcessor::Attribute(test_result, nullptr)}};
 
 const std::unordered_map<std::string, XmlProcessor::Attribute> DetectorParserContext::attributes_file = {
-    { "size", XmlProcessor::Attribute(test_size, nullptr) },
-    { "operator", XmlProcessor::Attribute(test_operator, nullptr) },
-    { "result", XmlProcessor::Attribute(test_result, nullptr) }
-};
+    {"size", XmlProcessor::Attribute(test_size, nullptr)},
+    {"operator", XmlProcessor::Attribute(test_operator, nullptr)},
+    {"result", XmlProcessor::Attribute(test_result, nullptr)}};
 
 const std::unordered_map<std::string, XmlProcessor::Attribute> DetectorParserContext::attributes_rule = {
-    { "start_offset", XmlProcessor::Attribute(rule_start_offset, nullptr) },
-    { "end_offset", XmlProcessor::Attribute(rule_end_offset, nullptr) },
-    { "operation", XmlProcessor::Attribute(rule_operation,nullptr) }
-};
+    {"start_offset", XmlProcessor::Attribute(rule_start_offset, nullptr)},
+    {"end_offset", XmlProcessor::Attribute(rule_end_offset, nullptr)},
+    {"operation", XmlProcessor::Attribute(rule_operation, nullptr)}};
 
 const std::unordered_map<std::string, XmlProcessor::Entity> DetectorParserContext::entities = {
-    { "and", XmlProcessor::Entity(attributes_bit, test_open, test_close, &arguments_and) },
-    { "author", XmlProcessor::Entity(text_author) },
-    { "data", XmlProcessor::Entity(attributes_data, test_open, test_close, &arguments_data) },
-    { "file", XmlProcessor::Entity(attributes_file, test_open, test_close) },
-    { "name", XmlProcessor::Entity(text_name) },
-    { "or", XmlProcessor::Entity(attributes_bit, test_open, test_close, &arguments_or) },
-    { "rule", XmlProcessor::Entity(attributes_rule, rule_open, rule_close) },
-    { "version", XmlProcessor::Entity(text_version) },
-    { "xor", XmlProcessor::Entity(attributes_bit, test_open, test_close, &arguments_xor) }
-};
+    {"and", XmlProcessor::Entity(attributes_bit, test_open, test_close, &arguments_and)},
+    {"author", XmlProcessor::Entity(text_author)},
+    {"data", XmlProcessor::Entity(attributes_data, test_open, test_close, &arguments_data)},
+    {"file", XmlProcessor::Entity(attributes_file, test_open, test_close)},
+    {"name", XmlProcessor::Entity(text_name)},
+    {"or", XmlProcessor::Entity(attributes_bit, test_open, test_close, &arguments_or)},
+    {"rule", XmlProcessor::Entity(attributes_rule, rule_open, rule_close)},
+    {"version", XmlProcessor::Entity(text_version)},
+    {"xor", XmlProcessor::Entity(attributes_bit, test_open, test_close, &arguments_xor)}};
 
-bool DetectorParserContext::parse(ParserSource *source) {
+bool DetectorParserContext::parse(ParserSource* source) {
     XmlProcessor processor(line_number_callback, entities, this);
 
     return processor.parse(source);
 }
 
-DetectorPtr Detector::parse(ParserSource *parser_source) {
+DetectorPtr Detector::parse(ParserSource* parser_source) {
     DetectorParserContext parser_context;
 
     /* TODO: lineno callback */
     if (!parser_context.parse(parser_source)) {
-	return nullptr;
+        return nullptr;
     }
 
     auto detector = parser_context.detector;
-    
+
     detector->id = get_id(DetectorDescriptor(detector.get()));
     return detector;
 }
 
 
-std::optional<int> DetectorParserContext::parse_enum(const std::string &value, const std::unordered_map<std::string, int> &enums, const std::string &field_name) const {
+std::optional<int> DetectorParserContext::parse_enum(const std::string& value,
+                                                     const std::unordered_map<std::string, int>& enums,
+                                                     const std::string& field_name) const {
     auto it = enums.find(value);
-    
+
     if (it == enums.end()) {
         output.line_error(lineno, "invalid %s: '%s'", field_name.c_str(), value.c_str());
         errno = EINVAL;
@@ -175,16 +189,17 @@ std::optional<int> DetectorParserContext::parse_enum(const std::string &value, c
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::parse_hex(std::vector<uint8_t> *result, const std::string &value, const std::string &field_name) {
+XmlProcessor::CallbackStatus DetectorParserContext::parse_hex(std::vector<uint8_t>* result, const std::string& value,
+                                                              const std::string& field_name) {
     if (value.size() % 2 != 0) {
         output.line_error(lineno, "invalid %s: odd number of hex digits", field_name.c_str());
-	return XmlProcessor::ERROR;
+        return XmlProcessor::ERROR;
     }
     auto length = value.size() / 2;
 
     if (test->length != 0 && test->length != length) {
         output.line_error(lineno, "invalid %s: length mismatch", field_name.c_str());
-	return XmlProcessor::ERROR;
+        return XmlProcessor::ERROR;
     }
 
     *result = hex2bin(value);
@@ -194,27 +209,28 @@ XmlProcessor::CallbackStatus DetectorParserContext::parse_hex(std::vector<uint8_
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::parse_number(int64_t *result, const std::string &value, const std::string &field_name) const {
+XmlProcessor::CallbackStatus DetectorParserContext::parse_number(int64_t* result, const std::string& value,
+                                                                 const std::string& field_name) const {
     int64_t i;
 
     if (value.empty()) {
         output.line_error(lineno, "invalid %s: '%s'", field_name.c_str(), value.c_str());
-	return XmlProcessor::ERROR;
+        return XmlProcessor::ERROR;
     }
 
     try {
-	size_t end;
+        size_t end;
 
-	i = std::stoll(value, &end, 16);
+        i = std::stoll(value, &end, 16);
 
-	if (end != value.length()) {
+        if (end != value.length()) {
             output.line_error(lineno, "invalid %s: '%s'", field_name.c_str(), value.c_str());
-	    return XmlProcessor::ERROR;
-	}
+            return XmlProcessor::ERROR;
+        }
     }
     catch (...) {
-	errno = EINVAL;
-	return XmlProcessor::ERROR;
+        errno = EINVAL;
+        return XmlProcessor::ERROR;
     }
 
     *result = i;
@@ -222,28 +238,30 @@ XmlProcessor::CallbackStatus DetectorParserContext::parse_number(int64_t *result
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::parse_offset(int64_t *result, const std::string &value, const std::string &field_name) {
+XmlProcessor::CallbackStatus DetectorParserContext::parse_offset(int64_t* result, const std::string& value,
+                                                                 const std::string& field_name) {
     if (value == "EOF") {
-	*result = DETECTOR_OFFSET_EOF;
-	return XmlProcessor::OK;
+        *result = DETECTOR_OFFSET_EOF;
+        return XmlProcessor::OK;
     }
 
     return parse_number(result, value, field_name);
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::parse_size(int64_t *result, const std::string &value, const std::string &field_name) {
+XmlProcessor::CallbackStatus DetectorParserContext::parse_size(int64_t* result, const std::string& value,
+                                                               const std::string& field_name) {
     if (value == "PO2") {
-	*result = DETECTOR_SIZE_POWER_OF_2;
-	return XmlProcessor::OK;
+        *result = DETECTOR_SIZE_POWER_OF_2;
+        return XmlProcessor::OK;
     }
 
     return parse_number(result, value, field_name);
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::rule_close(void *ctx, [[maybe_unused]] const void *args) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
+XmlProcessor::CallbackStatus DetectorParserContext::rule_close(void* ctx, [[maybe_unused]] const void* args) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
 
     context->rule = nullptr;
 
@@ -251,16 +269,17 @@ XmlProcessor::CallbackStatus DetectorParserContext::rule_close(void *ctx, [[mayb
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::rule_end_offset(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
+XmlProcessor::CallbackStatus DetectorParserContext::rule_end_offset(void* ctx, [[maybe_unused]] const void* args,
+                                                                    const std::string& value) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
 
     return context->parse_offset(&context->rule->end_offset, value, "end_offset");
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::rule_open(void *ctx, [[maybe_unused]] const void *args) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
-    
+XmlProcessor::CallbackStatus DetectorParserContext::rule_open(void* ctx, [[maybe_unused]] const void* args) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
+
     context->detector->rules.emplace_back();
     context->rule = &context->detector->rules[context->detector->rules.size() - 1];
 
@@ -268,19 +287,18 @@ XmlProcessor::CallbackStatus DetectorParserContext::rule_open(void *ctx, [[maybe
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::rule_operation(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
-    static const std::unordered_map<std::string, int> op = {
-        { "bitswap", Detector::OP_BITSWAP },
-        { "byteswap", Detector::OP_BYTESWAP },
-        { "none", Detector::OP_NONE },
-        { "wordswap", Detector::OP_WORDSWAP }
-    };
+XmlProcessor::CallbackStatus DetectorParserContext::rule_operation(void* ctx, [[maybe_unused]] const void* args,
+                                                                   const std::string& value) {
+    static const std::unordered_map<std::string, int> op = {{"bitswap", Detector::OP_BITSWAP},
+                                                            {"byteswap", Detector::OP_BYTESWAP},
+                                                            {"none", Detector::OP_NONE},
+                                                            {"wordswap", Detector::OP_WORDSWAP}};
 
-    auto context = static_cast<DetectorParserContext *>(ctx);
+    auto context = static_cast<DetectorParserContext*>(ctx);
     auto i = context->parse_enum(value, op, "operation");
-    
+
     if (!i.has_value()) {
-	return XmlProcessor::ERROR;
+        return XmlProcessor::ERROR;
     }
 
     context->rule->operation = static_cast<Detector::Operation>(i.value());
@@ -288,15 +306,17 @@ XmlProcessor::CallbackStatus DetectorParserContext::rule_operation(void *ctx, [[
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::rule_start_offset(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
+XmlProcessor::CallbackStatus DetectorParserContext::rule_start_offset(void* ctx, [[maybe_unused]] const void* args,
+                                                                      const std::string& value) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
 
     return context->parse_offset(&context->rule->start_offset, value, "start_offset");
 }
 
 
-[[maybe_unused]] [[maybe_unused]] [[maybe_unused]] XmlProcessor::CallbackStatus DetectorParserContext::test_close(void *ctx, [[maybe_unused]] const void *args) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
+[[maybe_unused]] [[maybe_unused]] [[maybe_unused]] XmlProcessor::CallbackStatus
+DetectorParserContext::test_close(void* ctx, [[maybe_unused]] const void* args) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
 
     context->test = nullptr;
 
@@ -304,22 +324,24 @@ XmlProcessor::CallbackStatus DetectorParserContext::rule_start_offset(void *ctx,
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::test_mask(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
+XmlProcessor::CallbackStatus DetectorParserContext::test_mask(void* ctx, [[maybe_unused]] const void* args,
+                                                              const std::string& value) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
 
     return context->parse_hex(&context->test->mask, value, "mask");
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::test_offset(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
+XmlProcessor::CallbackStatus DetectorParserContext::test_offset(void* ctx, [[maybe_unused]] const void* args,
+                                                                const std::string& value) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
 
     return context->parse_offset(&context->test->offset, value, "offset");
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::test_open(void *ctx, [[maybe_unused]] const void *args) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
+XmlProcessor::CallbackStatus DetectorParserContext::test_open(void* ctx, [[maybe_unused]] const void* args) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
 
     context->rule->tests.emplace_back();
     context->test = &context->rule->tests[context->rule->tests.size() - 1];
@@ -328,18 +350,16 @@ XmlProcessor::CallbackStatus DetectorParserContext::test_open(void *ctx, [[maybe
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::test_operator(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
+XmlProcessor::CallbackStatus DetectorParserContext::test_operator(void* ctx, [[maybe_unused]] const void* args,
+                                                                  const std::string& value) {
     static std::unordered_map<std::string, int> enums = {
-        { "equal", Detector::TEST_FILE_EQ },
-	{ "greater", Detector::TEST_FILE_GR },
-        { "less", Detector::TEST_FILE_LE }
-    };
+        {"equal", Detector::TEST_FILE_EQ}, {"greater", Detector::TEST_FILE_GR}, {"less", Detector::TEST_FILE_LE}};
 
-    auto context = static_cast<DetectorParserContext *>(ctx);
+    auto context = static_cast<DetectorParserContext*>(ctx);
     auto i = context->parse_enum(value, enums, "operator");
-    
+
     if (!i.has_value()) {
-    return XmlProcessor::ERROR;
+        return XmlProcessor::ERROR;
     }
 
     context->test->type = static_cast<Detector::TestType>(i.value());
@@ -347,15 +367,16 @@ XmlProcessor::CallbackStatus DetectorParserContext::test_operator(void *ctx, [[m
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::test_result(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
+XmlProcessor::CallbackStatus DetectorParserContext::test_result(void* ctx, [[maybe_unused]] const void* args,
+                                                                const std::string& value) {
     static std::unordered_map<std::string, int> enums = {
-	{"false", false},
-	{"true", true},
+        {"false", false},
+        {"true", true},
     };
 
-    auto context = static_cast<DetectorParserContext *>(ctx);
+    auto context = static_cast<DetectorParserContext*>(ctx);
     auto i = context->parse_enum(value, enums, "result");
-    
+
     if (!i.has_value()) {
         return XmlProcessor::ERROR;
     }
@@ -365,31 +386,35 @@ XmlProcessor::CallbackStatus DetectorParserContext::test_result(void *ctx, [[may
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::test_size(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
+XmlProcessor::CallbackStatus DetectorParserContext::test_size(void* ctx, [[maybe_unused]] const void* args,
+                                                              const std::string& value) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
 
     return context->parse_size(&context->test->offset, value, "size");
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::test_value(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
+XmlProcessor::CallbackStatus DetectorParserContext::test_value(void* ctx, [[maybe_unused]] const void* args,
+                                                               const std::string& value) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
 
     return context->parse_hex(&context->test->value, value, "value");
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::text_author(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
+XmlProcessor::CallbackStatus DetectorParserContext::text_author(void* ctx, [[maybe_unused]] const void* args,
+                                                                const std::string& value) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
 
     context->detector->author = value;
-    
+
     return XmlProcessor::OK;
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::text_name(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
+XmlProcessor::CallbackStatus DetectorParserContext::text_name(void* ctx, [[maybe_unused]] const void* args,
+                                                              const std::string& value) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
 
     context->detector->name = value;
 
@@ -397,8 +422,9 @@ XmlProcessor::CallbackStatus DetectorParserContext::text_name(void *ctx, [[maybe
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::text_version(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
-    auto context = static_cast<DetectorParserContext *>(ctx);
+XmlProcessor::CallbackStatus DetectorParserContext::text_version(void* ctx, [[maybe_unused]] const void* args,
+                                                                 const std::string& value) {
+    auto context = static_cast<DetectorParserContext*>(ctx);
 
     context->detector->version = value;
 
@@ -406,6 +432,6 @@ XmlProcessor::CallbackStatus DetectorParserContext::text_version(void *ctx, [[ma
 }
 
 
-void DetectorParserContext::line_number_callback(void *context, size_t line_number) {
+void DetectorParserContext::line_number_callback(void* context, size_t line_number) {
     static_cast<DetectorParserContext*>(context)->lineno = line_number;
 }

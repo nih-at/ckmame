@@ -33,35 +33,34 @@
 
 #include "OutputContextMtree.h"
 
+#include <cerrno>
 #include <cinttypes>
 #include <cstring>
-#include <cerrno>
 
 #include "globals.h"
 
 
-OutputContextMtree::OutputContextMtree(const std::string &fname_, int flags) : fname(fname_), runtest(flags & OUTPUT_FL_RUNTEST) {
+OutputContextMtree::OutputContextMtree(const std::string& fname_, int flags)
+    : fname(fname_), runtest(flags & OUTPUT_FL_RUNTEST) {
     if (fname.empty()) {
-	f = make_shared_stdout();
-	fname = "*stdout*";
+        f = make_shared_stdout();
+        fname = "*stdout*";
     }
     else {
-	f = make_shared_file(fname, "w");
-	if (!f) {
-	    output.error("cannot create '%s': %s", fname.c_str(), strerror(errno));
+        f = make_shared_file(fname, "w");
+        if (!f) {
+            output.error("cannot create '%s': %s", fname.c_str(), strerror(errno));
             throw std::exception();
-	}
+        }
     }
 }
 
-OutputContextMtree::~OutputContextMtree() {
-    close();
-}
+OutputContextMtree::~OutputContextMtree() { close(); }
 
 
 bool OutputContextMtree::close() {
     auto ok = true;
-    
+
     if (f != nullptr) {
         ok = fflush(f.get()) == 0;
         f = nullptr;
@@ -71,54 +70,53 @@ bool OutputContextMtree::close() {
 }
 
 
-static std::string
-strsvis_cstyle(const std::string &in) {
+static std::string strsvis_cstyle(const std::string& in) {
     /* maximal extension = 2/char */
     auto out = std::string(2 * in.length(), 0);
 
     size_t outpos = 0;
     for (auto c : in) {
-	switch (c) {
-	case '\007':
-	    out[outpos++] = '\\';
-	    out[outpos++] = 'a';
-	    break;
-	case '\010':
-	    out[outpos++] = '\\';
-	    out[outpos++] = 'b';
-	    break;
-	case '\014':
-	    out[outpos++] = '\\';
-	    out[outpos++] = 'f';
-	    break;
-	case '\012':
-	    out[outpos++] = '\\';
-	    out[outpos++] = 'n';
-	    break;
-	case '\015':
-	    out[outpos++] = '\\';
-	    out[outpos++] = 'r';
-	    break;
-	case '\040':
-	    out[outpos++] = '\\';
-	    out[outpos++] = 's';
-	    break;
-	case '\011':
-	    out[outpos++] = '\\';
-	    out[outpos++] = 't';
-	    break;
-	case '\013':
-	    out[outpos++] = '\\';
-	    out[outpos++] = 'v';
-	    break;
-	case '#':
-	    out[outpos++] = '\\';
-	    out[outpos++] = '#';
-	    break;
-	default:
-	    out[outpos++] = c;
-	    break;
-	}
+        switch (c) {
+        case '\007':
+            out[outpos++] = '\\';
+            out[outpos++] = 'a';
+            break;
+        case '\010':
+            out[outpos++] = '\\';
+            out[outpos++] = 'b';
+            break;
+        case '\014':
+            out[outpos++] = '\\';
+            out[outpos++] = 'f';
+            break;
+        case '\012':
+            out[outpos++] = '\\';
+            out[outpos++] = 'n';
+            break;
+        case '\015':
+            out[outpos++] = '\\';
+            out[outpos++] = 'r';
+            break;
+        case '\040':
+            out[outpos++] = '\\';
+            out[outpos++] = 's';
+            break;
+        case '\011':
+            out[outpos++] = '\\';
+            out[outpos++] = 't';
+            break;
+        case '\013':
+            out[outpos++] = '\\';
+            out[outpos++] = 'v';
+            break;
+        case '#':
+            out[outpos++] = '\\';
+            out[outpos++] = '#';
+            break;
+        default:
+            out[outpos++] = c;
+            break;
+        }
     }
     out.resize(outpos);
 
@@ -126,7 +124,7 @@ strsvis_cstyle(const std::string &in) {
 }
 
 
-bool OutputContextMtree::game(GamePtr game, const std::string &original_name) {
+bool OutputContextMtree::game(GamePtr game, const std::string& original_name) {
     auto dirname = strsvis_cstyle(game->name);
 
     if (runtest) {
@@ -148,17 +146,18 @@ bool OutputContextMtree::game(GamePtr game, const std::string &original_name) {
 }
 
 
-bool OutputContextMtree::header(DatEntry *dat) {
+bool OutputContextMtree::header(DatEntry* dat) {
     fprintf(f.get(), ". type=dir\n");
 
     return true;
 }
 
 
-void OutputContextMtree::write_files(const std::string &dirname, const std::vector<Rom> &files) {
-    for (auto &file : files) {
+void OutputContextMtree::write_files(const std::string& dirname, const std::vector<Rom>& files) {
+    for (auto& file : files) {
         fprintf(f.get(), "./%s/%s type=file", dirname.c_str(), strsvis_cstyle(file.name).c_str());
-        /* For disks, this is the internal size and checksums and not information of the file on-disk. Disks are only supported in zipped mode, where the mtree file can not be taken literally anyway, so this is ok. */
+        /* For disks, this is the internal size and checksums and not information of the file on-disk. Disks are only
+         * supported in zipped mode, where the mtree file can not be taken literally anyway, so this is ok. */
         if (file.is_size_known()) {
             fprintf(f.get(), " size=%" PRIu64, file.hashes.size);
         }

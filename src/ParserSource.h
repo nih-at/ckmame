@@ -42,28 +42,28 @@
 class ParserSource;
 
 typedef std::shared_ptr<ParserSource> ParserSourcePtr;
-    
+
 class ParserSource {
-public:
+  public:
     ParserSource();
     virtual ~ParserSource();
 
     virtual bool close() { return true; }
-    virtual size_t read_xxx(void *data, size_t length) = 0;
-    virtual ParserSourcePtr open(const std::string &name) = 0;
+    virtual size_t read_xxx(void* data, size_t length) = 0;
+    virtual ParserSourcePtr open(const std::string& name) = 0;
     virtual time_t get_mtime() = 0;
     virtual uint32_t get_crc() = 0;
 
     std::optional<std::string> getline();
     int peek();
     std::string peek(size_t n);
-    size_t read(void *data, size_t length);
-    
-private:
+    size_t read(void* data, size_t length);
+
+  private:
     std::vector<uint8_t> data;
-    uint8_t *current; // current position in data buffer
+    uint8_t* current; // current position in data buffer
     size_t available; // length of remaining valid data (from current)
-    
+
     void buffer_consume(size_t n);
     void buffer_fill(size_t n);
     void buffer_allocate(size_t n); // ensure space for n bytes of valid data (from current)

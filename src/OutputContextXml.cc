@@ -37,28 +37,29 @@
 #include <cinttypes>
 #include <cstring>
 
-#include "util.h"
 #include "globals.h"
+#include "util.h"
 
 
-#define xml_string(X) (reinterpret_cast<const xmlChar *>(X))
+#define xml_string(X) (reinterpret_cast<const xmlChar*>(X))
 
-OutputContextXml::OutputContextXml(const std::string &fname_, int flags) : fname(fname_) {
+OutputContextXml::OutputContextXml(const std::string& fname_, int flags) : fname(fname_) {
     if (fname.empty()) {
-	f = make_shared_stdout();
-	fname = "*stdout*";
+        f = make_shared_stdout();
+        fname = "*stdout*";
     }
     else {
-	f = make_shared_file(fname, "w");
-	if (!f) {
-	    output.error("cannot create '%s': %s", fname.c_str(), strerror(errno));
+        f = make_shared_file(fname, "w");
+        if (!f) {
+            output.error("cannot create '%s': %s", fname.c_str(), strerror(errno));
             throw std::exception();
-	}
+        }
     }
 
     doc = xmlNewDoc(xml_string("1.0"));
-    doc->encoding = reinterpret_cast<xmlChar *>(strdup("UTF-8"));
-    xmlCreateIntSubset(doc, xml_string("datafile"), xml_string("-//Logiqx//DTD ROM Management Datafile//EN"), xml_string("http://www.logiqx.com/Dats/datafile.dtd"));
+    doc->encoding = reinterpret_cast<xmlChar*>(strdup("UTF-8"));
+    xmlCreateIntSubset(doc, xml_string("datafile"), xml_string("-//Logiqx//DTD ROM Management Datafile//EN"),
+                       xml_string("http://www.logiqx.com/Dats/datafile.dtd"));
     root = xmlNewNode(nullptr, xml_string("datafile"));
     xmlDocSetRootElement(doc, root);
 }
@@ -76,48 +77,46 @@ bool OutputContextXml::close() {
         if (xmlDocFormatDump(f.get(), doc, 1) < 0) {
             ok = false;
         }
-	ok = fflush(f.get()) == 0;
+        ok = fflush(f.get()) == 0;
     }
-    
+
     f = nullptr;
 
     return ok;
 }
 
-static void
-set_attribute(xmlNodePtr node, const std::string &name, const std::string &value) {
+static void set_attribute(xmlNodePtr node, const std::string& name, const std::string& value) {
     if (value.empty()) {
         return;
     }
     xmlSetProp(node, xml_string(name.c_str()), xml_string(value.c_str()));
 }
 
-static void
-set_attribute_u64(xmlNodePtr node, const char *name, uint64_t value) {
+static void set_attribute_u64(xmlNodePtr node, const char* name, uint64_t value) {
     char b[128];
     snprintf(b, sizeof(b), "%" PRIu64, value);
     set_attribute(node, name, b);
 }
 
-static void
-set_attribute_hash(xmlNodePtr node, const char *name, int type, Hashes *hashes) {
+static void set_attribute_hash(xmlNodePtr node, const char* name, int type, Hashes* hashes) {
     set_attribute(node, name, hashes->to_string(type));
 }
 
 
-bool OutputContextXml::game(GamePtr game, const std::string &original_name) {
+bool OutputContextXml::game(GamePtr game, const std::string& original_name) {
     xmlNodePtr xmlGame = xmlNewChild(root, nullptr, xml_string("game"), nullptr);
-    
+
     set_attribute(xmlGame, "name", game->name);
     set_attribute(xmlGame, "cloneof", game->cloneof[0]);
     /* description is actually required */
-    xmlNewTextChild(xmlGame, nullptr, xml_string("description"), xml_string(!game->description.empty() ? game->description.c_str() : game->name.c_str()));
+    xmlNewTextChild(xmlGame, nullptr, xml_string("description"),
+                    xml_string(!game->description.empty() ? game->description.c_str() : game->name.c_str()));
 
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         for (size_t i = 0; i < game->files[ft].size(); i++) {
-            auto &rom = game->files[ft][i];
+            auto& rom = game->files[ft][i];
             xmlNodePtr xmlRom = xmlNewChild(xmlGame, nullptr, xml_string(ft == TYPE_ROM ? "rom" : "disk"), nullptr);
-        
+
             set_attribute(xmlRom, "name", rom.name);
             if (ft == TYPE_ROM) {
                 set_attribute_u64(xmlRom, "size", rom.hashes.size);
@@ -125,11 +124,11 @@ bool OutputContextXml::game(GamePtr game, const std::string &original_name) {
             set_attribute_hash(xmlRom, "crc", Hashes::TYPE_CRC, &rom.hashes);
             set_attribute_hash(xmlRom, "sha1", Hashes::TYPE_SHA1, &rom.hashes);
             set_attribute_hash(xmlRom, "md5", Hashes::TYPE_MD5, &rom.hashes);
-            
+
             if (rom.where != FILE_INGAME) {
                 set_attribute(xmlRom, "merge", rom.merge.empty() ? rom.name : rom.merge);
             }
-            
+
             set_attribute(xmlRom, "status", rom.status_name());
         }
     }
@@ -138,11 +137,12 @@ bool OutputContextXml::game(GamePtr game, const std::string &original_name) {
 }
 
 
-bool OutputContextXml::header(DatEntry *dat) {
+bool OutputContextXml::header(DatEntry* dat) {
     xmlNodePtr header = xmlNewChild(root, nullptr, xml_string("header"), nullptr);
-    
+
     xmlNewTextChild(header, nullptr, xml_string("name"), xml_string(dat->name.c_str()));
-    xmlNewTextChild(header, nullptr, xml_string("description"), xml_string(dat->description.empty() ? dat->name.c_str() : dat->description.c_str()));
+    xmlNewTextChild(header, nullptr, xml_string("description"),
+                    xml_string(dat->description.empty() ? dat->name.c_str() : dat->description.c_str()));
     xmlNewTextChild(header, nullptr, xml_string("version"), xml_string(dat->version.c_str()));
     xmlNewTextChild(header, nullptr, xml_string("author"), xml_string("automatically generated"));
 

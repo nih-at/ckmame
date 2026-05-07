@@ -32,8 +32,8 @@
 */
 
 #include "cleanup.h"
-#include "globals.h"
 #include "compat.h"
+#include "globals.h"
 
 #include <algorithm>
 
@@ -46,24 +46,24 @@
 #include "warn.h"
 
 
-static void cleanup_archive(filetype_t filetype, Archive *archive, Result *result, int flags);
+static void cleanup_archive(filetype_t filetype, Archive* archive, Result* result, int flags);
 
 
 void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
     const char* what;
     switch (where) {
-        case FILE_SUPERFLUOUS:
-            what = "superfluous";
-            break;
-        case FILE_NEEDED:
-            what = "needed";
-            break;
-        case FILE_EXTRA:
-            what = "extra";
-            break;
-        default:
-            what = "unknown";
-            break;
+    case FILE_SUPERFLUOUS:
+        what = "superfluous";
+        break;
+    case FILE_NEEDED:
+        what = "needed";
+        break;
+    case FILE_EXTRA:
+        what = "extra";
+        break;
+    default:
+        what = "unknown";
+        break;
     }
     auto progress = Progress::Message(std::string("cleaning up ") + what + " files");
     list->sort_archives();
@@ -77,12 +77,13 @@ void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
     size_t i = 0;
     while (i < n) {
         auto entry = list->archives[i];
-        if (where == FILE_EXTRA && !configuration.extra_directory_move_from_extra(ckmame_cache->get_directory_name_for_archive(entry.name))) {
+        if (where == FILE_EXTRA &&
+            !configuration.extra_directory_move_from_extra(ckmame_cache->get_directory_name_for_archive(entry.name))) {
             i++;
             continue;
         }
 
-	warn_set_info(WARN_TYPE_ARCHIVE, entry.name);
+        warn_set_info(WARN_TYPE_ARCHIVE, entry.name);
         ArchivePtr a = Archive::open(entry.name, entry.filetype, FILE_NOWHERE, 0);
 
         if (a) {
@@ -94,7 +95,7 @@ void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
             while (di < len) {
                 auto fl = list->entries[di];
                 /* file lists should know what's toplevel without adding a / to name */
-		int cmp;
+                int cmp;
                 if (fl.name[fl.name.length() - 1] == '/' && entry.name[entry.name.length() - 1] != '/') {
                     cmp = entry.name.compare(fl.name.substr(0, fl.name.length() - 1));
                 }
@@ -116,26 +117,28 @@ void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
                 check_needed_files(entry.filetype, a, &res);
             }
             else {
-                // TODO: check_archive_files calls find_in_romset with detector 0, which doesn't find files in ROM set that have a header. I don't understand the other calls to find_in_romset, so I don't know how to fix it.
+                // TODO: check_archive_files calls find_in_romset with detector 0, which doesn't find files in ROM set
+                // that have a header. I don't understand the other calls to find_in_romset, so I don't know how to fix
+                // it.
                 check_archive_files(entry.filetype, archives, "", &res);
             }
 
-	    diagnostics_archive(entry.filetype, a.get(), res, warn_needed, where != FILE_EXTRA);
+            diagnostics_archive(entry.filetype, a.get(), res, warn_needed, where != FILE_EXTRA);
             cleanup_archive(entry.filetype, a.get(), &res, flags);
-	    warn_unset_info();
-	}
+            warn_unset_info();
+        }
 
-	if (n != list->archives.size()) {
-	    n = list->archives.size();
-	}
-	else {
-	    i++;
-	}
+        if (n != list->archives.size()) {
+            n = list->archives.size();
+        }
+        else {
+            i++;
+        }
     }
 }
 
 
-static void cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
+static void cleanup_archive(filetype_t filetype, Archive* a, Result* result, int flags) {
     GarbagePtr gb;
 
     if (!a->is_writable()) {
@@ -147,74 +150,76 @@ static void cleanup_archive(filetype_t filetype, Archive *a, Result *result, int
     }
 
     for (size_t i = 0; i < a->files.size(); i++) {
-	switch (result->archive_files[filetype][i]) {
-	case FS_SUPERFLUOUS:
-	case FS_DUPLICATE:
-	case FS_USED: {
-	    const char *reason;
-	    switch (result->archive_files[filetype][i]) {
-	    case FS_SUPERFLUOUS:
-		reason = "unused";
-		break;
-	    case FS_DUPLICATE:
-		reason = "duplicate";
-		break;
-	    case FS_USED:
-		reason = "used";
-		break;
-	    default:
-		reason = "[internal error]";
-		break;
-	    }
+        switch (result->archive_files[filetype][i]) {
+        case FS_SUPERFLUOUS:
+        case FS_DUPLICATE:
+        case FS_USED: {
+            const char* reason;
+            switch (result->archive_files[filetype][i]) {
+            case FS_SUPERFLUOUS:
+                reason = "unused";
+                break;
+            case FS_DUPLICATE:
+                reason = "duplicate";
+                break;
+            case FS_USED:
+                reason = "used";
+                break;
+            default:
+                reason = "[internal error]";
+                break;
+            }
 
-	    output.message_verbose("delete %s file '%s'", reason, a->files[i].filename().c_str());
-	    a->file_delete(i);
-	    break;
+            output.message_verbose("delete %s file '%s'", reason, a->files[i].filename().c_str());
+            a->file_delete(i);
+            break;
+        }
+        case FS_BROKEN:
+        case FS_MISSING:
+        case FS_PARTUSED:
+            break;
 
-	}
-	case FS_BROKEN:
-	case FS_MISSING:
-	case FS_PARTUSED:
-	    break;
-
-	case FS_NEEDED:
-	    if (flags & CLEANUP_NEEDED) {
-		/* TODO: handle error (how?) */
-		if (save_needed(a, i, "")) {
+        case FS_NEEDED:
+            if (flags & CLEANUP_NEEDED) {
+                /* TODO: handle error (how?) */
+                if (save_needed(a, i, "")) {
                     if (a->where != FILE_ROMSET) {
                         /* save_needed delays deletes in archives with where != FILE_ROM */
                         a->file_delete(i);
                     }
-		}
-	    }
-	    break;
+                }
+            }
+            break;
 
-	case FS_UNKNOWN:
-	    if (flags & CLEANUP_UNKNOWN) {
+        case FS_UNKNOWN:
+            if (flags & CLEANUP_UNKNOWN) {
                 if (a->files[i].hashes.size == 0) {
                     output.message_verbose("delete empty file '%s'", a->files[i].filename().c_str());
                     a->file_delete(i);
                 }
                 else {
-		    bool delete_file = false;
-		    if (configuration.delete_unknown_pattern.length() > 0 &&
-			fnmatch(configuration.delete_unknown_pattern.c_str(), a->files[i].filename().c_str(), 0) == 0) {
-			delete_file = true;
-		    }
+                    bool delete_file = false;
+                    if (configuration.delete_unknown_pattern.length() > 0 &&
+                        fnmatch(configuration.delete_unknown_pattern.c_str(), a->files[i].filename().c_str(), 0) == 0) {
+                        delete_file = true;
+                    }
 
-		    if (delete_file) {
-			output.message_verbose("delete unknown file '%s' (matching delete-unknown-pattern)", a->files[i].filename().c_str());
-		    } else {
-			output.message_verbose("move unknown file '%s'", a->files[i].filename().c_str());
-		    }
+                    if (delete_file) {
+                        output.message_verbose("delete unknown file '%s' (matching delete-unknown-pattern)",
+                                               a->files[i].filename().c_str());
+                    }
+                    else {
+                        output.message_verbose("move unknown file '%s'", a->files[i].filename().c_str());
+                    }
 
                     /* TODO: handle error (how?) */
                     if (configuration.fix_romset) {
-			if (delete_file) {
-			    a->file_delete(i);
-			} else {
-			    gb->add(i, false);
-			}
+                        if (delete_file) {
+                            a->file_delete(i);
+                        }
+                        else {
+                            gb->add(i, false);
+                        }
                     }
                     else {
                         /* when FIX_DO is not set, this only updates in-memory representation of a */
@@ -222,7 +227,7 @@ static void cleanup_archive(filetype_t filetype, Archive *a, Result *result, int
                     }
                 }
             }
-	    break;
+            break;
         }
     }
 

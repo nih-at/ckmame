@@ -64,16 +64,12 @@ typedef std::shared_ptr<ArchiveContents> ArchiveContentsPtr;
 #define ARCHIVE_FL_MASK 0x0ff00
 
 
-enum ArchiveType {
-    ARCHIVE_ZIP,
-    ARCHIVE_LIBARCHIVE,
-    ARCHIVE_DIR,
-    ARCHIVE_IMAGES
-};
+enum ArchiveType { ARCHIVE_ZIP, ARCHIVE_LIBARCHIVE, ARCHIVE_DIR, ARCHIVE_IMAGES };
 
 class ArchiveContents {
-public:
-    ArchiveContents(ArchiveType type, std::string name, filetype_t filetype, where_t where, int flagsk, std::string filename_extension = "");
+  public:
+    ArchiveContents(ArchiveType type, std::string name, filetype_t filetype, where_t where, int flagsk,
+                    std::string filename_extension = "");
 
     uint64_t id;
     std::string name;
@@ -86,61 +82,52 @@ public:
     int flags;
     time_t mtime;
     uint64_t size;
-    
+
     ArchiveType archive_type;
     std::weak_ptr<Archive> open_archive;
     std::string filename_extension;
-  
-    [[nodiscard]] std::optional<size_t> file_index_by_name(const std::string &name) const;
-    bool has_all_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors);
-    
-    bool read_infos_from_cachedb(std::vector<File> *cached_files);
+
+    [[nodiscard]] std::optional<size_t> file_index_by_name(const std::string& name) const;
+    bool has_all_detector_hashes(const std::unordered_map<size_t, DetectorPtr>& detectors);
+
+    bool read_infos_from_cachedb(std::vector<File>* cached_files);
     [[nodiscard]] int is_cache_up_to_date() const;
 
     static void enter_in_maps(const ArchiveContentsPtr& contents);
-    static ArchiveContentsPtr by_name(filetype_t filetype, const std::string &name);
+    static ArchiveContentsPtr by_name(filetype_t filetype, const std::string& name);
     static void clear_cache();
 
     class TypeAndName {
-    public:
-        TypeAndName(filetype_t filetype_, std::string name_) : filetype(filetype_), name(std::move(name_)) { }
-        
+      public:
+        TypeAndName(filetype_t filetype_, std::string name_) : filetype(filetype_), name(std::move(name_)) {}
+
         filetype_t filetype;
         std::string name;
-        
-        bool operator==(const TypeAndName &other) const { return filetype == other.filetype && name == other.name; }
+
+        bool operator==(const TypeAndName& other) const { return filetype == other.filetype && name == other.name; }
     };
-    
-private:
+
+  private:
     static std::unordered_map<TypeAndName, ArchiveContentsPtr> archive_by_name;
 };
 
 namespace std {
-template <>
-struct hash<ArchiveContents::TypeAndName> {
-    std::size_t operator()(const ArchiveContents::TypeAndName &k) const {
+template <> struct hash<ArchiveContents::TypeAndName> {
+    std::size_t operator()(const ArchiveContents::TypeAndName& k) const {
         return std::hash<int>()(k.filetype) ^ std::hash<std::string>()(k.name);
     }
 };
-}
+} // namespace std
 
 class Archive {
-public:
-    enum CacheChange {
-        NONE,
-        HASHES_ONLY,
-        FILES
-    };
+  public:
+    enum CacheChange { NONE, HASHES_ONLY, FILES };
     class Change {
-    public:
-        enum Status {
-            ADDED,
-            DELETED,
-            EXISTS
-        };
-        
-        Change(): status(EXISTS) { }
-        
+      public:
+        enum Status { ADDED, DELETED, EXISTS };
+
+        Change() : status(EXISTS) {}
+
         Status status;
         std::string original_name;
         std::string source_name;
@@ -149,9 +136,9 @@ public:
         std::unordered_set<size_t> updated_hashes;
     };
 
-    static ArchivePtr open(const std::string &name, filetype_t filetype, where_t where, int flags);
-    static ArchivePtr open_toplevel(const std::string &name, filetype_t filetype, where_t where, int flags);
-    
+    static ArchivePtr open(const std::string& name, filetype_t filetype, where_t where, int flags);
+    static ArchivePtr open_toplevel(const std::string& name, filetype_t filetype, where_t where, int flags);
+
     static ArchivePtr open(const ArchiveContentsPtr& contents, int flags = 0);
 
     static bool read_only_mode;
@@ -161,24 +148,25 @@ public:
 
     int close();
     bool commit();
-    bool compare_size_hashes(size_t index, size_t detector_id, const FileData *rom);
-    bool compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors);
+    bool compare_size_hashes(size_t index, size_t detector_id, const FileData* rom);
+    bool compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr>& detectors);
     void move_broken_archive();
-    bool file_add_empty(const std::string &filename);
-    int file_compare_hashes(uint64_t idx, const Hashes *h);
+    bool file_add_empty(const std::string& filename);
+    int file_compare_hashes(uint64_t idx, const Hashes* h);
     virtual bool file_ensure_hashes(uint64_t idx, int hashtypes) { return file_ensure_hashes(idx, 0, hashtypes); }
     bool file_ensure_hashes(uint64_t index, size_t detector_id, int hashtypes);
-    bool file_copy(Archive *source_archive, uint64_t source_index, const std::string &filename);
-    bool file_copy_or_move(Archive *source_archive, uint64_t source_index, const std::string &filename, bool copy);
-    bool file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const Hashes *hashes);
+    bool file_copy(Archive* source_archive, uint64_t source_index, const std::string& filename);
+    bool file_copy_or_move(Archive* source_archive, uint64_t source_index, const std::string& filename, bool copy);
+    bool file_copy_part(Archive* source_archive, uint64_t source_index, const std::string& filename, uint64_t start,
+                        std::optional<uint64_t> length, const Hashes* hashes);
     bool file_delete(uint64_t index);
-    std::optional<size_t> file_find_offset(size_t idx, size_t size, const Hashes *h);
-    [[nodiscard]] std::optional<size_t> file_index_by_name(const std::string &name) const;
-    std::optional<size_t> file_index(const FileData *file) const;
-    bool file_move(Archive *source_archive, uint64_t source_index, const std::string &filename);
-    bool file_rename(uint64_t index, const std::string &filename);
+    std::optional<size_t> file_find_offset(size_t idx, size_t size, const Hashes* h);
+    [[nodiscard]] std::optional<size_t> file_index_by_name(const std::string& name) const;
+    std::optional<size_t> file_index(const FileData* file) const;
+    bool file_move(Archive* source_archive, uint64_t source_index, const std::string& filename);
+    bool file_rename(uint64_t index, const std::string& filename);
     bool file_rename_to_unique(uint64_t index);
-    std::string make_unique_name_in_archive(const std::string &filename);
+    std::string make_unique_name_in_archive(const std::string& filename);
     bool read_infos();
     bool rollback();
     [[nodiscard]] bool is_empty() const;
@@ -200,30 +188,27 @@ public:
     void set_cache_changed(CacheChange new_changed);
 
     ArchiveContentsPtr contents;
-    std::vector<File> &files;
-    std::string &name;
+    std::vector<File>& files;
+    std::string& name;
     const filetype_t filetype;
     const where_t where;
     std::vector<Change> changes;
 
     CacheChange cache_changed{NONE};
     bool modified;
-    
-protected:
-    enum GetHashesStatus {
-        OK,
-        READ_ERROR,
-        CRC_ERROR
-    };
-    Archive(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flags);
+
+  protected:
+    enum GetHashesStatus { OK, READ_ERROR, CRC_ERROR };
+    Archive(ArchiveType type, const std::string& name, filetype_t filetype, where_t where, int flags);
     void update_cache();
 
-    void add_file(const std::string &filename, const Hashes *hashes, const std::unordered_map<size_t, Hashes> *detector_hashes);
-    GetHashesStatus get_hashes(ZipSource *source, uint64_t length, bool eof, Hashes *hashes);
-    void merge_files(const std::vector<File> &files_cache);
-    
-private:
-    bool compute_detector_hashes(size_t index, const std::unordered_map<size_t, DetectorPtr> &detectors);
+    void add_file(const std::string& filename, const Hashes* hashes,
+                  const std::unordered_map<size_t, Hashes>* detector_hashes);
+    GetHashesStatus get_hashes(ZipSource* source, uint64_t length, bool eof, Hashes* hashes);
+    void merge_files(const std::vector<File>& files_cache);
+
+  private:
+    bool compute_detector_hashes(size_t index, const std::unordered_map<size_t, DetectorPtr>& detectors);
 };
 
 #endif //* HAD_ARCHIVE_H

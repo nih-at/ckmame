@@ -39,10 +39,10 @@ bool OutputContextHeader::close() {
 }
 
 
-bool OutputContextHeader::header(DatEntry *dat) {
+bool OutputContextHeader::header(DatEntry* dat) {
     if (header_set) {
-	// TODO: error: duplicate header
-	return false;
+        // TODO: error: duplicate header
+        return false;
     }
     header_set = true;
     header_data = *dat;

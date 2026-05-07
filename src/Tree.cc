@@ -33,32 +33,32 @@
 
 #include "Tree.h"
 
-#include "check.h"
-#include "check_util.h"
 #include "CkmameCache.h"
-#include "diagnostics.h"
-#include "fix.h"
 #include "Fixdat.h"
-#include "globals.h"
 #include "Progress.h"
 #include "RomDB.h"
 #include "StatusDB.h"
+#include "check.h"
+#include "check_util.h"
+#include "diagnostics.h"
+#include "fix.h"
+#include "globals.h"
 #include "warn.h"
 
 
 Tree check_tree;
 
-bool Tree::add(const std::string &game_name) {
+bool Tree::add(const std::string& game_name) {
     GamePtr game = db->read_game(game_name);
 
     if (!game) {
-	return false;
+        return false;
     }
 
     auto tree = this;
 
     if (!game->cloneof[1].empty()) {
-	tree = tree->add_node(game->cloneof[1], false);
+        tree = tree->add_node(game->cloneof[1], false);
     }
     if (!game->cloneof[0].empty()) {
         tree = tree->add_node(game->cloneof[0], false);
@@ -70,36 +70,37 @@ bool Tree::add(const std::string &game_name) {
 }
 
 
-bool Tree::recheck(const std::string &game_name) {
+bool Tree::recheck(const std::string& game_name) {
     if (game_name == name) {
         checked = false;
         return check;
     }
 
-    for (const auto &it : children) {
+    for (const auto& it : children) {
         if (it.second->recheck(game_name)) {
             return true;
-	}
+        }
     }
 
     return false;
 }
 
 
-bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashes *hashes) {
+bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashes* hashes) {
     auto locations = db->read_file_by_hash(filetype, *hashes);
     if (locations.empty()) {
-	return true;
+        return true;
     }
 
     auto ok = true;
-    for (const auto &location : locations) {
+    for (const auto& location : locations) {
         auto game_file = &location.rom;
 
-        if ((filetype == TYPE_DISK || size == game_file->hashes.size) && hashes->compare(game_file->hashes) == Hashes::MATCH && game_file->where == FILE_INGAME) {
+        if ((filetype == TYPE_DISK || size == game_file->hashes.size) &&
+            hashes->compare(game_file->hashes) == Hashes::MATCH && game_file->where == FILE_INGAME) {
             if (!recheck(location.game_name)) {
-		ok = false;
-	    }
+                ok = false;
+            }
         }
     }
 
@@ -108,21 +109,21 @@ bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashe
 
 
 void Tree::traverse() {
-    GameArchives archives[] = { GameArchives(), GameArchives(), GameArchives() };
+    GameArchives archives[] = {GameArchives(), GameArchives(), GameArchives()};
 
-    for (const auto &it : children) {
+    for (const auto& it : children) {
         it.second->traverse_internal(archives);
     }
 }
 
-void Tree::traverse_internal(GameArchives *ancestor_archives) {
-    GameArchives archives[] = { GameArchives(), ancestor_archives[0], ancestor_archives[1] };
+void Tree::traverse_internal(GameArchives* ancestor_archives) {
+    GameArchives archives[] = {GameArchives(), ancestor_archives[0], ancestor_archives[1]};
 
     Progress::push_message("checking " + name);
 
     auto flags = check ? ARCHIVE_FL_CREATE : 0;
 
-    for (auto filetype: db->filetypes()) {
+    for (auto filetype : db->filetypes()) {
         auto full_name = findfile(filetype, name);
 
         if (full_name.empty() && check) {
@@ -139,13 +140,13 @@ void Tree::traverse_internal(GameArchives *ancestor_archives) {
 
     Progress::pop_message();
 
-    for (const auto &it : children) {
+    for (const auto& it : children) {
         it.second->traverse_internal(archives);
     }
 }
 
 
-Tree *Tree::add_node(const std::string &game_name, bool do_check) {
+Tree* Tree::add_node(const std::string& game_name, bool do_check) {
     auto it = children.find(game_name);
 
     if (it == children.end()) {
@@ -162,65 +163,61 @@ Tree *Tree::add_node(const std::string &game_name, bool do_check) {
 }
 
 
-void Tree::process(GameArchives *archives) {
+void Tree::process(GameArchives* archives) {
     auto game = db->read_game(name);
 
     if (!game) {
-	output.error("db error: %s not found", name.c_str());
+        output.error("db error: %s not found", name.c_str());
         return;
     }
 
     try {
-	warn_set_info(WARN_TYPE_GAME, game->name);
+        warn_set_info(WARN_TYPE_GAME, game->name);
 
-	Result res(game.get(), archives[0]);
+        Result res(game.get(), archives[0]);
 
-	check_old(game.get(), &res);
-        for (auto ft: db->filetypes()) {
-	    check_game_files(game.get(), ft, archives, &res);
-	    check_archive_files(ft, archives[0], game->name, &res);
-	}
-	update_game_status(game.get(), &res);
+        check_old(game.get(), &res);
+        for (auto ft : db->filetypes()) {
+            check_game_files(game.get(), ft, archives, &res);
+            check_archive_files(ft, archives[0], game->name, &res);
+        }
+        update_game_status(game.get(), &res);
 
-	/* write warnings/errors for me */
-	diagnostics(game.get(), archives[0], res);
+        /* write warnings/errors for me */
+        diagnostics(game.get(), archives[0], res);
 
-	int ret = 0;
+        int ret = 0;
 
-	if (configuration.fix_romset) {
-	    ret = fix_game(game.get(), archives[0], &res);
-	}
+        if (configuration.fix_romset) {
+            ret = fix_game(game.get(), archives[0], &res);
+        }
 
-        if (ret == 0 && (res.game == GS_CORRECT || res.game == GS_CORRECT_MIA|| res.game == GS_OLD || res.game == GS_FIXABLE)) {
+        if (ret == 0 &&
+            (res.game == GS_CORRECT || res.game == GS_CORRECT_MIA || res.game == GS_OLD || res.game == GS_FIXABLE)) {
             ckmame_cache->complete_games.insert(game->name);
         }
 
         status_run.insert_game_status(*game.get(), res.game);
 
-	/* TODO: includes too much when rechecking */
-	if (configuration.create_fixdat) {
-	    Fixdat::write_entry(game.get(), &res);
-	}
+        /* TODO: includes too much when rechecking */
+        if (configuration.create_fixdat) {
+            Fixdat::write_entry(game.get(), &res);
+        }
 
-	if (configuration.fix_romset) {
-	    ret |= fix_save_needed_from_unknown(game.get(), archives[0], &res);
-	}
+        if (configuration.fix_romset) {
+            ret |= fix_save_needed_from_unknown(game.get(), archives[0], &res);
+        }
 
-	if (ret != 1) {
-	    checked = true;
-	}
-	warn_unset_info();
-
-
+        if (ret != 1) {
+            checked = true;
+        }
+        warn_unset_info();
     }
-    catch (std::exception &ex) {
-	warn_unset_info();
-	throw;
+    catch (std::exception& ex) {
+        warn_unset_info();
+        throw;
     }
 }
 
 
-
-void Tree::clear() {
-    children.clear();
-}
+void Tree::clear() { children.clear(); }

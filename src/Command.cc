@@ -63,7 +63,7 @@ int Command::run(int argc, char* const* argv) {
                                    "Report bugs at https://github.com/nih-at/ckmame/issues/new/choose",
                                    version + "\nCopyright (C) 1999-2025 Dieter Baron and Thomas Klausner\n" PACKAGE
                                              " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n",
-                                             {"Operating Modes", "Detail Options"});
+                                   {"Operating Modes", "Detail Options"});
 
     Configuration::add_options(commandline, used_variables);
 

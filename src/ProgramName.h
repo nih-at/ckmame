@@ -37,14 +37,13 @@
 #include <string>
 
 class ProgramName {
-public:
-  static void set(const char* name) {program_name = name;}
-  static const std::string& get() {return program_name;}
+  public:
+    static void set(const char* name) { program_name = name; }
+    static const std::string& get() { return program_name; }
 
-private:
-  static std::string program_name;
+  private:
+    static std::string program_name;
 };
 
 
-
-#endif //PROGRAMNAME_H
+#endif // PROGRAMNAME_H

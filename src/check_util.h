@@ -39,7 +39,7 @@
 
 #include "types.h"
 
-std::string findfile(filetype_t filetype, const std::string &name);
-std::string make_file_name(filetype_t filetype, const std::string &name);
+std::string findfile(filetype_t filetype, const std::string& name);
+std::string make_file_name(filetype_t filetype, const std::string& name);
 
 #endif /* _HAD_CHECK_UTIL_H */

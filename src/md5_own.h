@@ -44,8 +44,8 @@ struct MD5Context {
 
 typedef struct MD5Context MD5_CTX;
 
-void MD5Init(MD5_CTX *);
-void MD5Update(MD5_CTX *, const unsigned char *, unsigned);
-void MD5Final(unsigned char[16], MD5_CTX *);
+void MD5Init(MD5_CTX*);
+void MD5Update(MD5_CTX*, const unsigned char*, unsigned);
+void MD5Final(unsigned char[16], MD5_CTX*);
 
 #endif /* !MD5_H */

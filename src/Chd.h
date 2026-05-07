@@ -43,17 +43,17 @@
 #define CHD_FLAG_HAS_PARENT 0x01
 
 class Chd {
-public:
-    explicit Chd(const std::string &name);
+  public:
+    explicit Chd(const std::string& name);
 
     Hashes hashes;
 
     [[nodiscard]] uint64_t size() const { return total_len; }
 
-private:
-    uint64_t total_len;      /* logical size of the data */
+  private:
+    uint64_t total_len; /* logical size of the data */
 
-    void read_header_v5(const uint8_t *header, uint32_t header_len);
+    void read_header_v5(const uint8_t* header, uint32_t header_len);
 };
 
 typedef std::shared_ptr<Chd> ChdPtr;

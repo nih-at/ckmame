@@ -37,27 +37,19 @@
 #include <set>
 
 #include "Command.h"
-#include "Game.h"
 #include "DatEntry.h"
+#include "Game.h"
 
 class Dumpgame : public Command {
   public:
     Dumpgame();
 
-    void global_setup(const ParsedCommandline &commandline) override;
-    bool execute(const std::vector<std::string> &arguments) override;
+    void global_setup(const ParsedCommandline& commandline) override;
+    bool execute(const std::vector<std::string>& arguments) override;
     bool global_cleanup() override;
 
   private:
-    enum Special {
-        DATS,
-        DETECTOR,
-        DISKS,
-        GAMES,
-        HASH_TYPES,
-        MIA,
-        SUMMARY
-    };
+    enum Special { DATS, DETECTOR, DISKS, GAMES, HASH_TYPES, MIA, SUMMARY };
     bool brief_mode;
     bool find_checksum;
     bool first;
@@ -73,15 +65,15 @@ class Dumpgame : public Command {
     static void dump_hash_types();
     static bool dump_list(int key);
     static void dump_stats();
-    static std::string format_checksums(const Hashes *hashes);
-    static std::string format_dat(const DatEntry &de);
+    static std::string format_checksums(const Hashes* hashes);
+    static std::string format_dat(const DatEntry& de);
     static std::string format_hash_types(int ht);
     static bool is_pattern(const std::string& string);
     static void print_clones(const GamePtr& game);
-    static void print_diskline(Rom *disk);
+    static void print_diskline(Rom* disk);
     static void print_match(const GamePtr& game, filetype_t ft, size_t i);
-    static void print_matches(const Hashes *hash);
-    static void print_romline(Rom *rom);
+    static void print_matches(const Hashes* hash);
+    static void print_romline(Rom* rom);
 };
 
 #endif // DUMPGAME_H

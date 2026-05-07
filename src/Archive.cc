@@ -60,71 +60,73 @@
 
 #define BUFSIZE 8192
 
-//#define DEBUG_LC
+// #define DEBUG_LC
 
 bool Archive::read_only_mode = false;
 
 std::unordered_map<ArchiveContents::TypeAndName, ArchiveContentsPtr> ArchiveContents::archive_by_name;
 
-ArchiveContents::ArchiveContents(ArchiveType type_, std::string name_, filetype_t filetype_, where_t where_, int flags_, std::string filename_extension_) :
-    id(0),
-    name(std::move(name_)),
-    filetype(filetype_),
-    where(where_),
-    cache_id(0),
-    flags(flags_),
-    mtime(0),
-    size(0),
-    archive_type(type_),
-    filename_extension(std::move(filename_extension_)) { }
+ArchiveContents::ArchiveContents(ArchiveType type_, std::string name_, filetype_t filetype_, where_t where_, int flags_,
+                                 std::string filename_extension_)
+    : id(0),
+      name(std::move(name_)),
+      filetype(filetype_),
+      where(where_),
+      cache_id(0),
+      flags(flags_),
+      mtime(0),
+      size(0),
+      archive_type(type_),
+      filename_extension(std::move(filename_extension_)) {}
 
-Archive::Archive(ArchiveContentsPtr contents_) :
-    contents(std::move(contents_)),
-    files(contents->files),
-    name(contents->name),
-    filetype(contents->filetype),
-    where(contents->where),
-    cache_changed(NONE),
-    modified(false) {
-        changes.resize(files.size());
-    }
+Archive::Archive(ArchiveContentsPtr contents_)
+    : contents(std::move(contents_)),
+      files(contents->files),
+      name(contents->name),
+      filetype(contents->filetype),
+      where(contents->where),
+      cache_changed(NONE),
+      modified(false) {
+    changes.resize(files.size());
+}
 
-Archive::Archive(ArchiveType type, const std::string &name_, filetype_t ft, where_t where_, int flags_) : Archive(std::make_shared<ArchiveContents>(type, name_, ft, where_, flags_)) { }
+Archive::Archive(ArchiveType type, const std::string& name_, filetype_t ft, where_t where_, int flags_)
+    : Archive(std::make_shared<ArchiveContents>(type, name_, ft, where_, flags_)) {}
 
 ArchivePtr Archive::open(const ArchiveContentsPtr& contents, int flags) {
     ArchivePtr archive;
 
     if (contents->open_archive.expired()) {
         switch (contents->archive_type) {
-            case ARCHIVE_LIBARCHIVE:
+        case ARCHIVE_LIBARCHIVE:
 #ifdef HAVE_LIBARCHIVE
-                archive = std::make_shared<ArchiveLibarchive>(contents);
+            archive = std::make_shared<ArchiveLibarchive>(contents);
 #else
-                return nullptr;
+            return nullptr;
 #endif
-                break;
+            break;
 
-            case ARCHIVE_ZIP:
-                archive = std::make_shared<ArchiveZip>(contents);
-                break;
+        case ARCHIVE_ZIP:
+            archive = std::make_shared<ArchiveZip>(contents);
+            break;
 
-            case ARCHIVE_DIR:
-                archive = std::make_shared<ArchiveDir>(contents);
-                break;
+        case ARCHIVE_DIR:
+            archive = std::make_shared<ArchiveDir>(contents);
+            break;
 
-            case ARCHIVE_IMAGES:
-                archive = std::make_shared<ArchiveImages>(contents);
-                break;
+        case ARCHIVE_IMAGES:
+            archive = std::make_shared<ArchiveImages>(contents);
+            break;
 
-            default:
-                return nullptr;
+        default:
+            return nullptr;
         }
 
-        //printf("# reopening %s\n", archive->name.c_str());
+        // printf("# reopening %s\n", archive->name.c_str());
         contents->open_archive = archive;
     }
     else {
-        //printf("# already open %s\n", archive->name.c_str());
+        // printf("# already open %s\n", archive->name.c_str());
         archive = contents->open_archive.lock();
     }
 
@@ -153,8 +155,8 @@ void Archive::move_broken_archive() {
 }
 
 
-int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
-    auto &file_hashes = files[index].hashes;
+int Archive::file_compare_hashes(uint64_t index, const Hashes* hashes) {
+    auto& file_hashes = files[index].hashes;
 
     file_ensure_hashes(index, hashes->get_types());
 
@@ -167,10 +169,10 @@ int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
 
 
 bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes) {
-    auto &file = files[idx];
+    auto& file = files[idx];
 
     if (file.has_all_hashes(detector_id, hashtypes)) {
-	return true;
+        return true;
     }
 
     if (file.broken) {
@@ -180,45 +182,47 @@ bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes
     auto progress = Progress::Message("computing hashes for " + name + "/" + file.name);
 
     if (detector_id == 0) {
-	Hashes hashes;
-	hashes.add_types(Hashes::TYPE_ALL);
+        Hashes hashes;
+        hashes.add_types(Hashes::TYPE_ALL);
 
 
         ZipSourcePtr f;
 
-	try {
+        try {
             f = get_source(idx);
-	    f->open();
-	} catch (Exception &e) {
-	    output.error("%s: %s: can't open: %s", name.c_str(), file.name.c_str(), e.what());
+            f->open();
+        }
+        catch (Exception& e) {
+            output.error("%s: %s: can't open: %s", name.c_str(), file.name.c_str(), e.what());
             set_cache_changed(FILES);
-	    file.broken = true;
-	    return false;
-	}
+            file.broken = true;
+            return false;
+        }
 
-	switch (get_hashes(f.get(), file.hashes.size, true, &hashes)) {
-	case OK:
-	    break;
+        switch (get_hashes(f.get(), file.hashes.size, true, &hashes)) {
+        case OK:
+            break;
 
-	case READ_ERROR:
-	    output.error("%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), strerror(errno));
+        case READ_ERROR:
+            output.error("%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), strerror(errno));
             set_cache_changed(FILES);
-	    file.broken = true;
-	    return false;
+            file.broken = true;
+            return false;
 
-	case CRC_ERROR:
-	    output.error("%s: %s: CRC error: %08x != %08x", name.c_str(), file.name.c_str(), hashes.crc, file.hashes.crc);
+        case CRC_ERROR:
+            output.error("%s: %s: CRC error: %08x != %08x", name.c_str(), file.name.c_str(), hashes.crc,
+                         file.hashes.crc);
             set_cache_changed(FILES);
-	    file.broken = true;
-	    return false;
-	}
+            file.broken = true;
+            return false;
+        }
 
-	file.hashes.set_hashes(hashes);
+        file.hashes.set_hashes(hashes);
     }
     else {
-	if (!compute_detector_hashes(idx, db->detectors)) {
-	    return false;
-	}
+        if (!compute_detector_hashes(idx, db->detectors)) {
+            return false;
+        }
     }
     set_cache_changed(HASHES_ONLY);
     changes[idx].updated_hashes.insert(detector_id);
@@ -227,12 +231,12 @@ bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes
 }
 
 
-std::optional<size_t> Archive::file_find_offset(size_t index, size_t size, const Hashes *hashes) {
+std::optional<size_t> Archive::file_find_offset(size_t index, size_t size, const Hashes* hashes) {
     Hashes hashes_part;
 
     hashes_part.add_types(hashes->get_types());
 
-    auto &file = files[index];
+    auto& file = files[index];
 
     try {
         auto source = get_source(index);
@@ -259,7 +263,7 @@ std::optional<size_t> Archive::file_find_offset(size_t index, size_t size, const
             return offset;
         }
     }
-    catch (Exception &e) {
+    catch (Exception& e) {
         file.broken = true;
     }
 
@@ -267,7 +271,7 @@ std::optional<size_t> Archive::file_find_offset(size_t index, size_t size, const
 }
 
 
-std::optional<size_t> Archive::file_index_by_name(const std::string &filename) const {
+std::optional<size_t> Archive::file_index_by_name(const std::string& filename) const {
     auto index = contents->file_index_by_name(filename);
 
     if (index.has_value() && changes[index.value()].status == Change::DELETED) {
@@ -278,7 +282,7 @@ std::optional<size_t> Archive::file_index_by_name(const std::string &filename) c
 }
 
 
-std::string Archive::make_unique_name_in_archive(const std::string &filename) {
+std::string Archive::make_unique_name_in_archive(const std::string& filename) {
     if (!file_index_by_name(filename).has_value()) {
         return filename;
     }
@@ -286,28 +290,28 @@ std::string Archive::make_unique_name_in_archive(const std::string &filename) {
     std::string ext = std::filesystem::path(filename).extension().string();
 
     for (int i = 0; i < 1000; i++) {
-	char n[5];
-	snprintf(n, sizeof(n), "-%03d", i);
-	auto unique = filename.substr(0, filename.length() - ext.length()) + n + ext;
+        char n[5];
+        snprintf(n, sizeof(n), "-%03d", i);
+        auto unique = filename.substr(0, filename.length() - ext.length()) + n + ext;
 
-	auto exists = false;
+        auto exists = false;
 
-        for (auto &file : files) {
+        for (auto& file : files) {
             if (file.name == unique) {
                 exists = true;
                 break;
             }
-	}
+        }
 
         if (!exists) {
-	    return unique;
+            return unique;
         }
     }
 
     return "";
 }
 
-ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t where, int flags) {
+ArchivePtr Archive::open(const std::string& name, filetype_t filetype, where_t where, int flags) {
     std::string archive_name;
 
     if (name[name.length() - 1] == '/') {
@@ -327,32 +331,32 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
 
     try {
         switch (filetype) {
-            case TYPE_ROM:
-                if (configuration.roms_zipped) {
-                    auto extension = std::filesystem::path(archive_name).extension();
-                    if (iequals(extension, ".zip")) {
-                        archive = std::make_shared<ArchiveZip>(archive_name, filetype, where, flags);
-                    }
+        case TYPE_ROM:
+            if (configuration.roms_zipped) {
+                auto extension = std::filesystem::path(archive_name).extension();
+                if (iequals(extension, ".zip")) {
+                    archive = std::make_shared<ArchiveZip>(archive_name, filetype, where, flags);
+                }
 #ifdef HAVE_LIBARCHIVE
-                    else if (iequals(extension, ".7z")) {
-                        archive = std::make_shared<ArchiveLibarchive>(archive_name, filetype, where, flags);
-                    }
+                else if (iequals(extension, ".7z")) {
+                    archive = std::make_shared<ArchiveLibarchive>(archive_name, filetype, where, flags);
+                }
 #endif
-                    else {
-                        return nullptr;
-                    }
-                }
                 else {
-                    archive = std::make_shared<ArchiveDir>(archive_name, filetype, where, flags);
+                    return nullptr;
                 }
-                break;
+            }
+            else {
+                archive = std::make_shared<ArchiveDir>(archive_name, filetype, where, flags);
+            }
+            break;
 
-            case TYPE_DISK:
-                archive = std::make_shared<ArchiveImages>(archive_name, filetype, where, flags);
-                break;
+        case TYPE_DISK:
+            archive = std::make_shared<ArchiveImages>(archive_name, filetype, where, flags);
+            break;
 
-            default:
-                return nullptr;
+        default:
+            return nullptr;
         }
     }
     catch (...) {
@@ -360,7 +364,8 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
     }
 
     archive->contents->open_archive = archive;
-    archive->contents->flags = ((flags  & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK)) | (read_only_mode ? ARCHIVE_FL_RDONLY : 0));
+    archive->contents->flags =
+        ((flags & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK)) | (read_only_mode ? ARCHIVE_FL_RDONLY : 0));
 
     if (!archive->read_infos() && (flags & ARCHIVE_FL_CREATE) == 0) {
         return {};
@@ -372,7 +377,7 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
 }
 
 
-ArchivePtr Archive::open_toplevel(const std::string &name, filetype_t filetype, where_t where, int flags) {
+ArchivePtr Archive::open_toplevel(const std::string& name, filetype_t filetype, where_t where, int flags) {
     ArchivePtr a = open(name, filetype, where, flags | ARCHIVE_FL_TOP_LEVEL_ONLY);
 
     if (a && a->files.empty()) {
@@ -392,27 +397,28 @@ bool Archive::read_infos() {
 
     if (contents->cache_id > 0) {
         switch (contents->is_cache_up_to_date()) {
-            case -1:
-                return false;
+        case -1:
+            return false;
 
-            case 0:
-                set_cache_changed(FILES);
-		break;
+        case 0:
+            set_cache_changed(FILES);
+            break;
 
-	    case 1:
-                // For directories, mtime doesn't change for all changes of files within that directory, so we always have to rescan.
-                if (contents->size != 0) {
-                    files = files_cache;
-                    changes.resize(files.size());
-                    return true;
-                }
-                break;
-	    }
+        case 1:
+            // For directories, mtime doesn't change for all changes of files within that directory, so we always have
+            // to rescan.
+            if (contents->size != 0) {
+                files = files_cache;
+                changes.resize(files.size());
+                return true;
+            }
+            break;
+        }
     }
 
     if (!read_infos_xxx()) {
         set_cache_changed(FILES);
-	return false;
+        return false;
     }
 
     changes.resize(files.size());
@@ -423,9 +429,8 @@ bool Archive::read_infos() {
 
 
 bool Archive::is_empty() const {
-    return std::all_of(changes.begin(), changes.end(), [](const Change &change) {
-	return change.status == Change::DELETED;
-    });
+    return std::all_of(changes.begin(), changes.end(),
+                       [](const Change& change) { return change.status == Change::DELETED; });
 }
 
 
@@ -446,15 +451,15 @@ int ArchiveContents::is_cache_up_to_date() const {
     try {
         cache_db->get_last_change(cache_id, &mtime_cache, &size_cache);
     }
-    catch (Exception &exception) {
-	return -1;
+    catch (Exception& exception) {
+        return -1;
     }
 
     return (mtime_cache == mtime && static_cast<size_t>(size_cache) == size);
 }
 
 
-Archive::GetHashesStatus Archive::get_hashes(ZipSource *source, uint64_t length, bool eof, Hashes *hashes) {
+Archive::GetHashesStatus Archive::get_hashes(ZipSource* source, uint64_t length, bool eof, Hashes* hashes) {
     unsigned char buf[BUFSIZE];
 
     try {
@@ -473,7 +478,7 @@ Archive::GetHashesStatus Archive::get_hashes(ZipSource *source, uint64_t length,
 
         hu.end();
     }
-    catch (Exception &e) {
+    catch (Exception& e) {
         return READ_ERROR;
     }
 
@@ -481,7 +486,7 @@ Archive::GetHashesStatus Archive::get_hashes(ZipSource *source, uint64_t length,
         try {
             source->read(buf, 1);
         }
-        catch (Exception &e) {
+        catch (Exception& e) {
             return CRC_ERROR;
         }
     }
@@ -490,14 +495,15 @@ Archive::GetHashesStatus Archive::get_hashes(ZipSource *source, uint64_t length,
 }
 
 
-void Archive::merge_files(const std::vector<File> &files_cache) {
+void Archive::merge_files(const std::vector<File>& files_cache) {
     set_cache_changed(NONE);
 
     for (uint64_t i = 0; i < files.size(); i++) {
-        auto &file = files[i];
+        auto& file = files[i];
 
         file.filename_extension = contents->filename_extension;
-        auto it = std::find_if(files_cache.cbegin(), files_cache.cend(), [&file](const File &file_cache){ return file.name == file_cache.name; });
+        auto it = std::find_if(files_cache.cbegin(), files_cache.cend(),
+                               [&file](const File& file_cache) { return file.name == file_cache.name; });
         if (it != files_cache.cend()) {
             if (file.mtime == (*it).mtime && file.compare_size_hashes(*it)) {
                 if ((file.hashes.get_types() & ~(it->hashes.get_types())) == 0) {
@@ -534,7 +540,7 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
     }
 }
 
-std::optional<size_t> Archive::file_index(const FileData *file) const {
+std::optional<size_t> Archive::file_index(const FileData* file) const {
     for (size_t index = 0; index < files.size(); index++) {
         if (&files[index] == file) {
             return index;
@@ -547,7 +553,7 @@ std::optional<size_t> Archive::file_index(const FileData *file) const {
 
 // MARK: - ArchiveContents
 
-bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *cached_files) {
+bool ArchiveContents::read_infos_from_cachedb(std::vector<File>* cached_files) {
     if (!configuration.roms_zipped && filetype == TYPE_DISK) {
         cache_db = nullptr;
         cache_id = -1;
@@ -561,7 +567,7 @@ bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *cached_files) {
         try {
             cache_db->read_files(cache_id, cached_files);
         }
-        catch (Exception &exception) {
+        catch (Exception& exception) {
             return false;
         }
     }
@@ -569,12 +575,12 @@ bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *cached_files) {
     return true;
 }
 
-void ArchiveContents::enter_in_maps(const ArchiveContentsPtr &contents) {
+void ArchiveContents::enter_in_maps(const ArchiveContentsPtr& contents) {
     archive_by_name[TypeAndName(contents->filetype, contents->name)] = contents;
 }
 
 
-ArchiveContentsPtr ArchiveContents::by_name(filetype_t filetype, const std::string &name) {
+ArchiveContentsPtr ArchiveContents::by_name(filetype_t filetype, const std::string& name) {
     auto it = archive_by_name.find(TypeAndName(filetype, name));
 
     if (it == archive_by_name.end()) {
@@ -585,14 +591,12 @@ ArchiveContentsPtr ArchiveContents::by_name(filetype_t filetype, const std::stri
 }
 
 
-void ArchiveContents::clear_cache() {
-    archive_by_name.clear();
-}
+void ArchiveContents::clear_cache() { archive_by_name.clear(); }
 
 
-std::optional<size_t> ArchiveContents::file_index_by_name(const std::string &filename) const {
+std::optional<size_t> ArchiveContents::file_index_by_name(const std::string& filename) const {
     for (size_t i = 0; i < files.size(); i++) {
-        auto &file = files[i];
+        auto& file = files[i];
 
         if (filename == file.name) {
             return i;
@@ -602,17 +606,17 @@ std::optional<size_t> ArchiveContents::file_index_by_name(const std::string &fil
     return {};
 }
 
-bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors) {
+bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr>& detectors) {
     auto got_new_hashes = false;
 
     Progress::push_message("computing hashes in '" + name + "'");
     for (size_t index = 0; index < files.size(); index++) {
-        auto &file = files[index];
+        auto& file = files[index];
         std::unordered_map<size_t, DetectorPtr> missing_detectors;
 
         Progress::update();
 
-        for (const auto &pair : detectors) {
+        for (const auto& pair : detectors) {
             if (file.detector_hashes.find(pair.first) == file.detector_hashes.end()) {
                 missing_detectors[pair.first] = pair.second;
             }
@@ -636,8 +640,8 @@ bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorP
 }
 
 
-bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<size_t, DetectorPtr> &detectors) {
-    auto &file = files[index];
+bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<size_t, DetectorPtr>& detectors) {
+    auto& file = files[index];
 
     if (file.broken) {
         return false;
@@ -653,7 +657,7 @@ bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<siz
         source->open();
         source->read(data.data(), data.size());
     }
-    catch (std::exception &e) {
+    catch (std::exception& e) {
         output.error("%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), e.what());
         file.broken = true;
 
@@ -664,9 +668,9 @@ bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<siz
 }
 
 
-bool ArchiveContents::has_all_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors) {
-    for (const auto &pair : detectors) {
-        for (const auto &file: files) {
+bool ArchiveContents::has_all_detector_hashes(const std::unordered_map<size_t, DetectorPtr>& detectors) {
+    for (const auto& pair : detectors) {
+        for (const auto& file : files) {
             if (file.detector_hashes.find(pair.first) == file.detector_hashes.end()) {
                 return false;
             }
@@ -677,8 +681,8 @@ bool ArchiveContents::has_all_detector_hashes(const std::unordered_map<size_t, D
 }
 
 
-bool Archive::compare_size_hashes(size_t index, size_t detector_id, const FileData *rom) {
-    auto &file = files[index];
+bool Archive::compare_size_hashes(size_t index, size_t detector_id, const FileData* rom) {
+    auto& file = files[index];
 
     auto ok = false;
 

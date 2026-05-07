@@ -44,13 +44,13 @@
 
 static const std::string zname[] = {"", "cloneof", "grand-cloneof"};
 
-static void diagnostics_game(filetype_t ft, const Game *game, const Result &result);
+static void diagnostics_game(filetype_t ft, const Game* game, const Result& result);
 
 
-void diagnostics(const Game *game, const GameArchives &archives, const Result &result) {
+void diagnostics(const Game* game, const GameArchives& archives, const Result& result) {
     ckmame_cache->stats.add_game(result.game);
 
-    for (auto filetype: db->filetypes()) {
+    for (auto filetype : db->filetypes()) {
         for (size_t i = 0; i < game->files[filetype].size(); i++) {
             ckmame_cache->stats.add_rom(filetype, &game->files[filetype][i], result.game_files[filetype][i].quality);
         }
@@ -60,7 +60,7 @@ void diagnostics(const Game *game, const GameArchives &archives, const Result &r
 }
 
 
-void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, bool warn_needed, bool warn_unknown) {
+void diagnostics_archive(filetype_t ft, const Archive* a, const Result& result, bool warn_needed, bool warn_unknown) {
     if (a == nullptr) {
         return;
     }
@@ -69,128 +69,128 @@ void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, 
         auto f = &a->files[i];
 
         switch (result.archive_files[ft][i]) {
-            case FS_UNKNOWN:
-                if (warn_unknown && configuration.warn_file_unknown) {
-                    warn_archive_file(ft, f, "unknown");
-                }
-                break;
+        case FS_UNKNOWN:
+            if (warn_unknown && configuration.warn_file_unknown) {
+                warn_archive_file(ft, f, "unknown");
+            }
+            break;
 
-            case FS_PARTUSED:
-            case FS_USED:
-            case FS_MISSING:
-                /* handled in diagnostics_game */
-                break;
+        case FS_PARTUSED:
+        case FS_USED:
+        case FS_MISSING:
+            /* handled in diagnostics_game */
+            break;
 
-            case FS_BROKEN:
-                warn_archive_file(ft, f, "broken");
-                break;
+        case FS_BROKEN:
+            warn_archive_file(ft, f, "broken");
+            break;
 
-            case FS_NEEDED:
-                if (warn_needed && configuration.warn_file_known) {
-                    warn_archive_file(ft, f, "needed elsewhere");
-                }
-                break;
+        case FS_NEEDED:
+            if (warn_needed && configuration.warn_file_known) {
+                warn_archive_file(ft, f, "needed elsewhere");
+            }
+            break;
 
-            case FS_SUPERFLUOUS:
-                if (configuration.warn_file_known) {
-                    warn_archive_file(ft, f, "not used");
-                }
-                break;
-            case FS_DUPLICATE:
-                if (configuration.warn_file_known) {
-                    warn_archive_file(ft, f, "duplicate");
-                }
-                break;
+        case FS_SUPERFLUOUS:
+            if (configuration.warn_file_known) {
+                warn_archive_file(ft, f, "not used");
+            }
+            break;
+        case FS_DUPLICATE:
+            if (configuration.warn_file_known) {
+                warn_archive_file(ft, f, "duplicate");
+            }
+            break;
         }
     }
 }
 
 
-static void
-diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
+static void diagnostics_game(filetype_t ft, const Game* game, const Result& result) {
     if (!configuration.report_detailed) {
         switch (result.game) {
-            case GS_CORRECT:
-            case GS_CORRECT_MIA:
-                if (ft == TYPE_ROM) {
-                    if (configuration.report_correct) {
-                        warn_game(ft, game, "correct");
-                    }
-                    else if (result.game == GS_CORRECT_MIA && configuration.report_correct_mia) {
-                        warn_game(ft, game, "correct (mia)");
-                    }
+        case GS_CORRECT:
+        case GS_CORRECT_MIA:
+            if (ft == TYPE_ROM) {
+                if (configuration.report_correct) {
+                    warn_game(ft, game, "correct");
                 }
+                else if (result.game == GS_CORRECT_MIA && configuration.report_correct_mia) {
+                    warn_game(ft, game, "correct (mia)");
+                }
+            }
+            return;
+
+        case GS_OLD: {
+            // TODO: does not work if whole game is duplicate from old.
+            if (!configuration.report_correct) {
                 return;
+            }
 
-            case GS_OLD: {
-                // TODO: does not work if whole game is duplicate from old.
-                if (!configuration.report_correct) {
-                    return;
+            // TODO: move this to check and keep in result
+            auto all_same = true;
+            std::string old_name;
+            for (const auto& game_file : result.game_files) {
+                if (!game_file.empty()) {
+                    old_name = game_file[0].old_game;
+                    break;
                 }
+            }
 
-                // TODO: move this to check and keep in result
-                auto all_same = true;
-                std::string old_name;
-                for (const auto &game_file : result.game_files) {
-                    if (!game_file.empty()) {
-                        old_name = game_file[0].old_game;
-                        break;
-                    }
-                }
-
-                if (!old_name.empty()) {
-                    for (size_t ft = 0; ft < TYPE_MAX && all_same; ft++) {
-                        for (size_t i = 1; i < game->files[ft].size(); i++) {
-                            if (result.game_files[ft][i].old_game != old_name) {
-                                all_same = false;
-                                break;
-                            }
+            if (!old_name.empty()) {
+                for (size_t ft = 0; ft < TYPE_MAX && all_same; ft++) {
+                    for (size_t i = 1; i < game->files[ft].size(); i++) {
+                        if (result.game_files[ft][i].old_game != old_name) {
+                            all_same = false;
+                            break;
                         }
                     }
                 }
-                if (all_same) {
-                    if (ft == TYPE_ROM) {
-                        warn_game(ft, game, "old in '" + old_name + "'");
-                    }
-                    return;
-                }
-                break;
             }
-
-            case GS_PARTIAL:
-                if (configuration.complete_games_only) {
-                    if (ft == TYPE_ROM && configuration.report_missing) {
-                        warn_game(ft, game, "incomplete");
-                    }
-                    return;
+            if (all_same) {
+                if (ft == TYPE_ROM) {
+                    warn_game(ft, game, "old in '" + old_name + "'");
                 }
-                break;
+                return;
+            }
+            break;
+        }
 
-            case GS_MISSING:
+        case GS_PARTIAL:
+            if (configuration.complete_games_only) {
                 if (ft == TYPE_ROM && configuration.report_missing) {
-                    warn_game(ft, game, "not a single file found");
+                    warn_game(ft, game, "incomplete");
                 }
                 return;
+            }
+            break;
 
-            case GS_MISSING_BEST:
-                if (ft == TYPE_ROM && configuration.report_missing_mia) {
-                    warn_game(ft, game, "not a single file found (all mia)");
-                }
-                return;
+        case GS_MISSING:
+            if (ft == TYPE_ROM && configuration.report_missing) {
+                warn_game(ft, game, "not a single file found");
+            }
+            return;
 
-            default:
-                break;
+        case GS_MISSING_BEST:
+            if (ft == TYPE_ROM && configuration.report_missing_mia) {
+                warn_game(ft, game, "not a single file found (all mia)");
+            }
+            return;
+
+        default:
+            break;
         }
     }
 
-    if (configuration.complete_games_only && !(configuration.report_missing || configuration.report_fixable) && result.game != GS_FIXABLE) {
+    if (configuration.complete_games_only && !(configuration.report_missing || configuration.report_fixable) &&
+        result.game != GS_FIXABLE) {
         return;
     }
 
     for (size_t i = 0; i < game->files[ft].size(); i++) {
-        auto &match = result.game_files[ft][i];
-        auto &rom = game->files[ft][i];
-        FileData *file = nullptr;
+        auto& match = result.game_files[ft][i];
+        auto& rom = game->files[ft][i];
+        FileData* file = nullptr;
 
         if (!match.source_is_old() && match.archive) {
             file = &match.archive->files[match.index];
@@ -198,81 +198,89 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
 
         switch (match.quality) {
         case Match::UNCHECKED:
-            if ((configuration.report_missing && (rom.status == Rom::OK || configuration.report_no_good_dump)) || configuration.report_detailed) {
+            if ((configuration.report_missing && (rom.status == Rom::OK || configuration.report_no_good_dump)) ||
+                configuration.report_detailed) {
                 warn_game_file(ft, &rom, "not checked");
             }
             break;
 
-            case Match::MISSING:
-                if (rom.mia) {
-                    if (configuration.report_missing_mia || configuration.report_detailed) {
-                        warn_game_file(ft, &rom, "missing (mia)");
-                    }
+        case Match::MISSING:
+            if (rom.mia) {
+                if (configuration.report_missing_mia || configuration.report_detailed) {
+                    warn_game_file(ft, &rom, "missing (mia)");
                 }
-                else {
-                    if ((configuration.report_missing && (rom.status == Rom::OK || configuration.report_no_good_dump)) || configuration.report_detailed) {
-                        warn_game_file(ft, &rom, "missing");
-                    }
+            }
+            else {
+                if ((configuration.report_missing && (rom.status == Rom::OK || configuration.report_no_good_dump)) ||
+                    configuration.report_detailed) {
+                    warn_game_file(ft, &rom, "missing");
                 }
-                break;
+            }
+            break;
 
-            case Match::NAME_ERROR:
-                if (configuration.report_fixable) {
-                    warn_game_file(ft, &rom, "wrong name (" + file->name + ")" + (rom.where != match.where ? ", should be in " : "") + zname[rom.where]);
-                }
-                break;
+        case Match::NAME_ERROR:
+            if (configuration.report_fixable) {
+                warn_game_file(ft, &rom,
+                               "wrong name (" + file->name + ")" + (rom.where != match.where ? ", should be in " : "") +
+                                   zname[rom.where]);
+            }
+            break;
 
-            case Match::LONG:
-                if (configuration.report_fixable) {
-                    std::ostringstream out;
-                    out << "too long, valid subsection at byte " << match.offset << " (" << file->hashes.size << ")" << (rom.where != match.where ? ", should be in " : "") << zname[rom.where];
-                    warn_game_file(ft, &rom, out.str());
-                }
-                break;
+        case Match::LONG:
+            if (configuration.report_fixable) {
+                std::ostringstream out;
+                out << "too long, valid subsection at byte " << match.offset << " (" << file->hashes.size << ")"
+                    << (rom.where != match.where ? ", should be in " : "") << zname[rom.where];
+                warn_game_file(ft, &rom, out.str());
+            }
+            break;
 
-            case Match::OK:
-                if (rom.status == Rom::OK) {
-                    if (rom.mia && configuration.report_correct_mia) {
-                        warn_game_file(ft, &rom, "correct (mia)");
-                    }
-                    else if (configuration.report_correct || configuration.report_detailed) {
-                        warn_game_file(ft, &rom, "correct");
-                    }
+        case Match::OK:
+            if (rom.status == Rom::OK) {
+                if (rom.mia && configuration.report_correct_mia) {
+                    warn_game_file(ft, &rom, "correct (mia)");
                 }
-                else {
-                    if ((configuration.report_correct && configuration.report_no_good_dump) || configuration.report_detailed) {
-                        warn_game_file(ft, &rom, rom.status == Rom::BAD_DUMP ? "best bad dump" : "exists");
-                    }
+                else if (configuration.report_correct || configuration.report_detailed) {
+                    warn_game_file(ft, &rom, "correct");
                 }
-                break;
+            }
+            else {
+                if ((configuration.report_correct && configuration.report_no_good_dump) ||
+                    configuration.report_detailed) {
+                    warn_game_file(ft, &rom, rom.status == Rom::BAD_DUMP ? "best bad dump" : "exists");
+                }
+            }
+            break;
 
-            case Match::OK_AND_OLD:
-                if (configuration.report_correct || configuration.report_detailed) {
-                    warn_game_file(ft, &rom, "duplicate (also in old '" + match.old_game + "')");
-                }
-                break;
+        case Match::OK_AND_OLD:
+            if (configuration.report_correct || configuration.report_detailed) {
+                warn_game_file(ft, &rom, "duplicate (also in old '" + match.old_game + "')");
+            }
+            break;
 
-            case Match::COPIED:
-                if (configuration.report_fixable) {
-                    warn_game_file(ft, &rom, "is in '" + match.archive->name + "/" + match.archive->files[match.index].filename() + "'");
-                }
-                break;
+        case Match::COPIED:
+            if (configuration.report_fixable) {
+                warn_game_file(ft, &rom,
+                               "is in '" + match.archive->name + "/" + match.archive->files[match.index].filename() +
+                                   "'");
+            }
+            break;
 
-            case Match::IN_ZIP:
-                if (configuration.report_fixable) {
-                    warn_game_file(ft, &rom, "should be in " + zname[rom.where]);
-                }
-                break;
+        case Match::IN_ZIP:
+            if (configuration.report_fixable) {
+                warn_game_file(ft, &rom, "should be in " + zname[rom.where]);
+            }
+            break;
 
-            case Match::OLD:
-                if (configuration.report_correct || configuration.report_detailed) {
-                    warn_game_file(ft, &rom, "is in old '" + match.old_game + "'");
-                }
-                break;
+        case Match::OLD:
+            if (configuration.report_correct || configuration.report_detailed) {
+                warn_game_file(ft, &rom, "is in old '" + match.old_game + "'");
+            }
+            break;
 
-            case Match::NO_HASH:
-                /* only used for disks */
-                break;
+        case Match::NO_HASH:
+            /* only used for disks */
+            break;
         }
     }
 }

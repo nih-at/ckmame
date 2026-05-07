@@ -40,22 +40,22 @@
 #include "types.h"
 
 class FileData {
-public:
+  public:
     std::string name;
     Hashes hashes;
-    time_t mtime;   // needed by mkmamedb --runtest
-    
-    FileData() : mtime(0) { }
+    time_t mtime; // needed by mkmamedb --runtest
+
+    FileData() : mtime(0) {}
 
     bool is_size_known() const { return hashes.size != Hashes::SIZE_UNKNOWN; }
-  
-    bool compare_name(const FileData &other) const;
-    bool compare_name_size_hashes(const FileData &other) const;
-    bool compare_size(const FileData &other) const;
-    bool compare_size_hashes(const FileData &other) const;
-    Hashes::Compare compare_hashes(const FileData &other) const;
-    
-    bool operator<(const FileData &other) const { return name < other.name; }
+
+    bool compare_name(const FileData& other) const;
+    bool compare_name_size_hashes(const FileData& other) const;
+    bool compare_size(const FileData& other) const;
+    bool compare_size_hashes(const FileData& other) const;
+    Hashes::Compare compare_hashes(const FileData& other) const;
+
+    bool operator<(const FileData& other) const { return name < other.name; }
 };
 
 #endif // HAD_FILEDATA_H

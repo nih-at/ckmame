@@ -41,15 +41,15 @@
 #include "Rom.h"
 
 struct Game {
-public:
+  public:
     uint64_t id;
     std::string name;
     std::string description;
     size_t dat_no;
     std::string cloneof[2];
     std::vector<Rom> files[TYPE_MAX];
-    
-    Game() : id(UINT64_MAX), dat_no(0) { }
+
+    Game() : id(UINT64_MAX), dat_no(0) {}
 
     bool is_mia() const;
 };

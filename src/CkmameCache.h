@@ -48,14 +48,14 @@ class CkmameCache {
     void ensure_extra_maps();
     void ensure_needed_maps();
 
-    CkmameDBPtr get_db_for_archive(const std::string &name);
-    std::string get_directory_name_for_archive(const std::string &name);
-    void register_directory(const std::string &directory, where_t where);
+    CkmameDBPtr get_db_for_archive(const std::string& name);
+    std::string get_directory_name_for_archive(const std::string& name);
+    void register_directory(const std::string& directory, where_t where);
 
     std::vector<CkmameDB::FindResult> find_file(filetype_t filetype, size_t detector_id, const FileData& rom);
     bool compute_all_detector_hashes(bool needed_only, const std::unordered_map<size_t, DetectorPtr>& detectors);
 
-    void used(Archive *a, size_t idx);
+    void used(Archive* a, size_t idx);
 
     DeleteListPtr extra_delete_list;
     DeleteListPtr needed_delete_list;
@@ -68,13 +68,13 @@ class CkmameCache {
   private:
     class CacheDirectory {
       public:
-	std::string name;
+        std::string name;
         where_t where;
-	std::shared_ptr<CkmameDB> db;
-	bool initialized = false;
+        std::shared_ptr<CkmameDB> db;
+        bool initialized = false;
         bool directory_exists = false;
 
-	explicit CacheDirectory(std::string name_, where_t where): name(std::move(name_)), where(where) { }
+        explicit CacheDirectory(std::string name_, where_t where) : name(std::move(name_)), where(where) {}
 
         void initialize(bool create);
     };
@@ -86,12 +86,15 @@ class CkmameCache {
     bool extra_map_done;
     bool needed_map_done;
 
-    bool enter_dir_in_map_and_list(const DeleteListPtr &list, const std::string &directory_name, where_t where);
-    static bool enter_dir_in_map_and_list_unzipped(const DeleteListPtr &list, const std::string &directory_name, where_t where);
-    static bool enter_dir_in_map_and_list_zipped(const DeleteListPtr &list, const std::string &directory_name, where_t where);
-    static bool enter_file_in_map_and_list(const DeleteListPtr &list, const std::filesystem::directory_entry& entry, where_t where);
+    bool enter_dir_in_map_and_list(const DeleteListPtr& list, const std::string& directory_name, where_t where);
+    static bool enter_dir_in_map_and_list_unzipped(const DeleteListPtr& list, const std::string& directory_name,
+                                                   where_t where);
+    static bool enter_dir_in_map_and_list_zipped(const DeleteListPtr& list, const std::string& directory_name,
+                                                 where_t where);
+    static bool enter_file_in_map_and_list(const DeleteListPtr& list, const std::filesystem::directory_entry& entry,
+                                           where_t where);
 
-    const CacheDirectory* get_directory_for_archive(const std::string &name);
+    const CacheDirectory* get_directory_for_archive(const std::string& name);
 };
 
 typedef std::shared_ptr<CkmameCache> CkmameCachePtr;

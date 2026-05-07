@@ -64,14 +64,14 @@ extern "C" {
 #include "Hashes.h"
 
 class HashesContexts {
-public:
+  public:
     uint32_t crc;
     MD5_CTX md5;
     SHA1_CTX sha1;
     SHA256_CTX sha256;
 };
 
-Hashes::Update::Update(Hashes *hashes_) : hashes(hashes_) {
+Hashes::Update::Update(Hashes* hashes_) : hashes(hashes_) {
     contexts = std::make_unique<HashesContexts>();
 
     if (hashes->has_type(TYPE_CRC)) {
@@ -88,27 +88,25 @@ Hashes::Update::Update(Hashes *hashes_) : hashes(hashes_) {
     }
 }
 
-Hashes::Update::~Update() {
-    contexts = nullptr;
-}
+Hashes::Update::~Update() { contexts = nullptr; }
 
-void Hashes::Update::update(const void *data, size_t length) {
+void Hashes::Update::update(const void* data, size_t length) {
     size_t i = 0;
 
     while (i < length) {
-	unsigned int n = length - i > UINT_MAX ? UINT_MAX : static_cast<unsigned int>(length - i);
+        unsigned int n = length - i > UINT_MAX ? UINT_MAX : static_cast<unsigned int>(length - i);
 
         if (hashes->has_type(TYPE_CRC)) {
-            contexts->crc = static_cast<uint32_t>(crc32(contexts->crc, static_cast<const Bytef *>(data), n));
+            contexts->crc = static_cast<uint32_t>(crc32(contexts->crc, static_cast<const Bytef*>(data), n));
         }
         if (hashes->has_type(TYPE_MD5)) {
-            MD5Update(&contexts->md5, static_cast<const unsigned char *>(data), n);
+            MD5Update(&contexts->md5, static_cast<const unsigned char*>(data), n);
         }
         if (hashes->has_type(TYPE_SHA1)) {
-            SHA1Update(&contexts->sha1, static_cast<const uint8_t *>(data), n);
+            SHA1Update(&contexts->sha1, static_cast<const uint8_t*>(data), n);
         }
         if (hashes->has_type(TYPE_SHA256)) {
-            SHA256Update(&contexts->sha256, static_cast<const uint8_t *>(data), n);
+            SHA256Update(&contexts->sha256, static_cast<const uint8_t*>(data), n);
         }
 
         i += n;

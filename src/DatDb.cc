@@ -36,10 +36,9 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 const std::string DatDB::db_name = ".mkmamedb.db";
 
-const DB::DBFormat DatDB::format = {
-    0x02,
-    5,
-    "create table file (\n\
+const DB::DBFormat DatDB::format = {0x02,
+                                    5,
+                                    "create table file (\n\
 file_id integer primary key autoincrement,\n\
 file_name text not null,\n\
 mtime integer not null,\n\
@@ -55,37 +54,39 @@ crc int\n\
 );\n\
 create index dat_name on dat (name);\n\
 ",
-    {}
-};
+                                    {}};
 
 std::unordered_map<DatDB::Statement, std::string> DatDB::queries = {
-    { DELETE_DATS, "delete from dat where file_id = :file_id" },
-    { DELETE_FILE, "delete from file where file_id = :file_id"},
-    { INSERT_DAT, "insert into dat (file_id, entry_name, name, version, crc) values (:file_id, :entry_name, :name, :version, :crc)" },
-    { INSERT_FILE, "insert into file (file_name, mtime, size) values (:file_name, :mtime, :size)" },
-    { LIST_DATS, "select distinct name from dat"},
-    { LIST_FILES, "select file_name from file" },
-    { QUERY_DAT, "select file_name, entry_name, version, crc from file f, dat d where f.file_id = d.file_id and name = :name"},
-    { QUERY_FILE_ID, "select file_id from file where file_name = :file_name" },
-    { QUERY_FILE_LAST_CHANGE, "select file_id, size, mtime from file where file_name = :file_name" },
-    { QUERY_HAS_FILES, "select file_id from file limit 1" }
-};
+    {DELETE_DATS, "delete from dat where file_id = :file_id"},
+    {DELETE_FILE, "delete from file where file_id = :file_id"},
+    {INSERT_DAT,
+     "insert into dat (file_id, entry_name, name, version, crc) values (:file_id, :entry_name, :name, :version, :crc)"},
+    {INSERT_FILE, "insert into file (file_name, mtime, size) values (:file_name, :mtime, :size)"},
+    {LIST_DATS, "select distinct name from dat"},
+    {LIST_FILES, "select file_name from file"},
+    {QUERY_DAT,
+     "select file_name, entry_name, version, crc from file f, dat d where f.file_id = d.file_id and name = :name"},
+    {QUERY_FILE_ID, "select file_id from file where file_name = :file_name"},
+    {QUERY_FILE_LAST_CHANGE, "select file_id, size, mtime from file where file_name = :file_name"},
+    {QUERY_HAS_FILES, "select file_id from file limit 1"}};
 
 
-DatDB::DatDB(const std::string& directory) : DB(format, make_db_file_name(directory, db_name, configuration.dat_directory_use_central_cache_directory(directory)), DBH_CREATE | DBH_WRITE) {
-}
+DatDB::DatDB(const std::string& directory)
+    : DB(format,
+         make_db_file_name(directory, db_name, configuration.dat_directory_use_central_cache_directory(directory)),
+         DBH_CREATE | DBH_WRITE) {}
 
 
 std::string DatDB::get_query(int name, bool parameterized) const {
     if (parameterized) {
-	return "";
+        return "";
     }
     else {
-	auto it = queries.find(static_cast<Statement>(name));
-	if (it == queries.end()) {
-	    return "";
-	}
-	return it->second;
+        auto it = queries.find(static_cast<Statement>(name));
+        if (it == queries.end()) {
+            return "";
+        }
+        return it->second;
     }
 }
 
@@ -96,7 +97,7 @@ std::vector<std::string> DatDB::list_dats() {
     std::vector<std::string> dats;
 
     while (stmt->step()) {
-	dats.emplace_back(stmt->get_string("name"));
+        dats.emplace_back(stmt->get_string("name"));
     }
 
     return dats;
@@ -109,34 +110,33 @@ std::vector<std::string> DatDB::list_files() {
     std::vector<std::string> files;
 
     while (stmt->step()) {
-	files.emplace_back(stmt->get_string("file_name"));
+        files.emplace_back(stmt->get_string("file_name"));
     }
 
     return files;
 }
 
 
-std::optional<int64_t> DatDB::get_file_id(const std::string &file_name) {
+std::optional<int64_t> DatDB::get_file_id(const std::string& file_name) {
     auto stmt = get_statement(QUERY_FILE_ID);
 
     stmt->set_string("file_name", file_name);
 
     if (!stmt->step()) {
-	return {};
+        return {};
     }
 
     return stmt->get_int64("file_id");
 }
 
 
-
-bool DatDB::get_last_change(const std::string &file_name, time_t *mtime, size_t *size) {
+bool DatDB::get_last_change(const std::string& file_name, time_t* mtime, size_t* size) {
     auto stmt = get_statement(QUERY_FILE_LAST_CHANGE);
 
     stmt->set_string("file_name", file_name);
 
     if (!stmt->step()) {
-	return false;
+        return false;
     }
 
     *mtime = stmt->get_int64("mtime");
@@ -146,21 +146,21 @@ bool DatDB::get_last_change(const std::string &file_name, time_t *mtime, size_t 
 }
 
 
-void DatDB::delete_file(const std::string &file_name) {
+void DatDB::delete_file(const std::string& file_name) {
     auto id = get_file_id(file_name);
     if (id.has_value()) {
-	auto stmt = get_statement(DELETE_FILE);
-    	stmt->set_int64("file_id", id.value());
-    	stmt->execute();
+        auto stmt = get_statement(DELETE_FILE);
+        stmt->set_int64("file_id", id.value());
+        stmt->execute();
 
-	stmt = get_statement(DELETE_DATS);
-	stmt->set_int64("file_id", id.value());
-	stmt->execute();
+        stmt = get_statement(DELETE_DATS);
+        stmt->set_int64("file_id", id.value());
+        stmt->execute();
     }
 }
 
 
-void DatDB::insert_file(const std::string &file_name, time_t mtime, size_t size, const std::vector<DatEntry> &dats) {
+void DatDB::insert_file(const std::string& file_name, time_t mtime, size_t size, const std::vector<DatEntry>& dats) {
     auto stmt = get_statement(INSERT_FILE);
 
     stmt->set_string("file_name", file_name);
@@ -170,22 +170,22 @@ void DatDB::insert_file(const std::string &file_name, time_t mtime, size_t size,
     auto id = stmt->get_rowid();
 
     if (!dats.empty()) {
-	stmt = get_statement(INSERT_DAT);
+        stmt = get_statement(INSERT_DAT);
 
-	for (const auto &dat : dats) {
-	    stmt->set_int64("file_id", id);
-	    stmt->set_string("entry_name", dat.entry_name);
-	    stmt->set_string("name", dat.name);
-	    stmt->set_string("version", dat.version);
-	    stmt->set_uint64("crc", dat.crc);
-	    stmt->execute();
-	    stmt->reset();
-	}
+        for (const auto& dat : dats) {
+            stmt->set_int64("file_id", id);
+            stmt->set_string("entry_name", dat.entry_name);
+            stmt->set_string("name", dat.name);
+            stmt->set_string("version", dat.version);
+            stmt->set_uint64("crc", dat.crc);
+            stmt->execute();
+            stmt->reset();
+        }
     }
 }
 
 
-std::vector<DatDB::DatInfo> DatDB::get_dats(const std::string &name) {
+std::vector<DatDB::DatInfo> DatDB::get_dats(const std::string& name) {
     auto stmt = get_statement(QUERY_DAT);
 
     stmt->set_string("name", name);
@@ -193,7 +193,8 @@ std::vector<DatDB::DatInfo> DatDB::get_dats(const std::string &name) {
     std::vector<DatInfo> dats;
 
     while (stmt->step()) {
-	dats.emplace_back(stmt->get_string("file_name"), stmt->get_string("entry_name"), name, stmt->get_string("version"), stmt->get_uint64("crc"));
+        dats.emplace_back(stmt->get_string("file_name"), stmt->get_string("entry_name"), name,
+                          stmt->get_string("version"), stmt->get_uint64("crc"));
     }
 
     return dats;
@@ -204,7 +205,7 @@ bool DatDB::is_empty() {
     auto stmt = get_statement(QUERY_HAS_FILES);
 
     if (stmt->step()) {
-	return false;
+        return false;
     }
     return true;
 }

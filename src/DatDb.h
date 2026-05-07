@@ -44,40 +44,51 @@ typedef std::shared_ptr<DatDB> DatDBPtr;
 class DatDB : public DB {
   public:
     enum Statement {
-	DELETE_DATS,
-	DELETE_FILE,
-	INSERT_DAT,
-	INSERT_FILE,
-	LIST_DATS,
-	LIST_FILES,
-	QUERY_DAT,
-	QUERY_FILE_ID,
-	QUERY_FILE_LAST_CHANGE,
-	QUERY_HAS_FILES
+        DELETE_DATS,
+        DELETE_FILE,
+        INSERT_DAT,
+        INSERT_FILE,
+        LIST_DATS,
+        LIST_FILES,
+        QUERY_DAT,
+        QUERY_FILE_ID,
+        QUERY_FILE_LAST_CHANGE,
+        QUERY_HAS_FILES
     };
 
     class DatEntry {
       public:
-	DatEntry(std::string entry_name, std::string name, std::string version, uint32_t crc) : entry_name(std::move(entry_name)), name(std::move(name)), version(std::move(version)), crc(crc) { }
+        DatEntry(std::string entry_name, std::string name, std::string version, uint32_t crc)
+            : entry_name(std::move(entry_name)), name(std::move(name)), version(std::move(version)), crc(crc) {}
 
-	const std::string entry_name;
-	const std::string name;
-	const std::string version;
-    	uint32_t crc;
+        const std::string entry_name;
+        const std::string name;
+        const std::string version;
+        uint32_t crc;
     };
 
     class DatInfo {
       public:
-	DatInfo() = default;
+        DatInfo() = default;
 
-	DatInfo(std::string file_name, std::string entry_name, std::string name, std::string version, uint32_t crc) : file_name(std::move(file_name)), entry_name(std::move(entry_name)), name(std::move(name)), version(std::move(version)), crc(crc) { }
-    	DatInfo(const DatInfo& other, std::string file_name): file_name{std::move(file_name)}, entry_name(other.entry_name), name(other.name), version(other.version), crc(other.crc) {}
+        DatInfo(std::string file_name, std::string entry_name, std::string name, std::string version, uint32_t crc)
+            : file_name(std::move(file_name)),
+              entry_name(std::move(entry_name)),
+              name(std::move(name)),
+              version(std::move(version)),
+              crc(crc) {}
+        DatInfo(const DatInfo& other, std::string file_name)
+            : file_name{std::move(file_name)},
+              entry_name(other.entry_name),
+              name(other.name),
+              version(other.version),
+              crc(other.crc) {}
 
-	std::string file_name;
-	std::string entry_name;
-	std::string name;
-	std::string version;
-    	uint32_t crc = 0;
+        std::string file_name;
+        std::string entry_name;
+        std::string name;
+        std::string version;
+        uint32_t crc = 0;
     };
 
     explicit DatDB(const std::string& directory);
@@ -88,12 +99,12 @@ class DatDB : public DB {
     std::vector<std::string> list_dats();
     std::vector<std::string> list_files();
 
-    bool get_last_change(const std::string &file_name, time_t *mtime, size_t *size);
-    std::optional<int64_t> get_file_id(const std::string &file_name);
-    void delete_file(const std::string &file_name);
-    void insert_file(const std::string &file_name, time_t mtime, size_t size, const std::vector<DatEntry> &dats);
+    bool get_last_change(const std::string& file_name, time_t* mtime, size_t* size);
+    std::optional<int64_t> get_file_id(const std::string& file_name);
+    void delete_file(const std::string& file_name);
+    void insert_file(const std::string& file_name, time_t mtime, size_t size, const std::vector<DatEntry>& dats);
 
-    std::vector<DatInfo> get_dats(const std::string &name);
+    std::vector<DatInfo> get_dats(const std::string& name);
 
   protected:
     [[nodiscard]] std::string get_query(int name, bool parameterized) const override;
@@ -102,7 +113,7 @@ class DatDB : public DB {
     static const DBFormat format;
     static std::unordered_map<Statement, std::string> queries;
 
-    DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
+    DBStatement* get_statement(Statement name) { return get_statement_internal(name); }
 };
 
 

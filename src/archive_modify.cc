@@ -37,9 +37,9 @@
 #include <cinttypes>
 #include <cstring>
 
+#include "CkmameCache.h"
 #include "CkmameDB.h"
 #include "Exception.h"
-#include "CkmameCache.h"
 #include "globals.h"
 
 bool Archive::commit() {
@@ -50,29 +50,29 @@ bool Archive::commit() {
 
         if (!commit_xxx()) {
             return false;
-	}
+        }
 
         for (size_t index = 0; index < files.size(); index++) {
-            auto &change = changes[index];
+            auto& change = changes[index];
 
             switch (change.status) {
-                case Change::DELETED:
-                    if (is_writable()) {
-                        files.erase(files.begin() + index);
-                        changes.erase(changes.begin() + index);
-                        index--;
-                    }
-		break;
+            case Change::DELETED:
+                if (is_writable()) {
+                    files.erase(files.begin() + index);
+                    changes.erase(changes.begin() + index);
+                    index--;
+                }
+                break;
 
-                case Change::ADDED:
-                    change.status = Change::EXISTS;
-                    break;
+            case Change::ADDED:
+                change.status = Change::EXISTS;
+                break;
 
-                default:
-                    break;
-	    }
-	}
-        
+            default:
+                break;
+            }
+        }
+
         changes.clear();
         changes.resize(files.size());
 
@@ -80,7 +80,7 @@ bool Archive::commit() {
 
         modified = false;
     }
-    
+
     update_cache();
     return true;
 }
@@ -99,7 +99,7 @@ void Archive::update_cache() {
                 try {
                     contents->cache_db->delete_archive(contents->cache_id);
                 }
-                catch (Exception &exception) {
+                catch (Exception& exception) {
                     contents->cache_db->seterr();
                     output.error_database("%s: error deleting from %s", name.c_str(), CkmameDB::db_name.c_str());
                     /* TODO: handle errors */
@@ -121,12 +121,13 @@ void Archive::update_cache() {
                         continue;
                     }
 
-                    for (auto detector_id: change.updated_hashes) {
+                    for (auto detector_id : change.updated_hashes) {
                         if (detector_id == 0) {
                             contents->cache_db->update_file_hashes(contents->cache_id, i, file.hashes);
                         }
                         else {
-                            contents->cache_db->insert_file_detector_hashes(contents->cache_id, i, detector_id, file.get_hashes(detector_id));
+                            contents->cache_db->insert_file_detector_hashes(contents->cache_id, i, detector_id,
+                                                                            file.get_hashes(detector_id));
                         }
                     }
                     change.updated_hashes.clear();
@@ -152,11 +153,11 @@ void Archive::update_cache() {
 }
 
 
-bool Archive::file_add_empty(const std::string &filename) {
+bool Archive::file_add_empty(const std::string& filename) {
     if (!is_writable()) {
-	output.set_error_file(name);
-	output.archive_error("cannot add to read-only archive");
-	return false;
+        output.set_error_file(name);
+        output.archive_error("cannot add to read-only archive");
+        return false;
     }
 
     Hashes hashes;
@@ -172,11 +173,12 @@ bool Archive::file_add_empty(const std::string &filename) {
 }
 
 
-bool Archive::file_copy(Archive *source_archive, uint64_t source_index, const std::string &filename) {
+bool Archive::file_copy(Archive* source_archive, uint64_t source_index, const std::string& filename) {
     return file_copy_part(source_archive, source_index, filename, 0, {}, &source_archive->files[source_index].hashes);
 }
 
-bool Archive::file_copy_or_move(Archive *source_archive, uint64_t source_index, const std::string &filename, bool copy) {
+bool Archive::file_copy_or_move(Archive* source_archive, uint64_t source_index, const std::string& filename,
+                                bool copy) {
     if (copy) {
         return file_copy(source_archive, source_index, filename);
     }
@@ -186,27 +188,28 @@ bool Archive::file_copy_or_move(Archive *source_archive, uint64_t source_index, 
 }
 
 
-bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const Hashes *hashes) {
+bool Archive::file_copy_part(Archive* source_archive, uint64_t source_index, const std::string& filename,
+                             uint64_t start, std::optional<uint64_t> length, const Hashes* hashes) {
     if (!is_writable()) {
         output.set_error_file(name);
-	output.archive_error("cannot add to read-only archive");
-	return false;
+        output.archive_error("cannot add to read-only archive");
+        return false;
     }
 
     if (file_index_by_name(filename).has_value()) {
         output.set_error_file(name);
-	errno = EEXIST;
-	output.archive_error("can't copy to %s: %s", filename.c_str(), strerror(errno));
-	return false;
+        errno = EEXIST;
+        output.archive_error("can't copy to %s: %s", filename.c_str(), strerror(errno));
+        return false;
     }
     output.set_error_archive(source_archive->files[source_index].name, name);
     if (source_archive->files[source_index].broken) {
-	output.archive_file_error("not copying broken file");
-	return false;
+        output.archive_file_error("not copying broken file");
+        return false;
     }
     if (source_archive->changes[source_index].status == Change::ADDED) {
-	output.archive_error("cannot copy added file");
-	return false;
+        output.archive_error("cannot copy added file");
+        return false;
     }
     if (length.has_value()) {
         if (start + length.value() > source_archive->files[source_index].hashes.size) {
@@ -221,10 +224,12 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
         }
     }
 
-    bool full_file = start == 0 && (!length.has_value() || length.value() == source_archive->files[source_index].hashes.size);
-    
+    bool full_file =
+        start == 0 && (!length.has_value() || length.value() == source_archive->files[source_index].hashes.size);
+
     if (full_file) {
-        add_file(filename, &source_archive->files[source_index].hashes, &source_archive->files[source_index].detector_hashes);
+        add_file(filename, &source_archive->files[source_index].hashes,
+                 &source_archive->files[source_index].detector_hashes);
     }
     else {
         add_file(filename, hashes, nullptr);
@@ -237,7 +242,7 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
         try {
             changes[files.size() - 1].source = source_archive->get_source(source_index, start, length);
         }
-        catch (Exception &ex) {
+        catch (Exception& ex) {
             files.pop_back();
             changes.pop_back();
             return false;
@@ -250,15 +255,15 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
 
 bool Archive::file_delete(uint64_t index) {
     if (!is_writable()) {
-	output.set_error_file(name);
-	output.archive_error("cannot delete from read-only archive");
-	return false;
+        output.set_error_file(name);
+        output.archive_error("cannot delete from read-only archive");
+        return false;
     }
 
     if (changes[index].status != Change::EXISTS) {
-	output.set_error_file(name);
-	output.archive_error("cannot delete broken/added/deleted file");
-	return false;
+        output.set_error_file(name);
+        output.archive_error("cannot delete broken/added/deleted file");
+        return false;
     }
 
     changes[index].status = Change::DELETED;
@@ -268,7 +273,7 @@ bool Archive::file_delete(uint64_t index) {
 }
 
 
-bool Archive::file_move(Archive *source_archive, uint64_t source_index, const std::string &filename) {
+bool Archive::file_move(Archive* source_archive, uint64_t source_index, const std::string& filename) {
     if (!file_copy(source_archive, source_index, filename)) {
         return false;
     }
@@ -276,22 +281,22 @@ bool Archive::file_move(Archive *source_archive, uint64_t source_index, const st
     return source_archive->file_delete(source_index);
 }
 
-bool Archive::file_rename(uint64_t index, const std::string &filename) {
+bool Archive::file_rename(uint64_t index, const std::string& filename) {
     output.set_error_file(name);
 
     if (!is_writable()) {
-	output.archive_error("cannot rename in read-only archive");
-	return false;
+        output.archive_error("cannot rename in read-only archive");
+        return false;
     }
     if (changes[index].status != Change::EXISTS) {
-	output.archive_error("cannot rename broken/added/deleted file");
-	return false;
+        output.archive_error("cannot rename broken/added/deleted file");
+        return false;
     }
 
     if (file_index_by_name(filename).has_value()) {
-	errno = EEXIST;
-	output.archive_error("can't rename %s to %s: %s", files[index].name.c_str(), filename.c_str(), strerror(errno));
-	return false;
+        errno = EEXIST;
+        output.archive_error("can't rename %s to %s: %s", files[index].name.c_str(), filename.c_str(), strerror(errno));
+        return false;
     }
 
     if (changes[index].original_name.empty()) {
@@ -306,9 +311,9 @@ bool Archive::file_rename(uint64_t index, const std::string &filename) {
 
 bool Archive::file_rename_to_unique(uint64_t index) {
     if (!is_writable()) {
-	output.set_error_file(name);
-	output.archive_error("cannot rename in read-only archive");
-	return false;
+        output.set_error_file(name);
+        output.archive_error("cannot rename in read-only archive");
+        return false;
     }
 
     auto new_name = make_unique_name_in_archive(files[index].name);
@@ -326,30 +331,30 @@ bool Archive::rollback() {
     }
 
     modified = false;
-    
+
     for (size_t i = 0; i < files.size(); i++) {
-        auto &file = files[i];
-        auto &change = changes[i];
-        
+        auto& file = files[i];
+        auto& change = changes[i];
+
         if (!change.original_name.empty()) {
             file.name = change.original_name;
         }
         change.file = "";
         change.source = nullptr;
-        
-        switch (change.status) {
-            case Change::DELETED:
-                change.status = Change::EXISTS;
-                break;
-                
-            case Change::ADDED:
-                files.erase(files.begin() + i);
-                changes.erase(changes.begin() + i);
-                i--;
-                break;
 
-            default:
-                break;
+        switch (change.status) {
+        case Change::DELETED:
+            change.status = Change::EXISTS;
+            break;
+
+        case Change::ADDED:
+            files.erase(files.begin() + i);
+            changes.erase(changes.begin() + i);
+            i--;
+            break;
+
+        default:
+            break;
         }
     }
 
@@ -357,7 +362,8 @@ bool Archive::rollback() {
 }
 
 
-void Archive::add_file(const std::string &filename, const Hashes *hashes, const std::unordered_map<size_t, Hashes> *detector_hashes) {
+void Archive::add_file(const std::string& filename, const Hashes* hashes,
+                       const std::unordered_map<size_t, Hashes>* detector_hashes) {
     File file;
     Change change;
 
@@ -371,6 +377,6 @@ void Archive::add_file(const std::string &filename, const Hashes *hashes, const 
 
     files.push_back(file);
     changes.push_back(change);
-    
+
     modified = true;
 }

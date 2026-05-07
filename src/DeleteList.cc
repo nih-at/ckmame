@@ -56,27 +56,27 @@ DeleteList::Mark::Mark(const DeleteListPtr& list_) : list(list_), index(0), roll
 
 DeleteList::Mark::~Mark() {
     auto l = list.lock();
-    
+
     if (rollback && l && l->entries.size() > index) {
         l->entries.resize(index);
     }
 }
 
 
-void DeleteList::add_directory(const std::string &directory, bool omit_known) {
+void DeleteList::add_directory(const std::string& directory, bool omit_known) {
     std::unordered_set<std::string> known_games;
-    
+
     if (omit_known) {
         try {
             auto list = db->read_list(DBH_KEY_LIST_GAME);
             known_games.insert(list.begin(), list.end());
         }
-        catch (Exception &e) {
+        catch (Exception& e) {
             output.error("list of games not found in ROM database: %s", e.what());
             exit(1);
         }
     }
-        
+
     bool have_toplevel_roms = false;
     bool have_toplevel_disks = false;
 
@@ -85,18 +85,18 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
     try {
         Dir dir(directory, false);
 
-        for (const auto& entry : dir ) {
+        for (const auto& entry : dir) {
             Progress::update();
             if (name_type(entry) == NAME_IGNORE) {
                 continue;
             }
-            
+
             bool known = false;
-            
+
             if (entry.is_directory()) {
                 auto filename = entry.path().filename();
                 known = known_games.find(filename) != known_games.end();
-                                
+
                 if (configuration.roms_zipped) {
                     if (!known) {
                         archives.emplace_back(entry.path(), TYPE_DISK);
@@ -112,7 +112,7 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
             else {
                 if (configuration.roms_zipped) {
                     auto ext = entry.path().extension();
-                    
+
                     if (ext == ".zip") {
                         auto stem = entry.path().stem();
                         known = known_games.find(stem) != known_games.end();
@@ -134,7 +134,7 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
                 }
             }
         }
-        
+
         if (have_toplevel_roms) {
             archives.emplace_back(directory + "/", TYPE_ROM);
         }
@@ -154,34 +154,34 @@ int DeleteList::execute() {
     std::sort(entries.begin(), entries.end());
 
     int ret = 0;
-    for (const auto &entry : entries) {
-	if (name.empty() || entry.name != name) {
+    for (const auto& entry : entries) {
+        if (name.empty() || entry.name != name) {
             if (!close_archive(a.get())) {
                 ret = -1;
             }
             a = nullptr;
 
-	    name = entry.name;
-            
+            name = entry.name;
+
             if (name[name.length() - 1] == '/') {
                 a = Archive::open(name, entry.filetype, FILE_NOWHERE, 0);
             }
             else {
                 filetype_t filetype;
                 switch (name_type_s(name)) {
-                    case NAME_ZIP:
-                        filetype = TYPE_ROM;
-                        break;
-                        
-                    case NAME_IMAGES:
-                        filetype = TYPE_DISK;
-                        break;
-                        
-                    case NAME_UNKNOWN:
-                    case NAME_IGNORE:
-                    default:
-                        // TODO: what to do with unknown file types?
-                        continue;
+                case NAME_ZIP:
+                    filetype = TYPE_ROM;
+                    break;
+
+                case NAME_IMAGES:
+                    filetype = TYPE_DISK;
+                    break;
+
+                case NAME_UNKNOWN:
+                case NAME_IGNORE:
+                default:
+                    // TODO: what to do with unknown file types?
+                    continue;
                 }
 
                 a = Archive::open(name, filetype, FILE_NOWHERE, 0);
@@ -189,12 +189,12 @@ int DeleteList::execute() {
                     ret = -1;
                 }
             }
-	}
-	if (a && a->is_writable()) {
-	    output.message_verbose("delete used file '%s'", a->files[entry.index].filename().c_str());
-	    /* TODO: check for error */
-	    a->file_delete(entry.index);
-	}
+        }
+        if (a && a->is_writable()) {
+            output.message_verbose("delete used file '%s'", a->files[entry.index].filename().c_str());
+            /* TODO: check for error */
+            a->file_delete(entry.index);
+        }
     }
 
     if (!close_archive(a.get())) {
@@ -205,45 +205,41 @@ int DeleteList::execute() {
 }
 
 
-bool DeleteList::close_archive(Archive *archive) {
+bool DeleteList::close_archive(Archive* archive) {
     if (archive) {
         if (!archive->commit()) {
             archive->rollback();
             return false;
         }
-        
+
         if (archive->is_empty()) {
             remove_empty_archive(archive);
         }
     }
-    
+
     return true;
 }
 
 
-void DeleteList::remove_archive(Archive *archive) {
+void DeleteList::remove_archive(Archive* archive) {
     auto entry = std::find(archives.begin(), archives.end(), ArchiveLocation(archive));
     if (entry != archives.end()) {
         /* "needed" zip archives are not in list */
         archives.erase(entry);
     }
 }
-    
-void DeleteList::sort_archives() {
-    std::sort(archives.begin(), archives.end());
-}
+
+void DeleteList::sort_archives() { std::sort(archives.begin(), archives.end()); }
 
 
-void DeleteList::sort_entries() {
-    std::sort(entries.begin(), entries.end());
-}
+void DeleteList::sort_entries() { std::sort(entries.begin(), entries.end()); }
 
 
-void DeleteList::list_non_chds(const std::string &directory) {
+void DeleteList::list_non_chds(const std::string& directory) {
     try {
         Dir dir(directory, true);
 
-        for (const auto &entry : dir) {
+        for (const auto& entry : dir) {
             if (entry.path().extension() != ".chd") {
                 archives.emplace_back(entry.path(), TYPE_ROM);
             }

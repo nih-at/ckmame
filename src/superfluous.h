@@ -37,5 +37,5 @@
 #include "DeleteList.h"
 
 void print_superfluous(DeleteListPtr list);
-    
+
 #endif /* _HAD_SUPERFLUOUS_H */

@@ -36,20 +36,20 @@
 #include "Detector.h"
 #include "Exception.h"
 
-void DetectorCollection::add(const DetectorDescriptor &descriptor, size_t id) {
+void DetectorCollection::add(const DetectorDescriptor& descriptor, size_t id) {
     if (ids.find(id) != ids.end()) {
         throw Exception("duplicate detector id");
     }
-    
+
     detectors[descriptor] = id;
     ids[id] = descriptor;
-    
+
     if (id <= next_id) {
         next_id = id + 1;
     }
 }
 
-const DetectorDescriptor *DetectorCollection::get_descriptor(size_t id) const {
+const DetectorDescriptor* DetectorCollection::get_descriptor(size_t id) const {
     auto it = ids.find(id);
 
     if (it != ids.end()) {
@@ -59,13 +59,13 @@ const DetectorDescriptor *DetectorCollection::get_descriptor(size_t id) const {
     return nullptr;
 }
 
-size_t DetectorCollection::get_id(const DetectorDescriptor &descriptor) {
+size_t DetectorCollection::get_id(const DetectorDescriptor& descriptor) {
     auto it = detectors.find(descriptor);
-    
+
     if (it != detectors.end()) {
         return it->second;
     }
-    
+
     auto id = next_id;
     next_id += 1;
     detectors[descriptor] = id;
@@ -74,6 +74,6 @@ size_t DetectorCollection::get_id(const DetectorDescriptor &descriptor) {
 }
 
 
-bool DetectorCollection::known(const DetectorDescriptor &descriptor) const {
+bool DetectorCollection::known(const DetectorDescriptor& descriptor) const {
     return detectors.find(descriptor) != detectors.end();
 }

@@ -44,35 +44,36 @@ class DeleteList;
 typedef std::shared_ptr<DeleteList> DeleteListPtr;
 
 class DeleteList {
- public:
+  public:
     class Mark {
-    public:
+      public:
         explicit Mark(const DeleteListPtr& list = DeleteListPtr());
         ~Mark();
 
         void commit() { rollback = false; }
 
-    private:
+      private:
         std::weak_ptr<DeleteList> list;
         size_t index;
         bool rollback;
     };
-    
+
     std::vector<ArchiveLocation> archives;
     std::vector<FileLocation> entries;
 
-    DeleteList() = default;;
-    
-    void add(const Archive *a) { archives.emplace_back(a); }
-    void add_directory(const std::string &directory, bool omit_known);
+    DeleteList() = default;
+    ;
+
+    void add(const Archive* a) { archives.emplace_back(a); }
+    void add_directory(const std::string& directory, bool omit_known);
     int execute();
-    void remove_archive(Archive *archive);
+    void remove_archive(Archive* archive);
     void sort_archives();
     void sort_entries();
 
-private:
-    static bool close_archive(Archive *archive);
-    void list_non_chds(const std::string &directory);
+  private:
+    static bool close_archive(Archive* archive);
+    void list_non_chds(const std::string& directory);
 };
 
 

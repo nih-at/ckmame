@@ -47,30 +47,25 @@ class OutputContext;
 
 typedef std::shared_ptr<OutputContext> OutputContextPtr;
 
-#define OUTPUT_FL_RUNTEST  1
+#define OUTPUT_FL_RUNTEST 1
 
 class OutputContext {
-public:
-    enum Format {
-        FORMAT_CM,
-        FORMAT_DATAFILE_XML,
-        FORMAT_DB,
-        FORMAT_MTREE
-    };
-    
+  public:
+    enum Format { FORMAT_CM, FORMAT_DATAFILE_XML, FORMAT_DB, FORMAT_MTREE };
+
     virtual ~OutputContext() = default;
 
-    static OutputContextPtr create(Format format, const std::string &fname, int flags);
+    static OutputContextPtr create(Format format, const std::string& fname, int flags);
 
     virtual bool close() = 0;
-    virtual bool detector(Detector *detector) { return true; }
-    virtual bool game(GamePtr game, const std::string &original_name = "") = 0;
-    virtual bool header(DatEntry *dat) { return true; }
-    virtual void error_occurred() { }
+    virtual bool detector(Detector* detector) { return true; }
+    virtual bool game(GamePtr game, const std::string& original_name = "") = 0;
+    virtual bool header(DatEntry* dat) { return true; }
+    virtual void error_occurred() {}
 
-protected:
-    void cond_print_string(FILEPtr f, const std::string &pre, const std::string &str, const std::string &post);
-    void cond_print_hash(FILEPtr f, const std::string &pre, int t, const Hashes *h, const std::string &post);
+  protected:
+    void cond_print_string(FILEPtr f, const std::string& pre, const std::string& str, const std::string& post);
+    void cond_print_hash(FILEPtr f, const std::string& pre, int t, const Hashes* h, const std::string& post);
 };
 
 #endif // HAD_OUTPUT_H

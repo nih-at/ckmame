@@ -41,14 +41,14 @@ class Fixdat {
   public:
     static void begin();
     static void end();
-    static void write_entry(const Game *game, const Result *result);
+    static void write_entry(const Game* game, const Result* result);
 
-    explicit Fixdat(DatEntry dat) : dat(std::move(dat)), failed(false) { }
+    explicit Fixdat(DatEntry dat) : dat(std::move(dat)), failed(false) {}
 
   private:
     static std::vector<Fixdat> fixdats;
 
-    void write(const Game *game, const Result *result);
+    void write(const Game* game, const Result* result);
 
     bool ensure_output();
 

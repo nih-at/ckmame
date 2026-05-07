@@ -49,27 +49,27 @@ typedef std::shared_ptr<Tree> TreePtr;
 
 
 class Tree {
-public:
-    Tree() : check(false), checked(false) { }
-    Tree(const std::string &name_, bool check_) : name(name_), check(check_), checked(false) { }
+  public:
+    Tree() : check(false), checked(false) {}
+    Tree(const std::string& name_, bool check_) : name(name_), check(check_), checked(false) {}
 
     std::string name;
     bool check;
     bool checked;
-    
+
     std::map<std::string, TreePtr> children;
-    
-    bool add(const std::string &game_name);
-    bool recheck(const std::string &game_name);
-    bool recheck_games_needing(filetype_t filetype, uint64_t size, const Hashes *hashes);
+
+    bool add(const std::string& game_name);
+    bool recheck(const std::string& game_name);
+    bool recheck_games_needing(filetype_t filetype, uint64_t size, const Hashes* hashes);
     void traverse();
 
     void clear();
-    
-private:
-    Tree *add_node(const std::string &game_name, bool check);
-    void traverse_internal(GameArchives *ancestor_archives);
-    void process(GameArchives *archives);
+
+  private:
+    Tree* add_node(const std::string& game_name, bool check);
+    void traverse_internal(GameArchives* ancestor_archives);
+    void process(GameArchives* archives);
 };
 
 extern Tree check_tree;

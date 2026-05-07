@@ -45,13 +45,13 @@ void print_superfluous(DeleteListPtr list) {
 
     std::vector<std::string> extra_files;
 
-    for (auto &entry : list->archives) {
+    for (auto& entry : list->archives) {
         auto file = entry.name;
         if (file[file.length() - 1] == '/') {
             auto a = Archive::open(file, entry.filetype, FILE_NOWHERE, 0);
 
             if (a) {
-                for (auto &f : a->files) {
+                for (auto& f : a->files) {
                     extra_files.push_back(file + f.filename());
                 }
             }
@@ -65,7 +65,7 @@ void print_superfluous(DeleteListPtr list) {
         std::sort(extra_files.begin(), extra_files.end());
         output.set_subheader("");
         output.message("Extra files found:");
-        for (auto &file : extra_files) {
+        for (auto& file : extra_files) {
             output.message(file);
         }
     }

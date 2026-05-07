@@ -87,7 +87,8 @@ class Output {
   private:
     class FileInfo {
       public:
-        FileInfo(std::string archive_name, std::string file_name) : archive_name(std::move(archive_name)), file_name(std::move(file_name)) { }
+        FileInfo(std::string archive_name, std::string file_name)
+            : archive_name(std::move(archive_name)), file_name(std::move(file_name)) {}
 
         std::string archive_name;
         std::string file_name;
@@ -105,7 +106,7 @@ class Output {
     void print_header();
 
     void print_message_v(const char* fmt, va_list va);
-    void print_error_v(const char* fmt, va_list va, const std::string& prefix = "", const std::string& postfix ="");
+    void print_error_v(const char* fmt, va_list va, const std::string& prefix = "", const std::string& postfix = "");
     std::string prefix_line(size_t line_number);
     std::string prefix_archive_file();
     std::string postfix_database();

@@ -2,7 +2,7 @@
 #define STATDBRUN_H
 
 /*
-StatDBRun.h -- 
+StatDBRun.h --
 
 Copyright (C) Dieter Baron
 
@@ -38,18 +38,18 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class StatusDBRun {
   public:
     StatusDBRun() = default;
-    StatusDBRun(std::shared_ptr<StatusDB> db, RomDB *romdb);
+    StatusDBRun(std::shared_ptr<StatusDB> db, RomDB* romdb);
 
-    void insert_game_status(const Game& game, const GameStatus &game_status);
+    void insert_game_status(const Game& game, const GameStatus& game_status);
 
   private:
     int64_t get_dat_id(size_t dat_no);
 
     std::shared_ptr<StatusDB> db;
-    RomDB *romdb{};
+    RomDB* romdb{};
     int64_t run_id{-1};
     std::vector<DatEntry> dats;
     std::unordered_map<size_t, int64_t> dat_ids;
 };
 
-#endif //STATDBRUN_H
+#endif // STATDBRUN_H

@@ -49,15 +49,17 @@ class TomlSchema {
       public:
         virtual ~Type() {};
 
-	[[nodiscard]] virtual bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const = 0;
+        [[nodiscard]] virtual bool validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                            bool quiet) const = 0;
     };
 
     typedef std::shared_ptr<Type> TypePtr;
 
-    class Constant: public Type {
+    class Constant : public Type {
       public:
-        explicit Constant(std::string value): value(std::move(value)) {}
-	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
+        explicit Constant(std::string value) : value(std::move(value)) {}
+        [[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                    bool quiet) const override;
 
       private:
         std::string value;
@@ -65,71 +67,86 @@ class TomlSchema {
 
     class Boolean : public Type {
       public:
-	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
+        [[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                    bool quiet) const override;
     };
-    
+
     class Integer : public Type {
       public:
-	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
+        [[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                    bool quiet) const override;
     };
 
     class Number : public Type {
       public:
-	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
+        [[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                    bool quiet) const override;
     };
 
     class String : public Type {
       public:
-	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
+        [[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                    bool quiet) const override;
     };
-    
+
     class Array : public Type {
       public:
-	explicit Array(TypePtr elements) : elements(std::move(elements)) { }
-	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
-	
+        explicit Array(TypePtr elements) : elements(std::move(elements)) {}
+        [[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                    bool quiet) const override;
+
       private:
-	TypePtr elements;
+        TypePtr elements;
     };
 
     class Table : public Type {
       public:
-	explicit Table(std::map<std::string, TypePtr> members, TypePtr other_members) : members(std::move(members)), other_members(std::move(other_members)) { }
-        virtual ~Table() { }
-	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
+        explicit Table(std::map<std::string, TypePtr> members, TypePtr other_members)
+            : members(std::move(members)), other_members(std::move(other_members)) {}
+        virtual ~Table() {}
+        [[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                    bool quiet) const override;
 
       private:
-	std::map<std::string, TypePtr> members;
-	TypePtr other_members;
+        std::map<std::string, TypePtr> members;
+        TypePtr other_members;
     };
-    
+
     class Alternatives : public Type {
       public:
-	Alternatives(std::vector<TypePtr> alternatives, std::string name) : alternatives(std::move(alternatives)), name(std::move(name)) { }
-        virtual ~Alternatives() { }
-	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
+        Alternatives(std::vector<TypePtr> alternatives, std::string name)
+            : alternatives(std::move(alternatives)), name(std::move(name)) {}
+        virtual ~Alternatives() {}
+        [[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                    bool quiet) const override;
 
       private:
-	std::vector<TypePtr> alternatives;
-	std::string name;
+        std::vector<TypePtr> alternatives;
+        std::string name;
     };
 
-    explicit TomlSchema(TypePtr root_type) : root_type(std::move(root_type)), warned(false) { }
+    explicit TomlSchema(TypePtr root_type) : root_type(std::move(root_type)), warned(false) {}
 
     static TypePtr boolean() { return TypePtr(new Boolean()); }
-    static TypePtr constant(std::string value) {return TypePtr(new Constant(std::move(value))); }
+    static TypePtr constant(std::string value) { return TypePtr(new Constant(std::move(value))); }
     static TypePtr integer() { return TypePtr(new Integer()); }
     static TypePtr number() { return TypePtr(new Number()); }
     static TypePtr string() { return TypePtr(new String()); }
     static TypePtr array(TypePtr elements) { return TypePtr(new Array(std::move(elements))); }
-    static TypePtr table(std::map<std::string, TypePtr> members, TypePtr other_members) { return TypePtr(new Table(std::move(members), std::move(other_members))); }
-    static TypePtr alternatives(std::vector<TypePtr> alternatives, std::string name) { return TypePtr(new Alternatives(std::move(alternatives), std::move(name))); }
+    static TypePtr table(std::map<std::string, TypePtr> members, TypePtr other_members) {
+        return TypePtr(new Table(std::move(members), std::move(other_members)));
+    }
+    static TypePtr alternatives(std::vector<TypePtr> alternatives, std::string name) {
+        return TypePtr(new Alternatives(std::move(alternatives), std::move(name)));
+    }
 
     bool validate(const toml::node& node, const std::string& file_name);
-    
+
     void print(const std::string& path, const std::string& message, bool quiet);
     static std::string path_append(const std::string& path, const std::string& element);
-    static std::string path_append(const std::string& path, int index) { return path_append(path, std::to_string(index)); };
+    static std::string path_append(const std::string& path, int index) {
+        return path_append(path, std::to_string(index));
+    };
 
   private:
     TypePtr root_type;

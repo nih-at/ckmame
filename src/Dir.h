@@ -39,10 +39,10 @@
 
 class Dir {
   public:
-     Dir(const std::string& path, bool recursive);
+    Dir(const std::string& path, bool recursive);
 
-     auto begin() {return entries.cbegin();}
-     auto end() {return entries.cend();}
+    auto begin() { return entries.cbegin(); }
+    auto end() { return entries.cend(); }
 
   private:
     std::vector<std::filesystem::directory_entry> entries;

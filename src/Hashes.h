@@ -42,91 +42,75 @@
 class HashesContexts;
 
 class Hashes {
-public:
+  public:
     class Update {
-    public:
-        explicit Update(Hashes *hashes);
+      public:
+        explicit Update(Hashes* hashes);
         ~Update();
-        
-        void update(const void *data, size_t length);
+
+        void update(const void* data, size_t length);
         void end();
-        
-    private:
-	std::unique_ptr<HashesContexts> contexts;
-        Hashes *hashes;
+
+      private:
+        std::unique_ptr<HashesContexts> contexts;
+        Hashes* hashes;
     };
-    
+
     static uint64_t SIZE_UNKNOWN;
-    
-    enum {
-        TYPE_CRC = 1,
-        TYPE_MD5 = 2,
-        TYPE_SHA1 = 4,
-        TYPE_SHA256 = 8,
-        TYPE_MAX = 8,
-        TYPE_ALL = 15
-    };
-    enum {
-        SIZE_CRC = 4,
-        SIZE_MD5 = 16,
-        SIZE_SHA1 = 20,
-        SIZE_SHA256 = 32,
-        MAX_SIZE = 32
-    };
-    enum Compare {
-        NOCOMMON = -1,
-        MATCH,
-        MISMATCH
-    };
-    
+
+    enum { TYPE_CRC = 1, TYPE_MD5 = 2, TYPE_SHA1 = 4, TYPE_SHA256 = 8, TYPE_MAX = 8, TYPE_ALL = 15 };
+    enum { SIZE_CRC = 4, SIZE_MD5 = 16, SIZE_SHA1 = 20, SIZE_SHA256 = 32, MAX_SIZE = 32 };
+    enum Compare { NOCOMMON = -1, MATCH, MISMATCH };
+
     uint64_t size;
     uint32_t crc;
     std::vector<uint8_t> md5;
     std::vector<uint8_t> sha1;
     std::vector<uint8_t> sha256;
 
-    Hashes() : size(SIZE_UNKNOWN), crc(0), types(0) { }
+    Hashes() : size(SIZE_UNKNOWN), crc(0), types(0) {}
 
     static const Hashes zero;
-    
+
     void add_types(int types);
-    bool are_crc_complement(const Hashes &other) const;
+    bool are_crc_complement(const Hashes& other) const;
     int get_types() const { return types; }
     bool has_size() const { return size != SIZE_UNKNOWN; }
     bool has_type(int type) const;
-    bool has_all_types(const Hashes &other) const { return has_all_types(other.types); }
+    bool has_all_types(const Hashes& other) const { return has_all_types(other.types); }
     bool has_all_types(int requested_types) const { return (types & requested_types) == requested_types; }
-    Compare compare(const Hashes &other) const;
-    Compare compare_with_size(const Hashes &other) const;
-    bool operator==(const Hashes &other) const;
+    Compare compare(const Hashes& other) const;
+    Compare compare_with_size(const Hashes& other) const;
+    bool operator==(const Hashes& other) const;
     bool is_zero(int type) const;
     std::string to_string(int type) const;
     bool empty() const { return types == 0; }
     std::vector<uint8_t> get_best() const;
 
-    void merge(const Hashes &other);
-    void set_hashes(const Hashes &other);
+    void merge(const Hashes& other);
+    void set_hashes(const Hashes& other);
     void set_crc(uint32_t data, bool ignore_zero = false);
-    void set_md5(const std::vector<uint8_t> &data, bool ignore_zero = false);
-    void set_md5(const uint8_t *data, bool ignore_zero = false);
-    void set_sha1(const std::vector<uint8_t> &data, bool ignore_zero = false);
-    void set_sha1(const uint8_t *data, bool ignore_zero = false);
-    void set_sha256(const std::vector<uint8_t> &data, bool ignore_zero = false);
-    void set_sha256(const uint8_t *data, bool ignore_zero = false);
-    int set_from_string(const std::string &s);
+    void set_md5(const std::vector<uint8_t>& data, bool ignore_zero = false);
+    void set_md5(const uint8_t* data, bool ignore_zero = false);
+    void set_sha1(const std::vector<uint8_t>& data, bool ignore_zero = false);
+    void set_sha1(const uint8_t* data, bool ignore_zero = false);
+    void set_sha256(const std::vector<uint8_t>& data, bool ignore_zero = false);
+    void set_sha256(const uint8_t* data, bool ignore_zero = false);
+    int set_from_string(const std::string& s);
 
-    static int types_from_string(const std::string &s);
+    static int types_from_string(const std::string& s);
     static std::string type_name(int type);
     static size_t hash_size(int type);
 
-private:
-    Hashes(size_t size, int types, uint32_t crc, std::vector<uint8_t> md5, std::vector<uint8_t> sha1, std::vector<uint8_t> sha256);
+  private:
+    Hashes(size_t size, int types, uint32_t crc, std::vector<uint8_t> md5, std::vector<uint8_t> sha1,
+           std::vector<uint8_t> sha256);
     static std::unordered_map<std::string, int> name_to_type;
     static std::unordered_map<int, std::string> type_to_name;
-    
+
     int types;
 
-    void set(int type, std::vector<uint8_t> & hash, const std::vector<uint8_t> &data, bool ignore_zero);
+    void set(int type, std::vector<uint8_t>& hash, const std::vector<uint8_t>& data, bool ignore_zero);
 };
 
 #endif // HAD_HASHES_H

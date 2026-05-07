@@ -35,9 +35,7 @@
 
 #include "Exception.h"
 
-ZipSource::~ZipSource() {
-    zip_source_free(source);
-}
+ZipSource::~ZipSource() { zip_source_free(source); }
 
 
 void ZipSource::open() const {
@@ -54,7 +52,7 @@ void ZipSource::close() const {
 }
 
 
-uint64_t ZipSource::read(void *data, uint64_t length) const {
+uint64_t ZipSource::read(void* data, uint64_t length) const {
     auto n = zip_source_read(source, data, length);
 
     if (n < 0) {
@@ -65,6 +63,4 @@ uint64_t ZipSource::read(void *data, uint64_t length) const {
 }
 
 
-std::string ZipSource::error() const {
-    return zip_error_strerror(zip_source_error(source));
-}
+std::string ZipSource::error() const { return zip_error_strerror(zip_source_error(source)); }

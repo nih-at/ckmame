@@ -39,15 +39,15 @@
 #include <libxml/tree.h>
 
 class OutputContextXml : public OutputContext {
-public:
-    OutputContextXml(const std::string &fname, int flags);
+  public:
+    OutputContextXml(const std::string& fname, int flags);
     ~OutputContextXml() override;
-    
+
     bool close() override;
-    bool game(GamePtr game, const std::string &original_name) override;
-    bool header(DatEntry *dat) override;
-    
-private:
+    bool game(GamePtr game, const std::string& original_name) override;
+    bool header(DatEntry* dat) override;
+
+  private:
     xmlDocPtr doc;
     xmlNodePtr root;
     FILEPtr f;

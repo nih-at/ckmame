@@ -34,11 +34,9 @@
 #include "FileData.h"
 
 
-bool FileData::compare_name(const FileData &other) const {
-    return name == other.name;
-}
+bool FileData::compare_name(const FileData& other) const { return name == other.name; }
 
-bool FileData::compare_name_size_hashes(const FileData &other) const {
+bool FileData::compare_name_size_hashes(const FileData& other) const {
     return compare_name(other) && compare_size_hashes(other);
 }
 
@@ -46,9 +44,6 @@ bool FileData::compare_size(const FileData& other) const {
     return !is_size_known() || !other.is_size_known() || hashes.size == other.hashes.size;
 }
 
-bool FileData::compare_size_hashes(const FileData &other) const {
+bool FileData::compare_size_hashes(const FileData& other) const {
     return compare_size(other) && hashes.compare(other.hashes) == Hashes::MATCH;
 }
-
-
-
