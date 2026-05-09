@@ -410,6 +410,8 @@ void Parser::set_game_name(std::string name) {
         /* slashes are directory separators on some systems, and at least
          * one redump dat contained a slash in a rom name */
         std::replace(g->name.begin(), g->name.end(), '/', '-');
+        // Colons in file names are not supported on macOS and Windows.
+        std::replace(g->name.begin(), g->name.end(), ':', '-');
     }
 
     if (!options.game_name_suffix.empty()) {
