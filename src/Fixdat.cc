@@ -73,7 +73,7 @@ void Fixdat::cleanup() {
     auto prefix = fixdat_filename_prefix();
     for (auto file: std::filesystem::directory_iterator(directory)) {
         auto fname = file.path().filename().string();
-        if (file.is_regular_file() && fname.starts_with(prefix) && fname.ends_with(".dat") && fname != current_filename) {
+        if (file.is_regular_file() && fname.starts_with(prefix) && fname.ends_with(".dat") && fname != current_filename && fname.substr(prefix.size(), fname.size() - prefix.size() - 4).find('(') == std::string::npos) {
             std::filesystem::remove(file);
         }
     }
