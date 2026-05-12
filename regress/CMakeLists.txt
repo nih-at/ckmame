@@ -146,9 +146,6 @@ set(XFAIL_TESTS
   ckmamedb-keep-unzipped.zip.test
   ckmamedb-file-removed.dir.test
   ckmamedb-file-removed.zip.test
-  # bug in toml.hpp: https://github.com/marzer/tomlplusplus/issues/300
-  config-duplicate-section.dir.test
-  config-duplicate-section.zip.test
   doublezip-fix.dir.test
   doublezip-fix.zip.test
   extra-file-zip.zip.test
