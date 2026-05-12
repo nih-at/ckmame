@@ -47,6 +47,13 @@
 #include "globals.h"
 
 
+/**
+ * Check if RomDB is up to date with the dats in the dat directories.
+ * 
+ * @param dats_to_use Output parameter, list of dats to use to update RomDB.
+ * @return true if RomDB is up to date, false if newer dats are available.
+ * @throw Exception if there is an error accessing the database or dat files or a dat can't be found.
+ */
 static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo>& dats_to_use) {
     auto repository = DatRepository(configuration.dat_directories);
 
@@ -62,6 +69,7 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo>& dats_to_use) {
     }
 
     std::unordered_map<std::string, const DatEntry*> db_dats;
+    std::unordered_set<std::string> fs_dat_names;
 
     for (const auto& db_dat : db_dat_list) {
         db_dats[db_dat.name] = &db_dat;
@@ -75,6 +83,7 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo>& dats_to_use) {
         auto fs_dat = repository.find_dat(dat_name, allow_empty);
 
         dats_to_use.push_back(fs_dat);
+        fs_dat_names.insert(dat_name);
 
         if (it == db_dats.end()) {
             output.message("%s (-> %s)", dat_name.c_str(), fs_dat.version.c_str());
@@ -83,22 +92,33 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo>& dats_to_use) {
         }
         const auto& db_dat = it->second;
 
-        if (fs_dat.version == db_dat->version && fs_dat.crc != db_dat->crc) {
-            output.message("%s (%s %x -> %x)", dat_name.c_str(), db_dat->version.c_str(), db_dat->crc, fs_dat.crc);
+        if (fs_dat.version > db_dat->version) {
+            output.message("%s (%s -> %s)", dat_name.c_str(), db_dat->version.c_str(), fs_dat.version.c_str());
             up_to_date = false;
         }
-        else if (DatRepository::is_newer(fs_dat.version, db_dat->version)) {
-            output.message("%s (%s -> %s)", dat_name.c_str(), db_dat->version.c_str(), fs_dat.version.c_str());
+        else if (fs_dat.version == db_dat->version && fs_dat.crc != db_dat->crc) {
+            output.message("%s (%s: %x -> %x)", dat_name.c_str(), db_dat->version.c_str(), db_dat->crc, fs_dat.crc);
             up_to_date = false;
         }
     }
 
-    // TODO: check that no additional dats are in db
+    for (const auto& db_dat : db_dat_list) {
+        if (!fs_dat_names.contains(db_dat.name)) {
+            output.message("%s (%s ->)", db_dat.name.c_str(), db_dat.version.c_str());
+        }
+    }
 
     return up_to_date;
 }
 
 
+/**
+ * Update RomDB if it is not up to date with the dats in the dat directories.
+ * 
+ * @param force If true, update RomDB even if it is up to date.
+ * @return true if RomDB was updated, false if it was already up to date.
+ * @throw Exception if there is an error updating the database.
+ */
 bool update_romdb(bool force) {
     if (configuration.dats.empty() || configuration.dat_directories.empty()) {
         return false;

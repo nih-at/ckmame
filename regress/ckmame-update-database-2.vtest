@@ -13,7 +13,7 @@ rom-db = "output.db"
 end-of-inline-data
 directory roms {} <>
 stdout
-ckmame test db (1 54242138 -> 5492d05e)
+ckmame test db (1: 54242138 -> 5492d05e)
 end-of-inline-data
 stderr
 game '1-4' unknown

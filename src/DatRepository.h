@@ -44,8 +44,6 @@ class DatRepository {
     explicit DatRepository(const std::vector<std::string>& directories);
     ~DatRepository();
 
-   static bool is_newer(const std::string& a, const std::string& b);
-
     DatDB::DatInfo find_dat(const std::string& name, bool allow_empty);
     std::vector<std::string> list_dats();
 

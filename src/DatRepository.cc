@@ -246,11 +246,3 @@ void DatRepository::update_directory(const std::string& directory, const DatDBPt
         }
     }
 }
-
-
-bool DatRepository::is_newer(const std::string& a, const std::string& b) {
-    if (b.empty()) {
-        return true;
-    }
-    return a > b;
-}
