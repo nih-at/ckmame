@@ -43,7 +43,7 @@ bool ParserCm::parse() {
 
     std::optional<std::string> line;
 
-    while ((line = ps->getline()).has_value()) {
+    while (!end_parsing && (line = ps->getline()).has_value()) {
         lineno++;
 
         auto tokenizer = Tokenizer(line.value());
@@ -303,9 +303,6 @@ bool ParserCm::parse() {
                 // TODO: this shouldn't be necessary
                 header_end();
                 parse_state = TOP;
-                if (header_only) {
-                    return true;
-                }
             }
             else if (cmd == "author" || cmd == "category" || cmd == "comment" || cmd == "date" ||
                      cmd == "forcemerging" || cmd == "forcenodump" || cmd == "forcepacking") {

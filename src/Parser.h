@@ -79,7 +79,9 @@ class Parser {
     /* TODO: move out of context */
     size_t lineno; /* current line number in input file */
 
-    bool header_only;
+    bool end_parsing; /* set to true when parsing should be stopped (e.g. after header-only parse) */
+
+    bool header_only = false;
 
     virtual bool parse() { return false; }
     bool parse_header() {

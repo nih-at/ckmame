@@ -71,15 +71,8 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo>& dats_to_use) {
 
     for (const auto& dat_name : configuration.dats) {
         auto it = db_dats.find(dat_name);
-        auto fs_dats = repository.find_dats(dat_name);
-        if (fs_dats.empty()) {
-            throw Exception("can't find dat '" + dat_name + "'");
-        }
-        else if (fs_dats.size() > 1) {
-            throw Exception("multiple different dats found for '" + dat_name + "' with version '" + fs_dats[0].version +
-                            "'");
-        }
-        const auto& fs_dat = fs_dats[0];
+        auto allow_empty = configuration.dat_allow_empty_dat(dat_name);
+        auto fs_dat = repository.find_dat(dat_name, allow_empty);
 
         dats_to_use.push_back(fs_dat);
 

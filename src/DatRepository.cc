@@ -83,29 +83,70 @@ DatRepository::~DatRepository() {
     }
 }
 
+/**
+ * Find newest dat.
+ * 
+ * @param name Name of the dat to find.
+ * @param allow_empty If true, empty dats are allowed. Otherwise, the newest non-empty dat is used, but a warning is printed if there is a newer empty dat.
+ * @return Info about the dat.
+ * @throw Exception if dat can't be found.
+ */
+DatDB::DatInfo DatRepository::find_dat(const std::string& name, bool allow_empty) {
+    std::optional<DatDB::DatInfo> newest_empty_dat;
+    std::optional<DatDB::DatInfo> newest_dat;
 
-std::vector<DatDB::DatInfo> DatRepository::find_dats(const std::string& name) {
-    auto dats = std::vector<DatDB::DatInfo>{};
-    std::string newest_version;
-
-    for (auto const& pair : dbs) {
-        auto matches = pair.second->get_dats(name);
+    for (const auto& [directory, db] : dbs) {
+        auto matches = db->get_dats(name);
 
         for (const auto& match : matches) {
-            if (match.version == newest_version) {
-                dats.emplace_back(match, pair.first + "/" + match.file_name); // TODO: use std::filesystem
+            if (!allow_empty && match.empty) {
+                if (!newest_empty_dat || match > *newest_empty_dat) {
+                    newest_empty_dat = match;
+                }
             }
-            else if (is_newer(match.version, newest_version)) {
-                dats.clear();
-                dats.emplace_back(match, pair.first + "/" + match.file_name); // TODO: use std::filesystem
+            else {
+                if (newest_empty_dat && match > *newest_empty_dat) {
+                    newest_empty_dat = std::nullopt;
+                }
+
+                if (!newest_dat || match > *newest_dat) {
+                    newest_dat = DatDB::DatInfo(match, std::filesystem::path(directory) / match.file_name);
+                }
+                else {
+                    break;
+                }
             }
         }
     }
 
-    return dats;
+    if (newest_empty_dat) {
+        if (!newest_dat) {
+            throw Exception("only empty dats found for '" + name + "'");
+        }
+        if (newest_empty_dat > *newest_dat) {
+            if (newest_empty_dat->version != newest_dat->version) {
+                output.error("warning: newest dat for '%s' with version '%s' is empty, using older dat with version '%s'", name.c_str(),   newest_empty_dat->version.c_str(), newest_dat->version.c_str()); 
+            }
+            else {
+                output.error("warning: newest dat for '%s' with version '%s' is empty, using older dat with same version", name.c_str(), newest_empty_dat->version.c_str()); // TODO: include mtime in message
+            }
+        }
+    }
+
+    if (!newest_dat) {
+        throw Exception("can't find dat '" + name + "'");
+    }
+
+    return *newest_dat;
 }
 
 
+/**
+ * Get list of all dat names in all directories.
+ * 
+ * @return Sorted list of all dat names in all directories.
+ * @throw Exception if there is an error accessing the database.
+ */
 std::vector<std::string> DatRepository::list_dats() {
     std::set<std::string> dats;
 
@@ -164,7 +205,7 @@ void DatRepository::update_directory(const std::string& directory, const DatDBPt
                             if (parser) {
                                 if (parser->parse_header()) {
                                     auto header = output.get_header();
-                                    entries.emplace_back(entry_name, header.name, header.version, header.crc);
+                                    entries.emplace_back(entry_name, header.name, header.version, header.crc, output.empty);
                                 }
                             }
                         }
@@ -182,7 +223,7 @@ void DatRepository::update_directory(const std::string& directory, const DatDBPt
                     if (parser) {
                         if (parser->parse_header() && output.close()) {
                             auto header = output.get_header();
-                            entries.emplace_back("", header.name, header.version, header.crc);
+                            entries.emplace_back("", header.name, header.version, header.crc, output.empty);
                         }
                     }
                 }

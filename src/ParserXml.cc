@@ -54,7 +54,7 @@ XmlProcessor::CallbackStatus ParserXml::parse_file_end(void* ctx, const void* ar
     auto parser = static_cast<ParserXml*>(ctx);
     auto arguments = static_cast<const Arguments*>(args);
 
-    return status(parser->file_end(arguments->file_type));
+    return parser->status(parser->file_end(arguments->file_type));
 }
 
 
@@ -62,7 +62,7 @@ XmlProcessor::CallbackStatus ParserXml::parse_file_hash(void* ctx, const void* a
     auto parser = static_cast<ParserXml*>(ctx);
     auto arguments = static_cast<const Arguments*>(args);
 
-    return status(parser->file_hash(arguments->file_type, arguments->hash_type, value));
+    return parser->status(parser->file_hash(arguments->file_type, arguments->hash_type, value));
 }
 
 
@@ -71,12 +71,12 @@ XmlProcessor::CallbackStatus ParserXml::parse_file_loadflag(void* ctx, const voi
     auto arguments = static_cast<const Arguments*>(args);
 
     if (value == "continue" || value == "ignore") {
-        return status(parser->file_continue(arguments->file_type));
+        return parser->status(parser->file_continue(arguments->file_type));
     }
     else if (value == "reload" || value == "reload_plain" || value == "fill") {
-        return status(parser->file_ignore(arguments->file_type));
+        return parser->status(parser->file_ignore(arguments->file_type));
     }
-    return status(true);
+    return parser->status(true);
 }
 
 
@@ -84,7 +84,7 @@ XmlProcessor::CallbackStatus ParserXml::parse_file_merge(void* ctx, const void* 
     auto parser = static_cast<ParserXml*>(ctx);
     auto arguments = static_cast<const Arguments*>(args);
 
-    return status(parser->file_merge(arguments->file_type, value));
+    return parser->status(parser->file_merge(arguments->file_type, value));
 }
 
 
@@ -93,14 +93,14 @@ XmlProcessor::CallbackStatus ParserXml::parse_file_mia(void* ctx, const void* ar
     auto arguments = static_cast<const Arguments*>(args);
 
     // TODO: warning/error if value != yes/no
-    return status(parser->file_missing(arguments->file_type, value == "yes"));
+    return parser->status(parser->file_missing(arguments->file_type, value == "yes"));
 }
 
 XmlProcessor::CallbackStatus ParserXml::parse_file_name(void* ctx, const void* args, const std::string& value) {
     auto parser = static_cast<ParserXml*>(ctx);
     auto arguments = static_cast<const Arguments*>(args);
 
-    return status(parser->file_name(arguments->file_type, value));
+    return parser->status(parser->file_name(arguments->file_type, value));
 }
 
 
@@ -108,7 +108,7 @@ XmlProcessor::CallbackStatus ParserXml::parse_file_start(void* ctx, const void* 
     auto parser = static_cast<ParserXml*>(ctx);
     auto arguments = static_cast<const Arguments*>(args);
 
-    return status(parser->file_start(arguments->file_type));
+    return parser->status(parser->file_start(arguments->file_type));
 }
 
 
@@ -116,7 +116,7 @@ XmlProcessor::CallbackStatus ParserXml::parse_file_status(void* ctx, const void*
     auto parser = static_cast<ParserXml*>(ctx);
     auto arguments = static_cast<const Arguments*>(args);
 
-    return status(parser->file_status(arguments->file_type, value));
+    return parser->status(parser->file_status(arguments->file_type, value));
 }
 
 
@@ -128,7 +128,7 @@ XmlProcessor::CallbackStatus ParserXml::parse_file_size(void* ctx, const void* a
         return XmlProcessor::OK;
     }
     else {
-        return status(parser->file_size(arguments->file_type, value));
+        return parser->status(parser->file_size(arguments->file_type, value));
     }
 }
 
@@ -137,7 +137,7 @@ XmlProcessor::CallbackStatus ParserXml::parse_game_cloneof(void* ctx, [[maybe_un
                                                            const std::string& value) {
     auto parser = static_cast<ParserXml*>(ctx);
 
-    return status(parser->game_cloneof(value));
+    return parser->status(parser->game_cloneof(value));
 }
 
 
@@ -145,14 +145,14 @@ XmlProcessor::CallbackStatus ParserXml::parse_game_description(void* ctx, [[mayb
                                                                const std::string& value) {
     auto parser = static_cast<ParserXml*>(ctx);
 
-    return status(parser->game_description(value));
+    return parser->status(parser->game_description(value));
 }
 
 
 XmlProcessor::CallbackStatus ParserXml::parse_game_end(void* ctx, [[maybe_unused]] const void* args) {
     auto parser = static_cast<ParserXml*>(ctx);
 
-    return status(parser->game_end());
+    return parser->status(parser->game_end());
 }
 
 
@@ -160,17 +160,13 @@ XmlProcessor::CallbackStatus ParserXml::parse_game_name(void* ctx, [[maybe_unuse
                                                         const std::string& value) {
     auto parser = static_cast<ParserXml*>(ctx);
 
-    return status(parser->game_name(value));
+    return parser->status(parser->game_name(value));
 }
 
 XmlProcessor::CallbackStatus ParserXml::parse_game_start(void* ctx, [[maybe_unused]] const void* arguments) {
     auto parser = static_cast<ParserXml*>(ctx);
 
-    if (parser->header_only) {
-        return XmlProcessor::END;
-    }
-
-    return status(parser->game_start());
+    return parser->status(parser->game_start());
 }
 
 
@@ -178,10 +174,7 @@ XmlProcessor::CallbackStatus ParserXml::parse_header_end(void* ctx, [[maybe_unus
     auto parser = static_cast<ParserXml*>(ctx);
 
     auto ok = parser->header_end();
-    if (ok && parser->header_only) {
-        return XmlProcessor::END;
-    }
-    return status(ok);
+    return parser->status(ok);
 }
 
 
@@ -190,10 +183,10 @@ XmlProcessor::CallbackStatus ParserXml::parse_mame_build(void* ctx, const void* 
     auto arguments = static_cast<const Arguments*>(args);
 
     if (!parser->prog_name(arguments->file_type == TYPE_ROM ? "M.A.M.E." : "M.E.S.S.")) {
-        return status(false);
+        return parser->status(false);
     }
 
-    return status(parser->prog_version(value.substr(0, value.find(' '))));
+    return parser->status(parser->prog_version(value.substr(0, value.find(' '))));
 }
 
 
@@ -201,28 +194,28 @@ XmlProcessor::CallbackStatus ParserXml::parse_prog_description(void* ctx, [[mayb
                                                                const std::string& value) {
     auto parser = static_cast<ParserXml*>(ctx);
 
-    return status(parser->prog_description(value));
+    return parser->status(parser->prog_description(value));
 }
 
 XmlProcessor::CallbackStatus ParserXml::parse_prog_header(void* ctx, [[maybe_unused]] const void* args,
                                                           const std::string& value) {
     auto parser = static_cast<ParserXml*>(ctx);
 
-    return status(parser->prog_header(value));
+    return parser->status(parser->prog_header(value));
 }
 
 XmlProcessor::CallbackStatus ParserXml::parse_prog_name(void* ctx, [[maybe_unused]] const void* args,
                                                         const std::string& value) {
     auto parser = static_cast<ParserXml*>(ctx);
 
-    return status(parser->prog_name(value));
+    return parser->status(parser->prog_name(value));
 }
 
 XmlProcessor::CallbackStatus ParserXml::parse_prog_version(void* ctx, [[maybe_unused]] const void* args,
                                                            const std::string& value) {
     auto parser = static_cast<ParserXml*>(ctx);
 
-    return status(parser->prog_version(value));
+    return parser->status(parser->prog_version(value));
 }
 
 
@@ -238,7 +231,7 @@ XmlProcessor::CallbackStatus ParserXml::parse_softwarelist_name(void* ctx, [[may
         ok = parser->prog_version(std::to_string(mtime));
     }
 
-    return status(ok);
+    return parser->status(ok);
 }
 
 
@@ -303,4 +296,11 @@ bool ParserXml::parse() {
     auto processor = XmlProcessor(line_number_callback, entities, this);
 
     return processor.parse(ps.get());
+}
+
+XmlProcessor::CallbackStatus ParserXml::status(bool ok) {
+    if (end_parsing) {
+        return XmlProcessor::END;
+    }
+    return ok ? XmlProcessor::OK : XmlProcessor::ERROR; 
 }

@@ -54,7 +54,7 @@ bool ParserRc::parse() {
     auto sect = RC_UNKNOWN;
 
     std::optional<std::string> l;
-    while ((l = ps->getline()).has_value()) {
+    while (!end_parsing && (l = ps->getline()).has_value()) {
         lineno++;
         auto line = l.value();
 
@@ -70,9 +70,6 @@ bool ParserRc::parse() {
         }
 
         if (sect == RC_GAMES) {
-            if (header_only) {
-                return true;
-            }
             if (!process_romline(line)) {
                 output.line_error(lineno, "cannot parse ROM line, skipping");
                 ok = false;

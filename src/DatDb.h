@@ -58,37 +58,45 @@ class DatDB : public DB {
 
     class DatEntry {
       public:
-        DatEntry(std::string entry_name, std::string name, std::string version, uint32_t crc)
-            : entry_name(std::move(entry_name)), name(std::move(name)), version(std::move(version)), crc(crc) {}
+        DatEntry(std::string entry_name, std::string name, std::string version, uint32_t crc, bool empty)
+            : entry_name(std::move(entry_name)), name(std::move(name)), version(std::move(version)), crc(crc), empty(empty) {}
 
         const std::string entry_name;
         const std::string name;
         const std::string version;
         uint32_t crc;
+        bool empty;
     };
 
     class DatInfo {
       public:
         DatInfo() = default;
 
-        DatInfo(std::string file_name, std::string entry_name, std::string name, std::string version, uint32_t crc)
+        DatInfo(std::string file_name, time_t mtime, std::string entry_name, std::string name, std::string version, uint32_t crc, bool empty)
             : file_name(std::move(file_name)),
+              mtime(mtime),
               entry_name(std::move(entry_name)),
               name(std::move(name)),
               version(std::move(version)),
-              crc(crc) {}
+              crc(crc), empty(empty) {}
         DatInfo(const DatInfo& other, std::string file_name)
             : file_name{std::move(file_name)},
+              mtime(other.mtime),
               entry_name(other.entry_name),
               name(other.name),
               version(other.version),
-              crc(other.crc) {}
+              crc(other.crc), empty(other.empty) {}
+
+        bool operator>(const DatInfo& other) const;
+        bool operator==(const DatInfo& other) const;
 
         std::string file_name;
+        time_t mtime{0};
         std::string entry_name;
         std::string name;
         std::string version;
-        uint32_t crc = 0;
+        uint32_t crc{0};
+        bool empty{false};
     };
 
     explicit DatDB(const std::string& directory);

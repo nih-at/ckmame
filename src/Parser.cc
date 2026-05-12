@@ -57,6 +57,9 @@ std::unordered_map<std::string, Parser::Format> Parser::format_start = {
 
 #define CHECK_STATE(s)                                                                                               \
     do {                                                                                                             \
+        if (end_parsing) {                                                                                           \
+            return true;                                                                                             \
+        }                                                                                                            \
         if (state != (s)) {                                                                                          \
             output.line_error(lineno, "state is %s, expected %s", state_name(state).c_str(), state_name(s).c_str()); \
             error = true;                                                                                            \
@@ -91,8 +94,7 @@ ParserPtr Parser::create(const ParserSourcePtr& source, const std::unordered_set
 
     if (string_starts_with(start, unicode_bom)) {
         start = start.substr(unicode_bom.length());
-        char buffer[unicode_bom.length()];
-        source->read(buffer, unicode_bom.length());
+        source->skip(unicode_bom.length());
     }
 
     for (const auto& pair : format_start) {
@@ -434,6 +436,12 @@ bool Parser::game_start() {
         output.line_error(lineno, "game inside game");
         error = true;
         return false;
+    }
+
+    if (header_only) {
+        output_context->found_game();
+        end_parsing = true;
+        return true;
     }
 
     g = std::make_shared<Game>();

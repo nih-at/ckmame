@@ -58,6 +58,7 @@ class ParserSource {
     int peek();
     std::string peek(size_t n);
     size_t read(void* data, size_t length);
+    void skip(size_t n);
 
   private:
     std::vector<uint8_t> data;

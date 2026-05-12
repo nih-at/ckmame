@@ -10,9 +10,6 @@ dat-directories = [ "dats" ]
 dats = [ "ckmame test db" ]
 rom-db = "output.db"
 end-of-inline-data
-stdout
-ckmame test db (-> 1)
-end-of-inline-data
 stderr
-can't update ROM database: dat 'ckmame test db' is empty
+can't update ROM database: only empty dats found for 'ckmame test db'
 end-of-inline-data

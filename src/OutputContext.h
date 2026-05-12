@@ -60,6 +60,7 @@ class OutputContext {
     virtual bool close() = 0;
     virtual bool detector(Detector* detector) { return true; }
     virtual bool game(GamePtr game, const std::string& original_name = "") = 0;
+    virtual bool found_game() { return true;}
     virtual bool header(DatEntry* dat) { return true; }
     virtual void error_occurred() {}
 

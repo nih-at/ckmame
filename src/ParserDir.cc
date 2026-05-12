@@ -46,10 +46,6 @@ bool ParserDir::parse() {
 
     // TODO: set name from directory name?
 
-    if (header_only) {
-        return true;
-    }
-
     try {
         Dir dir(directory_name, false);
 
@@ -57,6 +53,9 @@ bool ParserDir::parse() {
             auto have_loose_chds = false;
 
             for (const auto& entry : dir) {
+                if (end_parsing) {
+                    break;
+                }
                 auto filepath = entry.path();
                 if (std::filesystem::is_directory(filepath)) {
                     auto dir_empty = true;
@@ -166,6 +165,10 @@ bool ParserDir::parse() {
             auto have_loose_files = false;
 
             for (const auto& entry : dir) {
+                if (end_parsing) {
+                    break;
+                }
+                
                 if (entry.is_directory()) {
                     /* TODO: handle errors */
                     auto a = Archive::open(entry.path(), TYPE_ROM, FILE_NOWHERE, 0);

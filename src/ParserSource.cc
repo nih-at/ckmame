@@ -93,6 +93,10 @@ std::string ParserSource::peek(size_t n) {
     return std::string(reinterpret_cast<char*>(current), std::min(n, available));
 }
 
+void ParserSource::skip(size_t n) {
+    buffer_consume(n);
+}
+
 
 size_t ParserSource::read(void* data, size_t length) {
     auto buffer = reinterpret_cast<uint8_t*>(data);
