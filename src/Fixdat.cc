@@ -69,6 +69,9 @@ void Fixdat::cleanup() {
     }
 
     auto directory = configuration.fixdat_directory.empty() ? std::filesystem::current_path() : std::filesystem::path(configuration.fixdat_directory);
+    if (!std::filesystem::is_directory(directory)) {
+        return;
+    }
     auto current_filename = empty ? "" : fixdat_filename();
     auto prefix = fixdat_filename_prefix();
     for (auto file: std::filesystem::directory_iterator(directory)) {
