@@ -51,10 +51,12 @@ class Rom : public FileData {
     bool compare_merged(const FileData& other) const;
     bool compare_merged(const Rom& other) const;
     std::string filename(filetype_t filetype) const;
-    bool is_mergable(const Rom& other) const;
+    bool is_mergeable(const Rom& other) const;
 
     std::string status_name(bool verbose = false) const { return status_name(status, verbose); }
     static std::string status_name(Status status, bool verbose = false);
+
+    bool operator==(const Rom& other) const;
 };
 
 #endif // HAD_ROM_H

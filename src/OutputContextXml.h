@@ -44,8 +44,8 @@ class OutputContextXml : public OutputContext {
     ~OutputContextXml() override;
 
     bool close() override;
-    bool game(GamePtr game, const std::string& original_name) override;
-    bool header(DatEntry* dat) override;
+    bool write_game(const GamePtr game) override;
+    bool write_header(const DatEntry& dat) override;
 
   private:
     xmlDocPtr doc;

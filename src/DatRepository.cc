@@ -41,7 +41,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Dir.h"
 #include "Exception.h"
 #include "OutputContextHeader.h"
-#include "Parser.h"
 #include "ParserSourceFile.h"
 #include "ParserSourceZip.h"
 #include "globals.h"
@@ -197,16 +196,9 @@ void DatRepository::update_directory(const std::string& directory, const DatDBPt
                     for (size_t index = 0; static_cast<int64_t>(index) < zip_get_num_entries(zip_archive, 0); index++) {
                         try {
                             auto entry_name = zip_get_name(zip_archive, index, 0);
-                            auto output = OutputContextHeader();
-
                             auto source = std::make_shared<ParserSourceZip>(entry.path(), zip_archive, entry_name);
-                            auto parser_options = Parser::Options{{}, false};
-                            auto parser = Parser::create(source, {}, nullptr, &output, parser_options);
-                            if (parser) {
-                                if (parser->parse_header()) {
-                                    auto header = output.get_header();
-                                    entries.emplace_back(entry_name, header.name, header.version, header.crc, output.empty);
-                                }
+                            if (auto header = get_dat_info(source)) {
+                                entries.emplace_back(entry_name, header->name, header->version, header->crc, header->empty);
                             }
                         }
                         catch (Exception& ex) {
@@ -214,17 +206,9 @@ void DatRepository::update_directory(const std::string& directory, const DatDBPt
                     }
                 }
                 else {
-                    auto output = OutputContextHeader();
-
                     auto source = std::make_shared<ParserSourceFile>(entry.path());
-                    auto parser_options = Parser::Options{{}, false};
-                    auto parser = Parser::create(source, {}, nullptr, &output, parser_options);
-
-                    if (parser) {
-                        if (parser->parse_header() && output.close()) {
-                            auto header = output.get_header();
-                            entries.emplace_back("", header.name, header.version, header.crc, output.empty);
-                        }
+                    if (auto header = get_dat_info(source)) {
+                        entries.emplace_back("", header->name, header->version, header->crc, header->empty);
                     }
                 }
             }
@@ -245,4 +229,15 @@ void DatRepository::update_directory(const std::string& directory, const DatDBPt
             db->delete_file(file);
         }
     }
+}
+
+
+std::optional<DatRepository::DatInfo> DatRepository::get_dat_info(ParserSourcePtr source) {
+    auto output = OutputContextHeader();
+    auto parser_options = DatOptions{};
+    auto parser = Parser::create(source, {}, nullptr, &output, parser_options);
+    if (parser && parser->parse_header() && output.finish() && output.has_header()) {
+        return DatInfo(output.get_header(), output.empty);
+    }
+    return std::nullopt;
 }

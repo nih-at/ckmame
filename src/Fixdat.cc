@@ -64,7 +64,7 @@ void Fixdat::end() {
 
 void Fixdat::cleanup() {
     if (output) {
-        output->close();
+        output->finish();
         output = nullptr;
     }
 
@@ -120,7 +120,7 @@ void Fixdat::write(const Game* game, const Result* result) {
     if (has_missing) {
         empty = false;
         if (ensure_output()) {
-            output->game(gm);
+            output->add_game(gm);
         }
     }
 }
@@ -158,7 +158,9 @@ bool Fixdat::ensure_output() {
         return false;
     }
 
-    if (!output->header(&de)) {
+    DatOptions options;
+    options.only_last_duplicate = true;
+    if (!output->start_dat(options, Output::FileInfo()) || !output->add_header(de)) {
         output = nullptr;
         failed = true;
         return false;

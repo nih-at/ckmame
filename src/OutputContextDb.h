@@ -44,10 +44,10 @@ class OutputContextDb : public OutputContext {
     ~OutputContextDb() override;
 
     bool close() override;
-    bool detector(Detector* detector) override;
-    bool game(GamePtr game, const std::string& original_name) override;
-    bool header(DatEntry* dat) override;
-    void error_occurred() override { ok = false; }
+    bool write_detector(const Detector& detector) override;
+    bool write_game(const GamePtr game) override;
+    bool write_header(const DatEntry& dat) override;
+    bool write_dat(size_t index, const DatEntry& dat) override;
 
     RomDB* get_db() const { return db.get(); }
 
@@ -56,19 +56,6 @@ class OutputContextDb : public OutputContext {
     std::string temp_file_name;
 
     std::unique_ptr<RomDB> db;
-
-    std::vector<DatEntry> dat;
-
-    std::vector<std::string> lost_children;
-
-    bool ok;
-
-    void familymeeting(Game* parent, Game* child);
-    std::string get_game_name(const std::string& original_name);
-    bool handle_lost();
-    bool lost(Game*);
-
-    std::unordered_map<std::string, std::string> renamed_games;
 };
 
 #endif // HAD_OUTPUT_DB_H

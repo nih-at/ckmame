@@ -225,7 +225,7 @@ bool MkMameDB::execute(const std::vector<std::string>& arguments) {
         dbname = configuration.rom_db;
     }
 
-    parser_options = Parser::Options({});
+    parser_options = DatOptions("");
     if (runtest) {
         parser_options.full_archive_names = true;
     }
@@ -242,7 +242,7 @@ bool MkMameDB::execute(const std::vector<std::string>& arguments) {
             output.set_error_file(detector_name);
             auto detector = Detector::parse(detector_name);
             if (detector != nullptr) {
-                out->detector(detector.get());
+                out->add_detector(*detector);
             }
 #else
             output.error("mkmamedb was built without XML support, detectors not available");
@@ -276,7 +276,7 @@ bool MkMameDB::execute(const std::vector<std::string>& arguments) {
         }
 
         if (ok) {
-            out->close();
+            out->finish();
         }
     }
     catch (const std::exception& exception) {

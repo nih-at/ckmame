@@ -5,5 +5,5 @@ arguments -o mamedb-test.db mamedb.dat
 file mamedb.dat mamedb-lost-parent.dat
 file mamedb-test.db {} mamedb-lost-parent.dump
 stderr
-inconsistency: clone-8 has non-existent parent parent-4
+mamedb.dat: inconsistency: clone-8 has non-existent parent parent-4
 end-of-inline-data

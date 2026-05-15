@@ -42,7 +42,7 @@
 class ParserDir : public Parser {
   public:
     ParserDir(ParserSourcePtr source, const std::unordered_set<std::string>& exclude, const DatEntry* dat,
-              OutputContext* output, const Options& options, std::string dname, int hashtypes_, bool runtest_ = false)
+              OutputContext* output, const DatOptions& options, std::string dname, int hashtypes_, bool runtest_ = false)
         : Parser(std::move(source), exclude, dat, output, options),
           directory_name(std::move(dname)),
           hashtypes(hashtypes_),

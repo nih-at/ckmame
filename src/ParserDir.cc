@@ -44,6 +44,7 @@
 bool ParserDir::parse() {
     lineno = 0;
 
+    output_context->start_dat(options, Output::FileInfo(directory_name));
     // TODO: set name from directory name?
 
     try {

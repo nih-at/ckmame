@@ -42,15 +42,12 @@ class OutputContextCm : public OutputContext {
     ~OutputContextCm() override;
 
     bool close() override;
-    bool game(GamePtr game, const std::string& original_name) override;
-    bool header(DatEntry* dat) override;
+    bool write_game(GamePtr game) override;
+    bool write_header(const DatEntry& dat) override;
 
   private:
     FILEPtr f;
     std::string fname;
-    std::vector<GamePtr> games;
-
-    bool write_game(Game* game);
 };
 
 #endif // HAD_OUTPUT_CM_H

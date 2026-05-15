@@ -146,7 +146,8 @@ class RomDB : public DB {
     std::vector<std::string> read_list(enum dbh_list type);
     void update_file_location(Game* game);
     void update_game_parent(const Game* game);
-    void write_dat(const std::vector<DatEntry>& dats);
+    void write_dats(const std::vector<DatEntry>& dats);
+    void write_dat(size_t dat_idx, const DatEntry& dat);
     void write_detector(const Detector& detector);
     void write_game(Game* game);
     void write_hashtypes(int, int);

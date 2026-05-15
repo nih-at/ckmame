@@ -70,17 +70,7 @@ bool OutputContextCm::close() {
         return false;
     }
 
-    std::sort(games.begin(), games.end(), cmp_game);
-
-    for (auto& game : games) {
-        write_game(game.get());
-    }
-
-    auto ok = true;
-
-    if (f) {
-        ok = fflush(f.get()) == 0;
-    }
+    auto ok = fflush(f.get()) == 0;
 
     f = nullptr;
 
@@ -88,25 +78,19 @@ bool OutputContextCm::close() {
 }
 
 
-bool OutputContextCm::game(GamePtr game, const std::string& original_name) {
-    games.push_back(game);
 
-    return true;
-}
-
-
-bool OutputContextCm::header(DatEntry* dat) {
+bool OutputContextCm::write_header(const DatEntry& dat) {
     fputs("clrmamepro (\n", f.get());
-    cond_print_string(f, "\tname ", dat->name, "\n");
-    cond_print_string(f, "\tdescription ", (dat->description.empty() ? dat->name : dat->description), "\n");
-    cond_print_string(f, "\tversion ", dat->version, "\n");
+    cond_print_string(f, "\tname ", dat.name, "\n");
+    cond_print_string(f, "\tdescription ", (dat.description.empty() ? dat.name : dat.description), "\n");
+    cond_print_string(f, "\tversion ", dat.version, "\n");
     fputs(")\n\n", f.get());
 
     return true;
 }
 
 
-bool OutputContextCm::write_game(Game* game) {
+bool OutputContextCm::write_game(const GamePtr game) {
     fputs("game (\n", f.get());
     cond_print_string(f, "\tname ", game->name, "\n");
     cond_print_string(f, "\tdescription ", game->description.empty() ? game->name : game->description, "\n");

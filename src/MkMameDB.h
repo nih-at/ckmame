@@ -50,7 +50,7 @@ class MkMameDB : public Command {
     bool process_file(const std::string& fname, OutputContext* out);
     bool process_stdin(OutputContext* out);
 
-    Parser::Options parser_options{{}};
+    DatOptions parser_options{};
     std::string dbname, dbname_real;
     std::unordered_set<std::string> exclude;
     std::vector<std::string> file_patterns;

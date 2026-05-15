@@ -38,7 +38,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 
 #include "DatDb.h"
-
+#include "Parser.h"
 class DatRepository {
   public:
     explicit DatRepository(const std::vector<std::string>& directories);
@@ -48,7 +48,19 @@ class DatRepository {
     std::vector<std::string> list_dats();
 
   private:
+    class DatInfo {
+      public:
+        DatInfo(const DatEntry& dat, bool empty)
+            : name(dat.name), version(dat.version), crc(dat.crc), empty(empty) {}
+
+        const std::string name;
+        const std::string version;
+        uint32_t crc;
+        bool empty;
+    };
     std::unordered_map<std::string, DatDBPtr> dbs;
+
+    static std::optional<DatInfo> get_dat_info(ParserSourcePtr source);
 
     static void update_directory(const std::string& directory, const DatDBPtr& db);
 };

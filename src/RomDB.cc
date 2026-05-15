@@ -531,20 +531,22 @@ std::vector<std::string> RomDB::read_list(enum dbh_list type) {
 }
 
 
-void RomDB::write_dat(const std::vector<DatEntry>& dats) {
+void RomDB::write_dats(const std::vector<DatEntry>& dats) {
+    for (size_t i = 0; i < dats.size(); i++) {
+        write_dat(i, dats[i]);
+    }
+}
+
+void RomDB::write_dat(size_t dat_idx, const DatEntry& dat) {
     auto stmt = get_statement(INSERT_DAT);
 
-    for (size_t i = 0; i < dats.size(); i++) {
-        auto& dat = dats[i];
-
-        stmt->set_int("dat_idx", static_cast<int>(i));
-        stmt->set_string("name", dat.name);
-        stmt->set_string("description", dat.description);
-        stmt->set_string("version", dat.version);
-        stmt->set_uint64("crc", dat.crc);
-        stmt->execute();
-        stmt->reset();
-    }
+    stmt->set_int("dat_idx", static_cast<int>(dat_idx));
+    stmt->set_string("name", dat.name);
+    stmt->set_string("description", dat.description);
+    stmt->set_string("version", dat.version);
+    stmt->set_uint64("crc", dat.crc);
+    stmt->execute();
+    stmt->reset();
 }
 
 
@@ -738,10 +740,12 @@ int RomDB::export_db(const std::unordered_set<std::string>& exclude, const DatEn
 
     auto db_dat = read_dat();
 
+    out->start_dat(DatOptions(), Output::FileInfo());
+    
     /* TODO: export detector */
 
     de.merge(dat, (db_dat.size() == 1 ? &db_dat[0] : nullptr));
-    out->header(&de);
+    out->add_header(de);
 
     std::vector<std::string> list;
 
@@ -761,9 +765,11 @@ int RomDB::export_db(const std::unordered_set<std::string>& exclude, const DatEn
         }
 
         if (exclude.find(game->name) == exclude.end()) {
-            out->game(game);
+            out->add_game(game);
         }
     }
+
+    out->finish();
 
     return 0;
 }

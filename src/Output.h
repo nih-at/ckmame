@@ -42,6 +42,26 @@
 
 class Output {
   public:
+    class FileInfo {
+      public:
+        FileInfo(std::string archive_name, std::string file_name)
+            : archive_name(std::move(archive_name)), file_name(std::move(file_name)) {}
+        FileInfo(std::string file_name) : archive_name(), file_name(std::move(file_name)) {}
+        FileInfo() = default;
+
+        std::string archive_name;
+        std::string file_name;
+
+        std::string full_name() const {
+            if (archive_name.empty()) {
+                return file_name;
+            }
+            else {
+                return archive_name + "/" + file_name;
+            }
+        }
+    };
+
     Output();
 
     void set_header(std::string header);
@@ -53,6 +73,7 @@ class Output {
 
     void push_error_archive(std::string archive_name, std::string file_name = "");
     void push_error_file(std::string file_name);
+    void push_error_info(FileInfo info);
     void pop_error_file_info();
 
     void set_error_archive(std::string archive_name, std::string file_name = "");
@@ -79,21 +100,17 @@ class Output {
     void file_error_system(const char* fmt, ...) PRINTF_LIKE(2, 3);
     void file_error_error_code(const std::error_code& ec, const char* fmt, ...) PRINTF_LIKE(3, 4);
 
+    void file_info_error(const FileInfo& file_info, const char* fmt, ...) PRINTF_LIKE(3, 4);
+    void file_info_error_database(const FileInfo& file_info, const char* fmt, ...) PRINTF_LIKE(3, 4);
+    void file_info_error_system(const FileInfo& file_info, const char* fmt, ...) PRINTF_LIKE(3, 4);
+    void file_info_error_error_code(const FileInfo& file_info, const std::error_code& ec, const char* fmt, ...) PRINTF_LIKE(4, 5);
+
     void line_error(size_t line_number, const char* fmt, ...) PRINTF_LIKE(3, 4);
     void line_error_database(size_t line_number, const char* fmt, ...) PRINTF_LIKE(3, 4);
     void line_error_system(size_t line_number, const char* fmt, ...) PRINTF_LIKE(3, 4);
     void line_error_error_code(size_t line_number, const std::error_code& ec, const char* fmt, ...) PRINTF_LIKE(4, 5);
 
   private:
-    class FileInfo {
-      public:
-        FileInfo(std::string archive_name, std::string file_name)
-            : archive_name(std::move(archive_name)), file_name(std::move(file_name)) {}
-
-        std::string archive_name;
-        std::string file_name;
-    };
-
     std::string header;
     std::string subheader;
     bool first_header;

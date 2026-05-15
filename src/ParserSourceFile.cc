@@ -46,12 +46,14 @@ ParserSourceFile::ParserSourceFile(const std::string& fname) : file_name(fname),
         if (!f) {
             throw Exception("can't open '%s': %s", fname.c_str(), strerror(errno));
         }
+        error_file_info = Output::FileInfo(file_name);
     }
     else {
         f = make_shared_stdin();
+        error_file_info = Output::FileInfo("*stdin*");
     }
 
-    output.push_error_archive("", file_name);
+    output.push_error_info(error_file_info);
 }
 
 ParserSourceFile::~ParserSourceFile() {

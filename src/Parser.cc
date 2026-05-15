@@ -83,7 +83,7 @@ std::string Parser::state_name(parser_state_t state) {
 }
 
 ParserPtr Parser::create(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
-                         const DatEntry* dat, OutputContext* output_context, const Options& options) {
+                         const DatEntry* dat, OutputContext* output_context, const DatOptions& options) {
     size_t length = 0;
     for (const auto& pair : format_start) {
         length = std::max(pair.first.length(), length);
@@ -119,7 +119,7 @@ ParserPtr Parser::create(const ParserSourcePtr& source, const std::unordered_set
 }
 
 bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude, const DatEntry* dat,
-                   OutputContext* out, const Options& options) {
+                   OutputContext* out, const DatOptions& options) {
     auto parser = create(source, exclude, dat, out, options);
 
     if (!parser) {
@@ -129,11 +129,22 @@ bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::
 
     parser->error = false;
 
-    return parser->do_parse() && !parser->error;
+    if (!parser->do_parse()) {
+        return false;
+    }
+
+    if (parser->error) {
+        return false;
+    }
+
+    return true;
 }
 
 
+
 bool Parser::do_parse() {
+    output_context->start_dat(options, error_file_info());
+
     auto ok = parse();
     if (ok) {
         eof();
@@ -383,11 +394,10 @@ bool Parser::game_end() {
             }
         }
 
-        ok = output_context->game(g, g->name == original_game_name ? "" : original_game_name);
+        output_context->add_game(g);
     }
 
     g = nullptr;
-
     state = PARSE_OUTSIDE;
 
     return ok;
@@ -400,7 +410,7 @@ bool Parser::game_name(const std::string& attr) {
     if (!options.use_description_as_name) {
         set_game_name(attr);
     }
-    original_game_name = attr;
+    g->original_name = attr;
 
     return true;
 }
@@ -490,7 +500,7 @@ bool Parser::prog_header(const std::string& attr) {
     else
 #endif
     {
-        if (!output_context->detector(detector.get())) {
+        if (!output_context->add_detector(*detector)) {
             ok = false;
         }
     }
@@ -520,7 +530,7 @@ bool Parser::prog_version(const std::string& attr) {
 
 
 Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry* dat,
-               OutputContext* output_context_, const Options& options)
+               OutputContext* output_context_, const DatOptions& options)
     : options(options),
       lineno(0),
       header_only(false),
@@ -548,7 +558,7 @@ bool Parser::header_end() {
     if (de.version[0] == '#') {
         de.name += " (Numbered)";
     }
-    output_context->header(&de);
+    output_context->add_header(de);
 
     state = PARSE_OUTSIDE;
 
@@ -639,6 +649,7 @@ void Parser::rom_end(filetype_t ft) {
     if (!r[ft]->merge.empty() && g->cloneof[0].empty()) {
         output.line_error(lineno, "warning: ROM '%s' has merge information but game '%s' has no parent",
                           r[ft]->name.c_str(), g->name.c_str());
+        r[ft]->merge = "";
     }
     if (deleted) {
         flags = (flags & PARSE_FL_ROM_CONTINUED) ? 0 : PARSE_FL_ROM_DELETED;
@@ -649,23 +660,5 @@ void Parser::rom_end(filetype_t ft) {
         if (!r[ft]->merge.empty() && r[ft]->merge == r[ft]->name) {
             r[ft]->merge = "";
         }
-    }
-}
-
-Parser::Options::Options(std::optional<std::string> dat_name, bool use_configuration) {
-    if (!use_configuration) {
-        return;
-    }
-
-    if (dat_name) {
-        game_name_suffix = configuration.dat_game_name_suffix(*dat_name);
-        use_description_as_name = configuration.dat_use_description_as_name(*dat_name);
-    }
-    else {
-        use_description_as_name = configuration.use_description_as_name;
-    }
-    if (!configuration.mia_games.empty()) {
-        auto list = slurp_lines(configuration.mia_games);
-        mia_games.insert(list.begin(), list.end());
     }
 }

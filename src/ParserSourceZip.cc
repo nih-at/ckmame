@@ -65,7 +65,8 @@ ParserSourceZip::ParserSourceZip(const std::string& archive_name_, struct zip* z
 
     mtime = st.mtime;
     crc = st.crc;
-    output.push_error_archive(archive_name, fname);
+    error_file_info = Output::FileInfo(archive_name, fname);
+    output.push_error_info(error_file_info);
 }
 
 ParserSourceZip::~ParserSourceZip() {

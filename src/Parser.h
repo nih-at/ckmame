@@ -58,23 +58,14 @@ typedef std::shared_ptr<Parser> ParserPtr;
 
 class Parser {
   public:
-    class Options {
-      public:
-        Options(std::optional<std::string> dat_name, bool use_configuration = true);
-
-        bool full_archive_names = false;
-        std::string game_name_suffix;
-        bool use_description_as_name = false;
-        std::unordered_set<std::string> mia_games;
-    };
 
     static ParserPtr create(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
-                            const DatEntry* dat, OutputContext* output, const Options& options);
+                            const DatEntry* dat, OutputContext* output, const DatOptions& options);
 
     static bool parse(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
-                      const DatEntry* dat, OutputContext* output, const Options& options);
+                      const DatEntry* dat, OutputContext* output, const DatOptions& options);
 
-    const Options& options;
+    const DatOptions& options;
 
     /* TODO: move out of context */
     size_t lineno; /* current line number in input file */
@@ -88,6 +79,8 @@ class Parser {
         header_only = true;
         return do_parse();
     }
+
+    const Output::FileInfo& error_file_info() const { return ps->error_file_info; }
 
     // callbacks
     void eof();
@@ -114,7 +107,7 @@ class Parser {
     bool prog_version(const std::string& attr);
 
     Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry* dat, OutputContext* output_,
-           const Options& options);
+           const DatOptions& options);
     virtual ~Parser() = default;
 
   protected:
@@ -140,7 +133,6 @@ class Parser {
     parser_state_t state;
     DatEntry de; /* info about dat file */
     GamePtr g;   /* current game */
-    std::string original_game_name;
     Rom* r[TYPE_MAX]{}; /* current files */
     DetectorPtr detector;
 
@@ -150,6 +142,9 @@ class Parser {
     enum Format { NONE, CLRMAMEPRO, ROMCENTER, XML };
 
     static std::unordered_map<std::string, Format> format_start;
+
+    std::map<std::string, std::vector<GamePtr>> games_by_name;
+    std::vector<std::string> dat_duplicate_name_suffix;
 
     bool do_parse();
     void set_game_name(std::string name);

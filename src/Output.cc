@@ -220,6 +220,38 @@ void Output::file_error_system(const char* fmt, ...) {
 }
 
 
+void Output::file_info_error(const FileInfo& file_info, const char* fmt, ...) {
+    va_list va;
+    va_start(va, fmt);
+    print_error_v(fmt, va, file_info.full_name());
+    va_end(va);
+}
+
+
+void Output::file_info_error_database(const FileInfo& file_info, const char* fmt, ...) {
+    va_list va;
+    va_start(va, fmt);
+    print_error_v(fmt, va, file_info.full_name(), postfix_database());
+    va_end(va);
+}
+
+
+void Output::file_info_error_system(const FileInfo& file_info, const char* fmt, ...) {
+    va_list va;
+    va_start(va, fmt);
+    print_error_v(fmt, va, file_info.full_name(), postfix_system());
+    va_end(va);
+}
+
+
+void Output::file_info_error_error_code(const FileInfo& file_info, const std::error_code& ec, const char* fmt, ...) {
+    va_list va;
+    va_start(va, fmt);
+    print_error_v(fmt, va, file_info.full_name(), ec.message());
+    va_end(va);
+}
+
+
 void Output::archive_file_error_system(const char* fmt, ...) {
     va_list va;
     va_start(va, fmt);
@@ -316,11 +348,14 @@ void Output::print_error_v(const char* fmt, va_list va, const std::string& prefi
     fprintf(stderr, "\n");
 }
 void Output::push_error_archive(std::string archive_name, std::string file_name) {
-    file_infos.emplace_back(FileInfo(std::move(archive_name), std::move(file_name)));
+    push_error_info(FileInfo(std::move(archive_name), std::move(file_name)));
 }
 
 
-void Output::push_error_file(std::string file_name) { file_infos.emplace_back(FileInfo("", std::move(file_name))); }
+void Output::push_error_file(std::string file_name) { push_error_info(FileInfo(std::move(file_name))); }
+
+
+void Output::push_error_info(FileInfo info) { file_infos.push_back(std::move(info)); }
 
 
 void Output::pop_error_file_info() {

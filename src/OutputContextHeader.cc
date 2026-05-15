@@ -31,21 +31,16 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "globals.h"
 #include "OutputContextHeader.h"
 
-bool OutputContextHeader::close() {
-    // TODO: error: no header
-    return header_set;
-}
-
-
-bool OutputContextHeader::header(DatEntry* dat) {
+bool OutputContextHeader::write_header(const DatEntry& dat) {
     if (header_set) {
-        // TODO: error: duplicate header
+        output.error("header already set");
         return false;
     }
     header_set = true;
-    header_data = *dat;
+    header_data = dat;
 
     return true;
 }

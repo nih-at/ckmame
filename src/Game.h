@@ -44,6 +44,7 @@ struct Game {
   public:
     uint64_t id;
     std::string name;
+    std::string original_name;
     std::string description;
     size_t dat_no;
     std::string cloneof[2];
@@ -52,6 +53,9 @@ struct Game {
     Game() : id(UINT64_MAX), dat_no(0) {}
 
     bool is_mia() const;
+    Rom* find_mergeable_file(filetype_t filetype, const Rom* file);
+
+    bool operator==( const Game& other ) const;
 };
 
 typedef std::shared_ptr<Game> GamePtr;

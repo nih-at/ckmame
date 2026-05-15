@@ -124,7 +124,7 @@ static std::string strsvis_cstyle(const std::string& in) {
 }
 
 
-bool OutputContextMtree::game(GamePtr game, const std::string& original_name) {
+bool OutputContextMtree::write_game(const GamePtr game) {
     auto dirname = strsvis_cstyle(game->name);
 
     if (runtest) {
@@ -146,7 +146,7 @@ bool OutputContextMtree::game(GamePtr game, const std::string& original_name) {
 }
 
 
-bool OutputContextMtree::header(DatEntry* dat) {
+bool OutputContextMtree::write_header(const DatEntry& dat) {
     fprintf(f.get(), ". type=dir\n");
 
     return true;

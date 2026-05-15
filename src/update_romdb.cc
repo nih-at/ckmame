@@ -160,7 +160,7 @@ bool update_romdb(bool force) {
                 source = std::make_shared<ParserSourceZip>(dat.file_name, zip_archive, dat.entry_name);
             }
 
-            auto options = Parser::Options(dat.name);
+            auto options = DatOptions(dat.name);
             if (!Parser::parse(source, {}, nullptr, output.get(), options)) {
                 auto message = "can't parse '" + dat.file_name + "'";
                 if (!dat.entry_name.empty()) {
@@ -169,14 +169,15 @@ bool update_romdb(bool force) {
                 throw Exception(message);
             }
 
-            if (new_db->games_from_dat(dat_idx) == 0 && !configuration.dat_allow_empty_dat(dat.name)) {
-                throw Exception("dat '" + dat.name + "' is empty");
-            }
+            // This no longer works this way, and should not be neccessary, since the mkmamedb already flags empty dats.
+            // if (new_db->games_from_dat(dat_idx) == 0 && !configuration.dat_allow_empty_dat(dat.name)) {
+            //     throw Exception("dat '" + dat.name + "' is empty");
+            // }
 
             dat_idx++;
         }
 
-        auto ok = output->close();
+        auto ok = output->finish();
         output.reset();
         if (!ok) {
             if (!configuration.use_temp_directory) {
@@ -191,7 +192,7 @@ bool update_romdb(bool force) {
     catch (std::exception& ex) {
         if (output) {
             output->error_occurred();
-            output->close();
+            output->finish();
         }
         throw Exception(std::string(ex.what()));
     }

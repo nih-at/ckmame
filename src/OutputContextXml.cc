@@ -103,7 +103,7 @@ static void set_attribute_hash(xmlNodePtr node, const char* name, int type, Hash
 }
 
 
-bool OutputContextXml::game(GamePtr game, const std::string& original_name) {
+bool OutputContextXml::write_game(const GamePtr game) {
     xmlNodePtr xmlGame = xmlNewChild(root, nullptr, xml_string("game"), nullptr);
 
     set_attribute(xmlGame, "name", game->name);
@@ -137,13 +137,13 @@ bool OutputContextXml::game(GamePtr game, const std::string& original_name) {
 }
 
 
-bool OutputContextXml::header(DatEntry* dat) {
+bool OutputContextXml::write_header(const DatEntry& dat) {
     xmlNodePtr header = xmlNewChild(root, nullptr, xml_string("header"), nullptr);
 
-    xmlNewTextChild(header, nullptr, xml_string("name"), xml_string(dat->name.c_str()));
+    xmlNewTextChild(header, nullptr, xml_string("name"), xml_string(dat.name.c_str()));
     xmlNewTextChild(header, nullptr, xml_string("description"),
-                    xml_string(dat->description.empty() ? dat->name.c_str() : dat->description.c_str()));
-    xmlNewTextChild(header, nullptr, xml_string("version"), xml_string(dat->version.c_str()));
+                    xml_string(dat.description.empty() ? dat.name.c_str() : dat.description.c_str()));
+    xmlNewTextChild(header, nullptr, xml_string("version"), xml_string(dat.version.c_str()));
     xmlNewTextChild(header, nullptr, xml_string("author"), xml_string("automatically generated"));
 
     return true;

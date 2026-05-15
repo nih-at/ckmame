@@ -38,11 +38,12 @@
 
 class OutputContextHeader : public OutputContext {
   public:
-    bool close() override;
-    bool game(GamePtr game, const std::string& original_name) override { return false; };
+    OutputContextHeader() {header_only = true;}
+    bool write_game(const GamePtr game) override { return false; };
     bool found_game() override { empty = false; return true; }
-    bool header(DatEntry* dat) override;
+    bool write_header(const DatEntry& dat) override;
 
+    bool has_header() const { return header_set; }
     const DatEntry& get_header() const { return header_data; }
 
     bool empty = true;

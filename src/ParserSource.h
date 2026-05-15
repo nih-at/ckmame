@@ -39,6 +39,8 @@
 #include <string>
 #include <vector>
 
+#include "Output.h"
+
 class ParserSource;
 
 typedef std::shared_ptr<ParserSource> ParserSourcePtr;
@@ -59,6 +61,8 @@ class ParserSource {
     std::string peek(size_t n);
     size_t read(void* data, size_t length);
     void skip(size_t n);
+
+    Output::FileInfo error_file_info;
 
   private:
     std::vector<uint8_t> data;

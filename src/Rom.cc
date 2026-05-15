@@ -49,7 +49,7 @@ std::string Rom::filename(filetype_t filetype) const {
 }
 
 
-bool Rom::is_mergable(const Rom& other) const {
+bool Rom::is_mergeable(const Rom& other) const {
     /* name must be the (merged) name */
     if (merged_name() != other.name) {
         return false;
@@ -104,4 +104,24 @@ std::string Rom::status_name(Status status, bool verbose) {
     default:
         return "";
     }
+}
+
+
+bool Rom::operator==(const Rom& other) const {
+    if (!compare_name_size_hashes(other)) {
+        return false;
+    }
+    if (merge != other.merge) {
+        return false;
+    }
+    if (status != other.status) {
+        return false;
+    }
+    if (where != other.where) {
+        return false;
+    }
+    if (mia != other.mia) {
+        return false;
+    }
+    return true;
 }
