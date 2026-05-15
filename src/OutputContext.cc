@@ -221,7 +221,7 @@ bool OutputContext::finish() {
                 auto original_name = game->name;
                 auto new_name = game->name;
                 if (!suffix.empty()) {
-                    new_name += " " + suffix;
+                    new_name += suffix;
                 }
                 if (counts[new_name] > 0) {
                     new_name += " (" + std::to_string(counts[new_name]) + ")";
@@ -330,6 +330,7 @@ const std::string& OutputContext::final_game_name(size_t dat_no, const std::stri
 DatOptions::DatOptions(std::optional<std::string> dat_name) {
     if (dat_name) {
         game_name_suffix = configuration.dat_game_name_suffix(*dat_name);
+        suffix_only_duplicates = configuration.dat_suffix_only_duplicates(*dat_name);
         use_description_as_name = configuration.dat_use_description_as_name(*dat_name);
     }
     else {

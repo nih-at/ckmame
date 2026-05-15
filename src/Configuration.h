@@ -134,6 +134,7 @@ class Configuration {
     bool use_torrentzip;              // use TORRENTZIP format for zip archives in ROM set.
     bool verbose;                     // print all actions taken to fix ROM set
     bool allow_empty_dat;             // Update RomDB even if dat is empty.
+    bool suffix_only_duplicates;      // use game_name_suffix only for names that would otherwise be duplicates.
 
     // TODO: Are these needed? They have no command line options.
     /* file_correct */

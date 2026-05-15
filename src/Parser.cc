@@ -426,8 +426,9 @@ void Parser::set_game_name(std::string name) {
         std::replace(g->name.begin(), g->name.end(), ':', '-');
     }
 
-    if (!options.game_name_suffix.empty()) {
-        g->name += options.game_name_suffix;
+    auto suffix = options.name_suffix();
+    if (!suffix.empty()) {
+        g->name += suffix;
     }
 }
 

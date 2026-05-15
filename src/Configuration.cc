@@ -130,6 +130,7 @@ TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table(
       TomlSchema::alternatives({TomlSchema::integer(), TomlSchema::constant("all")}, "integer or 'all'")},
      {"status-db-keep-runs",
       TomlSchema::alternatives({TomlSchema::integer(), TomlSchema::constant("all")}, "integer or 'all'")},
+     {"suffix-only-duplicates", TomlSchema::boolean()},
      {"unknown-directory", TomlSchema::string()},
      {"update-database", TomlSchema::boolean()},
      {"use-central-cache-directory", TomlSchema::boolean()},
@@ -304,6 +305,7 @@ void Configuration::reset() {
     }
     status_db = StatusDB::default_name();
     status_db_keep_runs = 2;
+    suffix_only_duplicates = false;
     unknown_directory = "unknown";
     update_database = false;
     use_central_cache_directory = false;
@@ -654,6 +656,7 @@ void Configuration::merge_config_table(const toml::table* table_pointer) {
     set_bool(table, "roms-zipped", roms_zipped);
     set_string(table, "saved-directory", saved_directory);
     set_string(table, "status-db", status_db);
+    set_bool(table, "suffix-only-duplicates", suffix_only_duplicates);
     set_integer_or_all(table, "status-db-keep-days", status_db_keep_days);
     set_integer_or_all(table, "status-db-keep-runs", status_db_keep_runs);
     set_string(table, "unknown-directory", unknown_directory);
@@ -823,7 +826,7 @@ bool Configuration::dat_create_fixdat(const std::string& dat) {
 bool Configuration::dat_suffix_only_duplicates(const std::string& dat) {
     auto it = dat_options.find(dat);
     if (it == dat_options.end() || !it->second.suffix_only_duplicates.has_value()) {
-        return false;
+        return suffix_only_duplicates;
     }
     return *it->second.suffix_only_duplicates;
 }

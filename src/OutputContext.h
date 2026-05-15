@@ -79,6 +79,7 @@ class DatOptions {
      * @return The suffix to add to the game name.
      */
 
+    std::string name_suffix() const { return suffix_only_duplicates ? "" : game_name_suffix; }
     std::string duplicate_name_suffix() const {return suffix_only_duplicates ? game_name_suffix : "";}
 };
 
