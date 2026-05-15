@@ -35,6 +35,7 @@
 
 #include "OutputContext.h"
 
+#include <algorithm>
 #include <string>
 
 #include "globals.h"

@@ -42,10 +42,6 @@
 #include "util.h"
 
 
-static struct {
-    bool operator()(GamePtr a, GamePtr b) const { return a->name < b->name; }
-} cmp_game;
-
 typedef struct output_context_cm output_context_cm_t;
 
 
