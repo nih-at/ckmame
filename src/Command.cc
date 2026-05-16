@@ -86,7 +86,7 @@ int Command::run(int argc, char* const* argv) {
         else {
             for (const auto& option : arguments.options) {
                 if (option.name == "set") {
-                    if (option.argument.find_first_of("?*[")) {
+                    if (option.argument.find_first_of("?*[") != std::string::npos) {
                         auto matched = false;
                         for (const auto& set : configuration.sets) {
                             if (fnmatch(option.argument.c_str(), set.c_str(), 0) == 0) {
@@ -99,10 +99,16 @@ int Command::run(int argc, char* const* argv) {
                         }
                     }
                     else {
-                        if (configuration.sets.find(option.argument) == configuration.sets.end()) {
+                        auto name = option.argument;
+                        auto it = configuration.sets.find(name);
+                        if (it == configuration.sets.end() && name.ends_with("/")) {
+                                name.pop_back();
+                                it = configuration.sets.find(name);
+                        }
+                        if (it == configuration.sets.end()) {
                             throw Exception("unknown set '" + option.argument + "'");
                         }
-                        selected_sets.insert(option.argument);
+                        selected_sets.insert(name);
                     }
                 }
             }
