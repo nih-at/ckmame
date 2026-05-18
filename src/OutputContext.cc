@@ -48,7 +48,7 @@
 
 /**
  * Create a new OutputContext of the given format.
- * 
+ *
  * @param format The format to create.
  * @param fname The file name to write to, or empty for stdout.
  * @param flags Additional flags.
@@ -101,7 +101,7 @@ void OutputContext::cond_print_hash(FILEPtr f, const std::string& pre, int t, co
 
 /**
  * Set the dat info for the created dat.
- * 
+ *
  * @param dat The dat info to set.
  * @return true on success, false on failure.
  */
@@ -116,7 +116,7 @@ bool OutputContext::set_dat_info(const DatEntry& dat) {
 
 /**
  * Start a new dat. This is called by the parser once for each dat before any information from the dat is added.
- * 
+ *
  * @param options The options for the new dat.
  * @return true on success, false on failure.
  */
@@ -127,7 +127,7 @@ bool OutputContext::start_dat(DatOptions options, Output::FileInfo file_info) {
 
 /**
  * Add a header for the current dat. This is called by the parser once for each dat. `start_dat` must have been called before.
- * 
+ *
  * @param dat The header info for the dat.
  * @return true on success, false on failure.
  */
@@ -142,7 +142,7 @@ bool OutputContext::add_header(const DatEntry& dat) {
 
 /**
  * Add detector for the current dat. This is called by the parser for each detector found in the dat. `start_dat` must have been called before.
- * 
+ *
  * @param detector The detector to add.
  * @return true on success, false on failure.
  */
@@ -159,9 +159,9 @@ bool OutputContext::add_detector(const Detector& detector) {
 
 /**
  * Add a game to the created dat.
- * 
+ *
  * This is called by the parser for each game found in the dat. `start_dat` must have been called before.
- * 
+ *
  * @param game The game to add.
  * @return true on success, false on failure.
  */
@@ -187,12 +187,12 @@ bool OutputContext::add_game(GamePtr game) {
 
 /**
  * Fix inconsistencies and write output. This is called after all parsing of all dats is finished.
- * 
+ *
  * @return true on success, false on failure.
  */
 bool OutputContext::finish() {
     // TODO: call close() even if an error occurred.
-    
+
     if (!ok) {
         return false;
     }
@@ -263,7 +263,7 @@ bool OutputContext::finish() {
         output.error("no header information");
         ok = false;
     }
-        
+
     size_t index = 0;
     for (const auto& dat : dats) {
         if (dat.dat) {
@@ -290,7 +290,7 @@ bool OutputContext::finish() {
     for (const auto& game : sorted_games) {
         write_game(game);
     }
-    
+
     return close();
 }
 
@@ -305,7 +305,7 @@ std::strong_ordering OutputContext::Name::operator<=>(const Name& other) const {
 
 /**
  * Get the final name for a game.
- * 
+ *
  * @param dat_no The dat number of the game, used to distinguish games with the same name in different dats.
  * @param name The original name of the game.
  * @return The final name of the game.
@@ -324,7 +324,7 @@ const std::string& OutputContext::final_game_name(size_t dat_no, const std::stri
 
 /**
  * Create a new DatOptions object for the given dat name using configuration settings.
- * 
+ *
  * @param dat_name The name of the dat.
  */
 DatOptions::DatOptions(std::optional<std::string> dat_name) {
@@ -346,7 +346,7 @@ DatOptions::DatOptions(std::optional<std::string> dat_name) {
 bool OutputContext::fix_game(Game* game, std::unordered_set<Game*> fixing) {
     if (fixed_where_games.contains(game)) {
         return true;
-    } 
+    }
     fixed_where_games.insert(game);
 
     const auto& error_info = dats[game->dat_no].error_info;
