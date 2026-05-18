@@ -53,8 +53,24 @@ struct Game {
     Game() : id(UINT64_MAX), dat_no(0) {}
 
     bool is_mia() const;
+
+    /** 
+     * Find a file in the game that can be merged with the given file.
+     * 
+     * @param filetype the type of the file to find
+     * @param file the file to merge with
+     * @return a pointer to the file in the game that can be merged with the given file, or nullptr if no such file exists
+     */
     Rom* find_mergeable_file(filetype_t filetype, const Rom* file);
 
+    /**
+    * Compare two games for equality.
+    * 
+    * This compares the game files and cloneof fields.
+    * 
+    * @param other the game to compare with
+    * @return true if the games are identical, false otherwise
+    */
     bool operator==( const Game& other ) const;
 };
 

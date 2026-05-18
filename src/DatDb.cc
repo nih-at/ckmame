@@ -187,13 +187,6 @@ void DatDB::insert_file(const std::string& file_name, time_t mtime, size_t size,
 }
 
 
-/**
- * Get all known dats with given name, ordered by version and modification time, newest first.
- * 
- * @param name Name of the dat to get.
- * @return List of dats with given name, ordered by version and modification time, newest first.
- * @throw Exception if there is an error accessing the database.
- */
 std::vector<DatDB::DatInfo> DatDB::get_dats(const std::string& name) {
     auto stmt = get_statement(QUERY_DAT);
 
@@ -210,12 +203,6 @@ std::vector<DatDB::DatInfo> DatDB::get_dats(const std::string& name) {
 }
 
 
-/**
- * Check if there are any dats in the database.
- * 
- * @return true if there are no dats in the database, false otherwise.
- * @throw Exception if there is an error accessing the database.
- */
 bool DatDB::is_empty() {
     auto stmt = get_statement(QUERY_HAS_FILES);
 

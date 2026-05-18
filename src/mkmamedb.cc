@@ -148,13 +148,13 @@ void MkMameDB::global_setup(const ParsedCommandline& commandline) {
             dbname = option.argument;
         }
         else if (option.name == "prog-description") {
-            dat.description = option.argument;
+            header_overrides.description = option.argument;
         }
         else if (option.name == "prog-name") {
-            dat.name = option.argument;
+            header_overrides.name = option.argument;
         }
         else if (option.name == "prog-version") {
-            dat.version = option.argument;
+            header_overrides.version = option.argument;
         }
         else if (option.name == "runtest") {
             runtest = true;
@@ -165,12 +165,6 @@ void MkMameDB::global_setup(const ParsedCommandline& commandline) {
     }
 
 
-    if (arguments.size() > 1 && !dat.name.empty()) {
-        fprintf(stderr,
-                "%s: warning: multiple input files specified, \n\t"
-                "--prog-name and --prog-version are ignored",
-                ProgramName::get().c_str());
-    }
 }
 
 bool MkMameDB::execute(const std::vector<std::string>& arguments) {
@@ -236,6 +230,7 @@ bool MkMameDB::execute(const std::vector<std::string>& arguments) {
         if ((out = OutputContext::create(fmt, dbname, flags)) == nullptr) {
             exit(1);
         }
+        out->add_header_overrides(header_overrides);
 
         if (!detector_name.empty()) {
 #if defined(HAVE_LIBXML2)
@@ -296,7 +291,7 @@ bool MkMameDB::process_file(const std::string& fname, OutputContext* out) {
 
     try {
         auto mdb = std::make_unique<RomDB>(fname, DBH_READ);
-        return mdb->export_db(exclude, &dat, out);
+        return mdb->export_db(exclude, out);
     }
     catch (std::exception& e) {
         /* that's fine */
@@ -325,7 +320,7 @@ bool MkMameDB::process_file(const std::string& fname, OutputContext* out) {
             try {
                 auto ps = std::make_shared<ParserSourceZip>(fname, za, name);
 
-                if (!Parser::parse(ps, exclude, &dat, out, parser_options)) {
+                if (!Parser::parse(ps, exclude, out, parser_options)) {
                     ok = false;
                 }
             }
@@ -351,7 +346,7 @@ bool MkMameDB::process_file(const std::string& fname, OutputContext* out) {
             }
 
             auto ctx =
-                ParserDir(nullptr, exclude, &dat, out, parser_options, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
+                ParserDir(nullptr, exclude, out, parser_options, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
             ok = ctx.parse();
         }
         else {
@@ -364,7 +359,7 @@ bool MkMameDB::process_file(const std::string& fname, OutputContext* out) {
 
                 try {
                     auto ps = std::make_shared<ParserSourceFile>(fname);
-                    ok = Parser::parse(ps, exclude, &dat, out, parser_options);
+                    ok = Parser::parse(ps, exclude, out, parser_options);
                 }
                 catch (std::exception& exception) {
                     fprintf(stderr, "%s: can't process %s: %s\n", ProgramName::get().c_str(), fname.c_str(),
@@ -385,7 +380,7 @@ bool MkMameDB::process_stdin(OutputContext* out) {
     try {
         auto ps = std::make_shared<ParserSourceFile>("");
 
-        return Parser::parse(ps, exclude, &dat, out, parser_options);
+        return Parser::parse(ps, exclude, out, parser_options);
     }
     catch (std::exception& exception) {
         fprintf(stderr, "%s: can't process stdin: %s\n", ProgramName::get().c_str(), exception.what());

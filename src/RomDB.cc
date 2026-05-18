@@ -730,7 +730,7 @@ void RomDB::write_files(Game* game, filetype_t ft) {
     }
 }
 
-int RomDB::export_db(const std::unordered_set<std::string>& exclude, const DatEntry* dat, OutputContext* out) {
+int RomDB::export_db(const std::unordered_set<std::string>& exclude, OutputContext* out) {
     DatEntry de;
 
     if (out == nullptr) {
@@ -744,8 +744,9 @@ int RomDB::export_db(const std::unordered_set<std::string>& exclude, const DatEn
     
     /* TODO: export detector */
 
-    de.merge(dat, (db_dat.size() == 1 ? &db_dat[0] : nullptr));
-    out->add_header(de);
+    if (db_dat.size() == 1) {
+        out->add_header(db_dat[0]);
+    }
 
     std::vector<std::string> list;
 

@@ -60,10 +60,10 @@ class Parser {
   public:
 
     static ParserPtr create(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
-                            const DatEntry* dat, OutputContext* output, const DatOptions& options);
+                            OutputContext* output, const DatOptions& options);
 
     static bool parse(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
-                      const DatEntry* dat, OutputContext* output, const DatOptions& options);
+                      OutputContext* output, const DatOptions& options);
 
     const DatOptions& options;
 
@@ -106,7 +106,7 @@ class Parser {
     bool prog_name(const std::string& attr);
     bool prog_version(const std::string& attr);
 
-    Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry* dat, OutputContext* output_,
+    Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, OutputContext* output_,
            const DatOptions& options);
     virtual ~Parser() = default;
 
@@ -118,7 +118,6 @@ class Parser {
 
     /* config */
     std::unordered_set<std::string> ignore;
-    DatEntry dat_default;
 
     /* output */
     OutputContext* output_context;

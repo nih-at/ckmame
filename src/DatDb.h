@@ -103,7 +103,14 @@ class DatDB : public DB {
 
     static const std::string db_name;
 
+    /**
+     * Check if there are any dats in the database.
+     * 
+     * @return `true` if there are no dats in the database, `false` otherwise.
+     * @throw Exception if there is an error accessing the database.
+     */
     bool is_empty();
+
     std::vector<std::string> list_dats();
     std::vector<std::string> list_files();
 
@@ -112,6 +119,13 @@ class DatDB : public DB {
     void delete_file(const std::string& file_name);
     void insert_file(const std::string& file_name, time_t mtime, size_t size, const std::vector<DatEntry>& dats);
 
+    /**
+     * Get all known dats with given name, ordered by version and modification time, newest first.
+     * 
+     * @param name Name of the dat to get.
+     * @return List of dats with given name, ordered by version and modification time, newest first.
+     * @throw Exception if there is an error accessing the database.
+     */
     std::vector<DatInfo> get_dats(const std::string& name);
 
   protected:

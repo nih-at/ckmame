@@ -44,7 +44,22 @@ class DatRepository {
     explicit DatRepository(const std::vector<std::string>& directories);
     ~DatRepository();
 
+    /**
+     * Find newest dat.
+     * 
+     * @param name Name of the dat to find.
+     * @param allow_empty If true, empty dats are allowed. Otherwise, the newest non-empty dat is used, but a warning is printed if there is a newer empty dat.
+     * @return Info about the dat.
+     * @throw Exception if dat can't be found.
+     */
     DatDB::DatInfo find_dat(const std::string& name, bool allow_empty);
+
+    /**
+     * Get list of all dat names in all directories.
+     * 
+     * @return Sorted list of all dat names in all directories.
+     * @throw Exception if there is an error accessing the database.
+     */
     std::vector<std::string> list_dats();
 
   private:

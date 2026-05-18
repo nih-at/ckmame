@@ -1,8 +1,10 @@
 3.1 (Unreleased)
 
 * Improve speed on slow file systems.
-* By default, don't update RomDB if dat is empty, can be overridden by `allow-empty-dat` configuration option.
+* By default, don't use empty dats to update RomDB, can be overridden by `allow-empty-dat` configuration option.
 * Improve readability of help message by splitting options into sections.
+* When creating fixdats, remove old fixdat files.
+* Add option `suffix-only-duplicates` and improve renaming of games with duplicate names.
 
 3.0 (2025-01-20)
 ================

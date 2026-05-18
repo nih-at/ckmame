@@ -34,6 +34,13 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/**
+ * Update RomDB if it is not up to date with the dats in the dat directories.
+ * 
+ * @param force If `true`, update RomDB even if it is up to date.
+ * @return `true` if RomDB was updated, `false` if it was already up to date.
+ * @throw Exception if there is an error updating the database.
+ */
 bool update_romdb(bool force = false);
 
-#endif // CKMAME_UPDATE_ROMDB_H
+#endif // HAD_UPDATE_ROMDB_H

@@ -82,14 +82,6 @@ DatRepository::~DatRepository() {
     }
 }
 
-/**
- * Find newest dat.
- * 
- * @param name Name of the dat to find.
- * @param allow_empty If true, empty dats are allowed. Otherwise, the newest non-empty dat is used, but a warning is printed if there is a newer empty dat.
- * @return Info about the dat.
- * @throw Exception if dat can't be found.
- */
 DatDB::DatInfo DatRepository::find_dat(const std::string& name, bool allow_empty) {
     std::optional<DatDB::DatInfo> newest_empty_dat;
     std::optional<DatDB::DatInfo> newest_dat;
@@ -140,12 +132,6 @@ DatDB::DatInfo DatRepository::find_dat(const std::string& name, bool allow_empty
 }
 
 
-/**
- * Get list of all dat names in all directories.
- * 
- * @return Sorted list of all dat names in all directories.
- * @throw Exception if there is an error accessing the database.
- */
 std::vector<std::string> DatRepository::list_dats() {
     std::set<std::string> dats;
 
@@ -235,7 +221,7 @@ void DatRepository::update_directory(const std::string& directory, const DatDBPt
 std::optional<DatRepository::DatInfo> DatRepository::get_dat_info(ParserSourcePtr source) {
     auto output = OutputContextHeader();
     auto parser_options = DatOptions{};
-    auto parser = Parser::create(source, {}, nullptr, &output, parser_options);
+    auto parser = Parser::create(source, {}, &output, parser_options);
     if (parser && parser->parse_header() && output.finish() && output.has_header()) {
         return DatInfo(output.get_header(), output.empty);
     }

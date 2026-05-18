@@ -112,13 +112,6 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo>& dats_to_use) {
 }
 
 
-/**
- * Update RomDB if it is not up to date with the dats in the dat directories.
- * 
- * @param force If true, update RomDB even if it is up to date.
- * @return true if RomDB was updated, false if it was already up to date.
- * @throw Exception if there is an error updating the database.
- */
 bool update_romdb(bool force) {
     if (configuration.dats.empty() || configuration.dat_directories.empty()) {
         return false;
@@ -161,7 +154,7 @@ bool update_romdb(bool force) {
             }
 
             auto options = DatOptions(dat.name);
-            if (!Parser::parse(source, {}, nullptr, output.get(), options)) {
+            if (!Parser::parse(source, {}, output.get(), options)) {
                 auto message = "can't parse '" + dat.file_name + "'";
                 if (!dat.entry_name.empty()) {
                     message += "/" + dat.entry_name;

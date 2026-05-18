@@ -55,6 +55,13 @@ std::unordered_map<std::string, Parser::Format> Parser::format_start = {
     {"[EMULATOR]", ROMCENTER}, {"clrmamepro ", CLRMAMEPRO}, {"emulator ", CLRMAMEPRO}};
 
 
+/**
+ * Check that the parser is in the expected state and whether parsing should stop.  
+ * 
+ * This macro returns from the calling function if there is an error or parsing should stop.
+ * 
+ * @param s The expected state.
+ */
 #define CHECK_STATE(s)                                                                                               \
     do {                                                                                                             \
         if (end_parsing) {                                                                                           \
@@ -83,7 +90,7 @@ std::string Parser::state_name(parser_state_t state) {
 }
 
 ParserPtr Parser::create(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
-                         const DatEntry* dat, OutputContext* output_context, const DatOptions& options) {
+                         OutputContext* output_context, const DatOptions& options) {
     size_t length = 0;
     for (const auto& pair : format_start) {
         length = std::max(pair.first.length(), length);
@@ -108,19 +115,19 @@ ParserPtr Parser::create(const ParserSourcePtr& source, const std::unordered_set
         return {};
 
     case CLRMAMEPRO:
-        return std::shared_ptr<Parser>(new ParserCm(source, exclude, dat, output_context, options));
+        return std::shared_ptr<Parser>(new ParserCm(source, exclude, output_context, options));
     case ROMCENTER:
-        return std::shared_ptr<Parser>(new ParserRc(source, exclude, dat, output_context, options));
+        return std::shared_ptr<Parser>(new ParserRc(source, exclude, output_context, options));
     case XML:
-        return std::shared_ptr<Parser>(new ParserXml(source, exclude, dat, output_context, options));
+        return std::shared_ptr<Parser>(new ParserXml(source, exclude, output_context, options));
     }
 
     return {};
 }
 
-bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude, const DatEntry* dat,
+bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
                    OutputContext* out, const DatOptions& options) {
-    auto parser = create(source, exclude, dat, out, options);
+    auto parser = create(source, exclude, out, options);
 
     if (!parser) {
         output.file_error("unknown dat format");
@@ -530,8 +537,7 @@ bool Parser::prog_version(const std::string& attr) {
 }
 
 
-Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry* dat,
-               OutputContext* output_context_, const DatOptions& options)
+Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, OutputContext* output_context_, const DatOptions& options)
     : options(options),
       lineno(0),
       header_only(false),
@@ -542,7 +548,6 @@ Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, 
       header_set(false),
       error(false),
       state(PARSE_IN_HEADER) {
-    dat_default.merge(dat, nullptr);
     for (auto& i : r) {
         i = nullptr;
     }
@@ -555,7 +560,6 @@ bool Parser::header_end() {
     if (ps) {
         de.crc = ps->get_crc();
     }
-    de.merge(&dat_default, &de);
     if (de.version[0] == '#') {
         de.name += " (Numbered)";
     }

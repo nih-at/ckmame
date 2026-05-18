@@ -44,14 +44,6 @@ bool Game::is_mia() const {
     return false;
 }
 
-/**
- * Compare two games for equality.
- * 
- * This compares the game files and cloneof fields.
- * 
- * @param other the game to compare with
- * @return true if the games are identical, false otherwise
- */
 bool Game::operator==( const Game& other ) const {
     if (cloneof[0] != other.cloneof[0] || cloneof[1] != other.cloneof[1]) {
         return false;
@@ -65,13 +57,6 @@ bool Game::operator==( const Game& other ) const {
 }
 
 
-/** 
- * Find a file in the game that can be merged with the given file.
- * 
- * @param filetype the type of the file to find
- * @param file the file to merge with
- * @return a pointer to the file in the game that can be merged with the given file, or nullptr if no such file exists
- */
 Rom* Game::find_mergeable_file(filetype_t filetype, const Rom* file) {
     for (auto& f : files[filetype]) {
         if (file->is_mergeable(f)) {

@@ -46,14 +46,6 @@
 #include "OutputContextXml.h"
 
 
-/**
- * Create a new OutputContext of the given format.
- *
- * @param format The format to create.
- * @param fname The file name to write to, or empty for stdout.
- * @param flags Additional flags.
- * @return The created OutputContext, or nullptr on failure.
- */
 OutputContextPtr OutputContext::create(OutputContext::Format format, const std::string& fname, int flags) {
     switch (format) {
     case FORMAT_CM:
@@ -99,38 +91,12 @@ void OutputContext::cond_print_hash(FILEPtr f, const std::string& pre, int t, co
     cond_print_string(f, pre, h->to_string(t), post);
 }
 
-/**
- * Set the dat info for the created dat.
- *
- * @param dat The dat info to set.
- * @return true on success, false on failure.
- */
-bool OutputContext::set_dat_info(const DatEntry& dat) {
-    if (header) {
-        output.error("dat info already set");
-        return false;
-    }
-    header = dat;
-    return true;
-}
 
-/**
- * Start a new dat. This is called by the parser once for each dat before any information from the dat is added.
- *
- * @param options The options for the new dat.
- * @return true on success, false on failure.
- */
 bool OutputContext::start_dat(DatOptions options, Output::FileInfo file_info) {
     dats.emplace_back(options, file_info);
     return true;
 }
 
-/**
- * Add a header for the current dat. This is called by the parser once for each dat. `start_dat` must have been called before.
- *
- * @param dat The header info for the dat.
- * @return true on success, false on failure.
- */
 bool OutputContext::add_header(const DatEntry& dat) {
     if (!dat_started()) {
         output.error("start_dat must be called before add_header");
@@ -140,12 +106,6 @@ bool OutputContext::add_header(const DatEntry& dat) {
     return true;
 }
 
-/**
- * Add detector for the current dat. This is called by the parser for each detector found in the dat. `start_dat` must have been called before.
- *
- * @param detector The detector to add.
- * @return true on success, false on failure.
- */
 bool OutputContext::add_detector(const Detector& detector) {
     for (const auto& d : detectors) {
         if (d.name == detector.name && d.author == detector.author && d.version == detector.version) {
@@ -157,14 +117,6 @@ bool OutputContext::add_detector(const Detector& detector) {
 }
 
 
-/**
- * Add a game to the created dat.
- *
- * This is called by the parser for each game found in the dat. `start_dat` must have been called before.
- *
- * @param game The game to add.
- * @return true on success, false on failure.
- */
 bool OutputContext::add_game(GamePtr game) {
     if (!dat_started()) {
         output.error("start_dat must be called before add_game");
@@ -185,11 +137,6 @@ bool OutputContext::add_game(GamePtr game) {
     return true;
 }
 
-/**
- * Fix inconsistencies and write output. This is called after all parsing of all dats is finished.
- *
- * @return true on success, false on failure.
- */
 bool OutputContext::finish() {
     // TODO: call close() even if an error occurred.
 
@@ -255,14 +202,7 @@ bool OutputContext::finish() {
         return false;
     }
 
-    auto header = get_header();
-    if (header) {
-        write_header(*header);
-    }
-    else {
-        output.error("no header information");
-        ok = false;
-    }
+    write_header(get_header());
 
     size_t index = 0;
     for (const auto& dat : dats) {
@@ -303,13 +243,6 @@ std::strong_ordering OutputContext::Name::operator<=>(const Name& other) const {
 }
 
 
-/**
- * Get the final name for a game.
- *
- * @param dat_no The dat number of the game, used to distinguish games with the same name in different dats.
- * @param name The original name of the game.
- * @return The final name of the game.
- */
 const std::string& OutputContext::final_game_name(size_t dat_no, const std::string& name) const {
     if (name.empty()) {
         return name;
@@ -322,11 +255,6 @@ const std::string& OutputContext::final_game_name(size_t dat_no, const std::stri
 }
 
 
-/**
- * Create a new DatOptions object for the given dat name using configuration settings.
- *
- * @param dat_name The name of the dat.
- */
 DatOptions::DatOptions(std::optional<std::string> dat_name) {
     if (dat_name) {
         game_name_suffix = configuration.dat_game_name_suffix(*dat_name);
@@ -432,14 +360,40 @@ bool OutputContext::fix_game(Game* game, std::unordered_set<Game*> fixing) {
     return true;
 }
 
-const DatEntry* OutputContext::get_header() const {
-    if (header) {
-        return &*header;
-    }
-    else if (!dats.empty() && dats[0].dat) {
-        return &*dats[0].dat;
+
+DatEntry OutputContext::get_header() const {
+    if (dats.size() == 1 && dats[0].dat) {
+        return header_overrides.apply(*dats[0].dat);
     }
     else {
-        return nullptr;
+        return header_overrides.apply(DatEntry());
+    }
+}
+
+
+DatEntry DatEntryOverrides::apply(const DatEntry& dat) const {
+    DatEntry result = dat;
+    if (name) {
+        result.name = *name;
+    }
+    if (description) {
+        result.description = *description;
+    }
+    if (version) {
+        result.version = *version;
+    }
+    return result;
+}
+
+
+void DatEntryOverrides::merge(const DatEntryOverrides& additional_overrides) {
+    if (additional_overrides.name) {
+        name = additional_overrides.name;
+    }
+    if (additional_overrides.description) {
+        description = additional_overrides.description;
+    }
+    if (additional_overrides.version) {
+        version = additional_overrides.version;
     }
 }

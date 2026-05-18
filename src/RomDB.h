@@ -151,7 +151,7 @@ class RomDB : public DB {
     void write_detector(const Detector& detector);
     void write_game(Game* game);
     void write_hashtypes(int, int);
-    int export_db(const std::unordered_set<std::string>& exclude, const DatEntry* dat, OutputContext* out);
+    int export_db(const std::unordered_set<std::string>& exclude, OutputContext* out);
 
     bool has_types[TYPE_MAX];
 

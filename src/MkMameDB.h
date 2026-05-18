@@ -55,7 +55,7 @@ class MkMameDB : public Command {
     std::unordered_set<std::string> exclude;
     std::vector<std::string> file_patterns;
     std::unordered_set<std::string> skip_files;
-    DatEntry dat;
+    DatEntryOverrides header_overrides;
     int flags{0};
     OutputContext::Format fmt{OutputContext::FORMAT_DB};
     std::string detector_name;
