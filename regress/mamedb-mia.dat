@@ -22,4 +22,8 @@
 		<rom name="04.rom" size="4" crc="d87f7e0c" md5="098f6bcd4621d373cade4e832627b4f6" sha1="a94a8fe5ccb19ba61c4c0873d391e987982fbbd3" mia="yes" />
 		<rom name="0c.rom" size="12" crc="0623c932" md5="b60c52bf4849067f0b57c8bd30985466" sha1="2f2d205d5451d3256cf1c693982b40101e9989bf" mia="yes"/>
 	</game>
+	<game name="3-nodumpmia" id="0004">
+		<description>one file in nodump state that is also marked MIA</description>
+		<rom name="nodump.rom" size="99" status="nodump" mia="yes" />
+	</game>
 </datafile>
