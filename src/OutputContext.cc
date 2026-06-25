@@ -38,12 +38,12 @@
 #include <algorithm>
 #include <string>
 
-#include "globals.h"
-#include "util.h"
 #include "OutputContextCm.h"
 #include "OutputContextDb.h"
 #include "OutputContextMtree.h"
 #include "OutputContextXml.h"
+#include "globals.h"
+#include "util.h"
 
 
 OutputContextPtr OutputContext::create(OutputContext::Format format, const std::string& fname, int flags) {
@@ -172,7 +172,8 @@ bool OutputContext::finish() {
                 }
                 if (counts[new_name] > 0) {
                     new_name += " (" + std::to_string(counts[new_name]) + ")";
-                    output.error("warning: duplicate game '%s', renamed to '%s'", original_name.c_str(), new_name.c_str());
+                    output.error("warning: duplicate game '%s', renamed to '%s'", original_name.c_str(),
+                                 new_name.c_str());
                 }
                 counts[new_name] += 1;
                 game->name = new_name;
@@ -224,9 +225,8 @@ bool OutputContext::finish() {
     for (const auto& [name, game] : games) {
         sorted_games.push_back(game);
     }
-    std::sort(sorted_games.begin(), sorted_games.end(), [](const GamePtr& a, const GamePtr& b) {
-        return a->name < b->name;
-    });
+    std::sort(sorted_games.begin(), sorted_games.end(),
+              [](const GamePtr& a, const GamePtr& b) { return a->name < b->name; });
     for (const auto& game : sorted_games) {
         write_game(game);
     }
@@ -303,14 +303,18 @@ bool OutputContext::fix_game(Game* game, std::unordered_set<Game*> fixing) {
                 for (size_t j = 0; j < i; j++) {
                     if (!parent->cloneof[j].empty()) {
                         if (i + j > 2) {
-                            output.file_info_error(error_info, "game '%s' has more than 2 ancestors, which is not supported", game->name.c_str());
+                            output.file_info_error(error_info,
+                                                   "game '%s' has more than 2 ancestors, which is not supported",
+                                                   game->name.c_str());
                             return false;
                         }
                         if (game->cloneof[i + j].empty()) {
                             game->cloneof[i + j] = parent->cloneof[j];
                         }
                         else if (game->cloneof[i + j] != parent->cloneof[j]) {
-                            output.file_info_error(error_info, "game '%s' has inconsistent cloneof fields with parent '%s'", game->name.c_str(), parent->name.c_str());
+                            output.file_info_error(error_info,
+                                                   "game '%s' has inconsistent cloneof fields with parent '%s'",
+                                                   game->name.c_str(), parent->name.c_str());
                             return false;
                         }
                     }
@@ -318,7 +322,7 @@ bool OutputContext::fix_game(Game* game, std::unordered_set<Game*> fixing) {
             }
             else {
                 output.file_info_error(error_info, "inconsistency: %s has non-existent parent %s", game->name.c_str(),
-                                game->cloneof[i].c_str());
+                                       game->cloneof[i].c_str());
                 game->cloneof[i] = "";
                 parents.push_back(nullptr);
             }
@@ -350,9 +354,19 @@ bool OutputContext::fix_game(Game* game, std::unordered_set<Game*> fixing) {
                 }
 
                 if (file.where == FILE_INGAME && !file.merge.empty()) {
-                    output.file_info_error(error_info, "In game '%s': '%s': merged from '%s', but ancestors don't contain matching file",
-                                    game->name.c_str(), file.name.c_str(), file.merge.c_str());
+                    output.file_info_error(
+                        error_info, "In game '%s': '%s': merged from '%s', but ancestors don't contain matching file",
+                        game->name.c_str(), file.name.c_str(), file.merge.c_str());
                 }
+            }
+        }
+    }
+
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+        for (auto& file : game->files[ft]) {
+            // If no dump exists, it can't be missing.
+            if (file.mia && file.status == Rom::NO_DUMP) {
+                file.mia = false;
             }
         }
     }
