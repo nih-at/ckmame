@@ -1,7 +1,7 @@
-features PRELOAD_ENABLED
 description test single-rom game with disk, get missing disk from extra, rename not allowed
 #variants zip
 return 0
+precheck ./can-preload
 preload fwrite.so
 environment-set RENAME_FAILS roms/108-5.chd
 arguments --no-status-db -Fvj -D ../mamedb-disk.db -e extradir

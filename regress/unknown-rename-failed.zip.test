@@ -1,8 +1,8 @@
-features PRELOAD_ENABLED
 description test copying file to garbage, failing (disk full) and not removing from set
 #variants zip
 return 0
 environment-set RENAME_ALWAYS_FAILS 1
+precheck ./can-preload
 preload fwrite.so
 arguments -Fvcj -D ../mamedb-small.db
 file roms/unknown-file.zip unknown-file.zip

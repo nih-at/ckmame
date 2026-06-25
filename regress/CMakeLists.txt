@@ -18,6 +18,8 @@ foreach(PROGRAM ${SUPPORT_PROGRAMS})
   endif()
 endforeach()
 
+add_executable(can-preload can-preload.c)
+
 foreach(PROGRAM unpack)
   add_executable(${PROGRAM} ${PROGRAM}.c)
   # for config.h

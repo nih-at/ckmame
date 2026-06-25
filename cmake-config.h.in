@@ -14,6 +14,5 @@
 #cmakedefine HAVE_SHA256INIT
 #cmakedefine HAVE_STRCASECMP
 #cmakedefine HAVE__STRICMP
-#cmakedefine PRELOAD_ENABLED
 
 #endif /* HAD_CONFIG_H */

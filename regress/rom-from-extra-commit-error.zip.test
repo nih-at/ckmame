@@ -1,7 +1,7 @@
-features PRELOAD_ENABLED
 description "test single-rom game (no parent), extra zip contains file, can't copy"
 #variants zip
 return 0
+precheck ./can-preload
 preload fwrite.so
 environment-set RENAME_FAILS roms/1-4.zip
 arguments --no-status-db -Fvje extra -D ../mamedb-small.db
