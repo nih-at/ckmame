@@ -36,7 +36,7 @@ if (LibArchive_FOUND)
 endif()
 
 if (NOT WIN32)
-  add_library(fwrite MODULE fwrite.c)
+  add_library(fwrite SHARED fwrite.c)
   target_link_libraries(fwrite ${CMAKE_DL_LIBS})
 endif()
 

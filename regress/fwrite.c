@@ -38,32 +38,34 @@
 #define __USE_GNU
 #include <dlfcn.h>
 #undef __USE_GNU
+#include <unistd.h>
+
+#include "nihtest-preload.h"
 
 static size_t count = 0;
 static size_t max_write = 0;
-static size_t (*real_fwrite)(const void *ptr, size_t size, size_t nmemb, FILE *stream) = NULL;
-static int (*real_link)(const char *src, const char *dest) = NULL;
-static int (*real_rename)(const char *src, const char *dest) = NULL;
+static size_t (*real_fwrite)(const void* ptr, size_t size, size_t nmemb, FILE* stream) = NULL;
+static int (*real_link)(const char* src, const char* dest) = NULL;
+static int (*real_rename)(const char* src, const char* dest) = NULL;
 #if 0
 static size_t (*real_write)(int d, const void *buf, size_t nbytes) = NULL;
 #endif
 
-size_t
-fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
+size_t PRELOAD_NAME(fwrite)(const void* ptr, size_t size, size_t nmemb, FILE* stream) {
     size_t ret;
 
     if (real_fwrite == NULL) {
-	char *foo;
-	if ((foo = getenv("FWRITE_MAX_WRITE")) != NULL)
-	    max_write = strtoul(foo, NULL, 0);
-	real_fwrite = dlsym(RTLD_NEXT, "fwrite");
-	if (!real_fwrite)
-	    abort();
+        char* foo;
+        if ((foo = getenv("FWRITE_MAX_WRITE")) != NULL)
+            max_write = strtoul(foo, NULL, 0);
+        real_fwrite = dlsym(RTLD_NEXT, "fwrite");
+        if (!real_fwrite)
+            abort();
     }
 
     if (max_write > 0 && count + size * nmemb > max_write) {
-	errno = ENOSPC;
-	return -1;
+        errno = ENOSPC;
+        return -1;
     }
 
 
@@ -73,59 +75,63 @@ fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
     return ret;
 }
 
-int
-link(const char *src, const char *dest) {
+PRELOAD_REPLACE(fwrite);
+
+int PRELOAD_NAME(link)(const char* src, const char* dest) {
     if (real_link == NULL) {
-	real_link = dlsym(RTLD_NEXT, "link");
-	if (!real_link)
-	    abort();
+        real_link = dlsym(RTLD_NEXT, "link");
+        if (!real_link)
+            abort();
     }
 
     if (getenv("LINK_ALWAYS_FAILS") != NULL) {
-	errno = EPERM;
-	return -1;
+        errno = EPERM;
+        return -1;
     }
 
     if (getenv("LINK_FAILS") != NULL) {
-	if (strcmp(getenv("LINK_FAILS"), dest) == 0) {
-	    errno = EPERM;
-	    return -1;
-	}
+        if (strcmp(getenv("LINK_FAILS"), dest) == 0) {
+            errno = EPERM;
+            return -1;
+        }
     }
 
     return real_link(src, dest);
 }
 
-int
-rename(const char *src, const char *dest) {
+PRELOAD_REPLACE(link);
+
+int PRELOAD_NAME(rename)(const char* src, const char* dest) {
     if (real_rename == NULL) {
-	real_rename = dlsym(RTLD_NEXT, "rename");
-	if (!real_rename)
-	    abort();
+        real_rename = dlsym(RTLD_NEXT, "rename");
+        if (!real_rename)
+            abort();
     }
 
     if (getenv("RENAME_LOG") != NULL) {
-	fprintf(stderr, "LOG: rename '%s' -> '%s'\n", src, dest);
+        fprintf(stderr, "LOG: rename '%s' -> '%s'\n", src, dest);
     }
 
     if (getenv("RENAME_ALWAYS_FAILS") != NULL) {
-	errno = EPERM;
-	return -1;
+        errno = EPERM;
+        return -1;
     }
 
     if (getenv("RENAME_FAILS") != NULL) {
-	if (strcmp(getenv("RENAME_FAILS"), dest) == 0) {
-	    errno = EPERM;
-	    return -1;
-	}
+        if (strcmp(getenv("RENAME_FAILS"), dest) == 0) {
+            errno = EPERM;
+            return -1;
+        }
     }
 
     return real_rename(src, dest);
 }
 
+PRELOAD_REPLACE(rename);
+
 #if 0
 ssize_t
-write(int d, const void *buf, size_t nbytes) {
+PRELOAD_NAME(write)(int d, const void *buf, size_t nbytes) {
     size_t ret;
 
     if (real_write == NULL) {
@@ -152,4 +158,6 @@ write(int d, const void *buf, size_t nbytes) {
     return ret;
 
 }
+
+PRELOAD_REPLACE(write);
 #endif
