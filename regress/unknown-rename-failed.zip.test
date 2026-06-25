@@ -1,3 +1,4 @@
+features PRELOAD_ENABLED
 description test copying file to garbage, failing (disk full) and not removing from set
 #variants zip
 return 0

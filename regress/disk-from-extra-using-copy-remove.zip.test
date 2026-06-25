@@ -1,3 +1,4 @@
+features PRELOAD_ENABLED
 description test single-rom game with disk, get missing disk from extra, rename not allowed
 #variants zip
 return 0

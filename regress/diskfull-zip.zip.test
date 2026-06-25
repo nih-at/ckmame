@@ -1,3 +1,4 @@
+features PRELOAD_ENABLED
 description test copying file from extra, failing (disk full) and cleaning up extra
 #variants zip
 return 0

@@ -1,3 +1,4 @@
+features PRELOAD_ENABLED
 description "test single-rom game (no parent), extra zip contains file, can't copy"
 #variants zip
 return 0

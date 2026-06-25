@@ -82,6 +82,10 @@ else()
   message(WARNING "-- libxml2 library not found; XML support disabled")
 endif()
 
+if (NOT APPLE)
+  set(PRELOAD_ENABLED 1)
+endif()
+
 find_package(LibArchive)
 
 if (LibArchive_FOUND)
