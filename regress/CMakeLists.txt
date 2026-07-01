@@ -3,6 +3,11 @@ set(SUPPORT_PROGRAMS
   dbrestore
 )
 
+set (PRELOAD_LIBRARIES
+  fwrite
+  rename
+)
+
 set(ENV{srcdir} ${CMAKE_CURRENT_SOURCE_DIR})
 
 foreach(PROGRAM ${SUPPORT_PROGRAMS})
@@ -36,8 +41,10 @@ if (LibArchive_FOUND)
 endif()
 
 if (NOT WIN32)
-  add_library(fwrite SHARED programs/fwrite.c)
-  target_link_libraries(fwrite ${CMAKE_DL_LIBS})
+foreach(LIB ${PRELOAD_LIBRARIES})
+  add_library(${LIB} SHARED programs/${LIB}.c)
+  target_link_libraries(${LIB} ${CMAKE_DL_LIBS})
+endforeach()
 endif()
 
 add_custom_target(cleanup

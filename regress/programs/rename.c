@@ -1,5 +1,5 @@
 /*
-  fwrite.c -- override fwrite() to allow testing special cases
+  rename.c -- override rename() to allow testing special cases
   Copyright (C) 2013-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -35,37 +35,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #define __USE_GNU
 #include <dlfcn.h>
 #undef __USE_GNU
-#include <unistd.h>
 
 #include "nihtest-preload.h"
 
-static size_t count = 0;
-static size_t max_write = 0;
-static size_t (*real_fwrite)(const void* ptr, size_t size, size_t nmemb, FILE* stream) = NULL;
+static int (*real_rename)(const char* src, const char* dest) = NULL;
 
-size_t PRELOAD_NAME(fwrite)(const void* ptr, size_t size, size_t nmemb, FILE* stream) {
-    size_t ret;
-
-    if (real_fwrite == NULL) {
-        char* foo;
-        if ((foo = getenv("FWRITE_MAX_WRITE")) != NULL) {
-            max_write = strtoul(foo, NULL, 0);
-        }
-        real_fwrite = get_original_function_pointer("fwrite");
+int PRELOAD_NAME(rename)(const char* src, const char* dest) {
+    if (getenv("RENAME_LOG") != NULL) {
+        fprintf(stderr, "LOG: rename '%s' -> '%s'\n", src, dest);
     }
 
-    if (max_write > 0 && count + size * nmemb > max_write) {
-        errno = ENOSPC;
+    if (getenv("RENAME_ALWAYS_FAILS") != NULL) {
+        errno = EPERM;
         return -1;
     }
 
-    ret = real_fwrite(ptr, size, nmemb, stream);
-    count += ret * size;
+    if (getenv("RENAME_FAILS") != NULL) {
+        if (strcmp(getenv("RENAME_FAILS"), dest) == 0) {
+            errno = EPERM;
+            return -1;
+        }
+    }
 
-    return ret;
+    if (real_rename == NULL) {
+        real_rename = get_original_function_pointer("rename");
+    }
+
+    return real_rename(src, dest);
 }
 
-PRELOAD_REPLACE(fwrite);
+PRELOAD_REPLACE(rename);

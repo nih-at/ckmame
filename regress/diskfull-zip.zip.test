@@ -2,7 +2,7 @@ description test copying file from extra, failing (disk full) and cleaning up ex
 #variants zip
 return 0
 environment-set FWRITE_MAX_WRITE 5
-precheck ./can-preload
+precheck ./can-preload --need-next
 preload fwrite.so
 arguments --no-status-db -Fjvc -D ../mamedb-lost-parent-ok.db -e extra
 directory roms {} <>

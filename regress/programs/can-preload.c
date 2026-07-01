@@ -31,11 +31,21 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-int main() {
-    /* TODO: proper check */
-#if defined(__APPLE__)
-    return 1;
-#else
-    return 0;
+#include <string.h>
+
+/* This program isn't run on Windows, since nihtest doesn't support preload on Windows. */
+
+int main(int argc, char* argv[]) {
+    int need_next = 0;
+    if (argc > 1 && strcmp(argv[1], "--need-next") == 0) {
+        need_next = 1;
+    }
+#ifdef __APPLE__
+    if (need_next) {
+        /* We didn't getting the original function pointer to work on macOS. */
+        return 1;
+    }
 #endif
+    /* TODO: proper check */
+    return 0;
 }
