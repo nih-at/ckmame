@@ -45,7 +45,6 @@
 static size_t count = 0;
 static size_t max_write = 0;
 static size_t (*real_fwrite)(const void* ptr, size_t size, size_t nmemb, FILE* stream) = NULL;
-static int (*real_link)(const char* src, const char* dest) = NULL;
 static int (*real_rename)(const char* src, const char* dest) = NULL;
 #if 0
 static size_t (*real_write)(int d, const void *buf, size_t nbytes) = NULL;
@@ -77,30 +76,6 @@ size_t PRELOAD_NAME(fwrite)(const void* ptr, size_t size, size_t nmemb, FILE* st
 
 PRELOAD_REPLACE(fwrite);
 
-int PRELOAD_NAME(link)(const char* src, const char* dest) {
-    if (real_link == NULL) {
-        real_link = dlsym(RTLD_NEXT, "link");
-        if (!real_link)
-            abort();
-    }
-
-    if (getenv("LINK_ALWAYS_FAILS") != NULL) {
-        errno = EPERM;
-        return -1;
-    }
-
-    if (getenv("LINK_FAILS") != NULL) {
-        if (strcmp(getenv("LINK_FAILS"), dest) == 0) {
-            errno = EPERM;
-            return -1;
-        }
-    }
-
-    return real_link(src, dest);
-}
-
-PRELOAD_REPLACE(link);
-
 int PRELOAD_NAME(rename)(const char* src, const char* dest) {
     if (real_rename == NULL) {
         real_rename = dlsym(RTLD_NEXT, "rename");
@@ -128,36 +103,3 @@ int PRELOAD_NAME(rename)(const char* src, const char* dest) {
 }
 
 PRELOAD_REPLACE(rename);
-
-#if 0
-ssize_t
-PRELOAD_NAME(write)(int d, const void *buf, size_t nbytes) {
-    size_t ret;
-
-    if (real_write == NULL) {
-	char *foo;
-	if ((foo = getenv("WRITE_MAX_WRITE")) != NULL)
-	    max_write = strtoul(foo, NULL, 0);
-	real_write = dlsym(RTLD_NEXT, "write");
-	if (!real_write)
-	    abort();
-    }
-
-    /* ignore stdin, stdout, stderr */
-    if (d > 2 && max_write > 0 && count + nbytes > max_write) {
-	errno = ENOSPC;
-	return -1;
-    }
-
-
-    ret = real_write(d, buf, nbytes);
-    if (d > 2) {
-	count += ret;
-    }
-
-    return ret;
-
-}
-
-PRELOAD_REPLACE(write);
-#endif
