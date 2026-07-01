@@ -1,9 +1,14 @@
 [settings]
 features-files = @PROJECT_BINARY_DIR@/config.h
 test-input-directories = @CMAKE_CURRENT_SOURCE_DIR@
+    @CMAKE_CURRENT_SOURCE_DIR@/data
+    @CMAKE_CURRENT_SOURCE_DIR@/dats
+    @CMAKE_CURRENT_SOURCE_DIR@/dumps
+    @CMAKE_CURRENT_SOURCE_DIR@/fixdats
+    @CMAKE_CURRENT_SOURCE_DIR@/roms
 program-directories = @PROJECT_BINARY_DIR@/regress
     @PROJECT_BINARY_DIR@/src
-    @CMAKE_CURRENT_SOURCE_DIR@
+    @CMAKE_CURRENT_SOURCE_DIR@/programs
     /usr/local/bin
 default-program = ckmame
 default-stderr-replace = "^[^ :]*: " ""
@@ -12,8 +17,8 @@ default-stderr-replace = "^[^ :]*: " ""
 zip.zip = zipcmp -v
 .zip = zipcmp -v
 7z.zip = compare-archives
-db.ckmamedb = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/compare-ckmamedb
-db.ckmamedb-unzipped = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/compare-ckmamedb -u
+db.ckmamedb = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/programs/compare-ckmamedb
+db.ckmamedb-unzipped = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/programs/compare-ckmamedb -u
 
 [copiers]
 db.dump = dbrestore
@@ -25,4 +30,4 @@ db.ckmamedb-dump = dbrestore -t ckmamedb
 db.statusdb-dump = dbdump --ignore run.date
 db.dump = dbdump
 db.ckmamedb-dump = dbdump
-dat.fixdat = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/fixdat-reset-version
+dat.fixdat = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/programs/fixdat-reset-version

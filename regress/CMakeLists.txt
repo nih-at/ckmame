@@ -6,7 +6,7 @@ set(SUPPORT_PROGRAMS
 set(ENV{srcdir} ${CMAKE_CURRENT_SOURCE_DIR})
 
 foreach(PROGRAM ${SUPPORT_PROGRAMS})
-  add_executable(${PROGRAM} ${PROGRAM}.cc)
+  add_executable(${PROGRAM} programs/${PROGRAM}.cc)
   # for config.h
   target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR})
   # compat.h
@@ -18,10 +18,10 @@ foreach(PROGRAM ${SUPPORT_PROGRAMS})
   endif()
 endforeach()
 
-add_executable(can-preload can-preload.c)
+add_executable(can-preload programs/can-preload.c)
 
 foreach(PROGRAM unpack)
-  add_executable(${PROGRAM} ${PROGRAM}.c)
+  add_executable(${PROGRAM} programs/${PROGRAM}.c)
   # for config.h
   target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR})
   # compat.h
@@ -30,13 +30,13 @@ foreach(PROGRAM unpack)
 endforeach()
 
 if (LibArchive_FOUND)
-  add_executable(compare-archives compare-archives.cc)
+  add_executable(compare-archives programs/compare-archives.cc)
   target_include_directories(compare-archives PRIVATE ${PROJECT_BINARY_DIR})
   target_link_libraries(compare-archives ZLIB::ZLIB LibArchive::LibArchive)
 endif()
 
 if (NOT WIN32)
-  add_library(fwrite SHARED fwrite.c)
+  add_library(fwrite SHARED programs/fwrite.c)
   target_link_libraries(fwrite ${CMAKE_DL_LIBS})
 endif()
 
@@ -79,8 +79,8 @@ set(CUSTOM_DBS
 foreach(db ${DBS})
   get_filename_component(main ${db} NAME_WE)
   add_custom_command(OUTPUT "${db}"
-    COMMAND mkmamedb -o "${db}" "${CMAKE_CURRENT_SOURCE_DIR}/${main}.dat"
-    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${main}.dat"
+    COMMAND mkmamedb -o "${db}" "${CMAKE_CURRENT_SOURCE_DIR}/dats/${main}.dat"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/dats/${main}.dat"
     COMMENT "Generating ${db}"
   )
 endforeach()
@@ -88,15 +88,15 @@ endforeach()
 foreach(db ${XML_DBS})
   get_filename_component(main ${db} NAME_WE)
   add_custom_command(OUTPUT "${db}"
-    COMMAND mkmamedb -o "${db}" "${CMAKE_CURRENT_SOURCE_DIR}/${main}.xml"
-    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${main}.xml"
+    COMMAND mkmamedb -o "${db}" "${CMAKE_CURRENT_SOURCE_DIR}/dats/${main}.xml"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/dats/${main}.xml"
     COMMENT "Generating ${db}"
   )
 endforeach()
 
 add_custom_command(OUTPUT mamedb-skipped.db
-  COMMAND mkmamedb -o mamedb-skipped.db --detector "${CMAKE_CURRENT_SOURCE_DIR}/detector.xml" "${CMAKE_CURRENT_SOURCE_DIR}/mamedb-skipped.dat"
-  DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/mamedb-skipped.dat" "${CMAKE_CURRENT_SOURCE_DIR}/detector.xml"
+  COMMAND mkmamedb -o mamedb-skipped.db --detector "${CMAKE_CURRENT_SOURCE_DIR}/dats/detector.xml" "${CMAKE_CURRENT_SOURCE_DIR}/dats/mamedb-skipped.dat"
+  DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/dats/mamedb-skipped.dat" "${CMAKE_CURRENT_SOURCE_DIR}/dats/detector.xml"
   COMMENT "Generating mamedb-skipped.db"
 )
 
@@ -109,8 +109,8 @@ foreach(VTEST_PATH IN LISTS VTEST_FILES)
   string(REGEX REPLACE ".vtest$" ".dir.test" DIR_TEST ${VTEST_FILE})
   list(APPEND GENERATED_TESTS ${DIR_TEST})
   add_custom_command(OUTPUT "${DIR_TEST}"
-    COMMAND ${PYTHONBIN} ${CMAKE_CURRENT_SOURCE_DIR}/convert_to_dir_variant.py --dir "${CMAKE_CURRENT_SOURCE_DIR}/${VTEST_FILE}"
-    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${VTEST_FILE}" "${CMAKE_CURRENT_SOURCE_DIR}/convert_to_dir_variant.py"
+    COMMAND ${PYTHONBIN} ${CMAKE_CURRENT_SOURCE_DIR}/programs/convert_to_dir_variant.py --dir "${CMAKE_CURRENT_SOURCE_DIR}/${VTEST_FILE}"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${VTEST_FILE}" "${CMAKE_CURRENT_SOURCE_DIR}/programs/convert_to_dir_variant.py"
     COMMENT "Generating ${DIR_TEST}"
   )
 
@@ -118,8 +118,8 @@ foreach(VTEST_PATH IN LISTS VTEST_FILES)
   string(REGEX REPLACE ".vtest$" ".zip.test" ZIP_TEST ${VTEST_FILE})
   list(APPEND GENERATED_TESTS ${ZIP_TEST})
   add_custom_command(OUTPUT "${ZIP_TEST}"
-    COMMAND ${PYTHONBIN} ${CMAKE_CURRENT_SOURCE_DIR}/convert_to_dir_variant.py --zip "${CMAKE_CURRENT_SOURCE_DIR}/${VTEST_FILE}"
-    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${VTEST_FILE}" "${CMAKE_CURRENT_SOURCE_DIR}/convert_to_dir_variant.py"
+    COMMAND ${PYTHONBIN} ${CMAKE_CURRENT_SOURCE_DIR}/programs/convert_to_dir_variant.py --zip "${CMAKE_CURRENT_SOURCE_DIR}/${VTEST_FILE}"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${VTEST_FILE}" "${CMAKE_CURRENT_SOURCE_DIR}/programs/convert_to_dir_variant.py"
     COMMENT "Generating ${ZIP_TEST}"
   )
 endforeach()
@@ -131,15 +131,15 @@ add_custom_target(testinput
 )
 
 add_custom_target(update-mamedb.dump
-  COMMAND dbdump ${CMAKE_CURRENT_BINARY_DIR}/mame.db > ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-ok.dump
-  COMMAND dbdump ${CMAKE_CURRENT_BINARY_DIR}/mamedb-lost-parent-ok.db > ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-lost-parent.dump
-  COMMAND mkmamedb -o mame.db.tmp ${CMAKE_CURRENT_SOURCE_DIR}/mame.dat ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-lost-parent-ok.dat
-  COMMAND dbdump mame.db.tmp > mamedb-duplicate-game.dump
+  COMMAND dbdump ${CMAKE_CURRENT_BINARY_DIR}/mame.db > ${CMAKE_CURRENT_SOURCE_DIR}/dumps/mamedb-ok.dump
+  COMMAND dbdump ${CMAKE_CURRENT_BINARY_DIR}/mame.db > ${CMAKE_CURRENT_SOURCE_DIR}/dumps/mamedb-lost-parent.dump
+  COMMAND mkmamedb -o mame.db.tmp ${CMAKE_CURRENT_SOURCE_DIR}/dats/mame.dat ${CMAKE_CURRENT_SOURCE_DIR}/dats/mamedb-lost-parent-ok.dat
+  COMMAND dbdump mame.db.tmp > ${CMAKE_CURRENT_SOURCE_DIR}/dumps/mamedb-duplicate-game.dump
   COMMAND cmake -E remove mame.db.tmp
-  COMMAND dbdump mamedb-parent-crcdiff.db > mamedb-parent-crcdiff.dump
-  COMMAND dbdump mamedb-parent-no-common.db > mamedb-parent-no-common.dump
-  COMMAND mkmamedb -o tmptmp.db ${CMAKE_CURRENT_SOURCE_DIR}/mame.dat ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-2.dat
-  COMMAND dbdump tmptmp.db > mamedb-multi-dats.dump
+  COMMAND dbdump mamedb-parent-crcdiff.db > ${CMAKE_CURRENT_SOURCE_DIR}/dumps/mamedb-parent-crcdiff.dump
+  COMMAND dbdump mamedb-parent-no-common.db > ${CMAKE_CURRENT_SOURCE_DIR}/dumps/mamedb-parent-no-common.dump
+  COMMAND mkmamedb -o tmptmp.db ${CMAKE_CURRENT_SOURCE_DIR}/dats/mame.dat ${CMAKE_CURRENT_SOURCE_DIR}/dats/mamedb-2.dat
+  COMMAND dbdump tmptmp.db > ${CMAKE_CURRENT_SOURCE_DIR}/dumps/mamedb-multi-dats.dump
   COMMAND cmake -E remove tmptmp.db
   DEPENDS ${DBS}
 )
@@ -179,7 +179,7 @@ endif()
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 
-configure_file(nihtest.conf.in nihtest.conf @ONLY)
+configure_file(support/nihtest.conf.in nihtest.conf @ONLY)
 
 if(ENABLE_COVERAGE)
   add_custom_target(coverage
