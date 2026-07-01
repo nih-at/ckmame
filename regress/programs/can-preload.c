@@ -36,11 +36,11 @@
 /* This program isn't run on Windows, since nihtest doesn't support preload on Windows. */
 
 int main(int argc, char* argv[]) {
+#ifdef __APPLE__
     int need_next = 0;
     if (argc > 1 && strcmp(argv[1], "--need-next") == 0) {
         need_next = 1;
     }
-#ifdef __APPLE__
     if (need_next) {
         /* We didn't getting the original function pointer to work on macOS. */
         return 1;
