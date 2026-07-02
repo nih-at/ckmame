@@ -42,71 +42,39 @@
 #include "util.h"
 
 
-typedef struct output_context_cm output_context_cm_t;
-
-
-OutputContextCm::OutputContextCm(const std::string& fname_, int flags_) : fname(fname_) {
-    if (fname.empty()) {
-        f = make_shared_stdout();
-        fname = "*stdout*";
-    }
-    else {
-        f = make_shared_file(fname, "w");
-        if (!f) {
-            output.error("cannot create '{}': {}", fname, strerror(errno));
-            throw std::exception();
-        }
-    }
-}
-
-OutputContextCm::~OutputContextCm() { close(); }
-
-bool OutputContextCm::close() {
-    if (f == nullptr) {
-        return false;
-    }
-
-    auto ok = fflush(f.get()) == 0;
-
-    f = nullptr;
-
-    return ok;
-}
-
-
 bool OutputContextCm::write_header(const DatEntry& dat) {
-    fputs("clrmamepro (\n", f.get());
-    cond_print_string(f, "\tname ", dat.name, "\n");
-    cond_print_string(f, "\tdescription ", (dat.description.empty() ? dat.name : dat.description), "\n");
-    cond_print_string(f, "\tversion ", dat.version, "\n");
-    fputs(")\n\n", f.get());
+    stream << "clrmamepro (" << std::endl;
+    cond_print_string("\tname ", dat.name, "\n");
+    cond_print_string("\tdescription ", (dat.description.empty() ? dat.name : dat.description), "\n");
+    cond_print_string("\tversion ", dat.version, "\n");
+    stream << ")\n\n";
 
     return true;
 }
 
 
 bool OutputContextCm::write_game(const GamePtr game) {
-    fputs("game (\n", f.get());
-    cond_print_string(f, "\tname ", game->name, "\n");
-    cond_print_string(f, "\tdescription ", game->description.empty() ? game->name : game->description, "\n");
-    cond_print_string(f, "\tcloneof ", game->cloneof[0], "\n");
-    cond_print_string(f, "\tromof ", game->cloneof[0], "\n");
+    stream << "game (\n";
+    cond_print_string("\tname ", game->name, "\n");
+    cond_print_string("\tdescription ", game->description.empty() ? game->name : game->description, "\n");
+    cond_print_string("\tcloneof ", game->cloneof[0], "\n");
+    cond_print_string("\tromof ", game->cloneof[0], "\n");
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         for (auto& rom : game->files[ft]) {
-            fprintf(f.get(), "\t%s ( ", ft == TYPE_ROM ? "rom" : "disk");
-            cond_print_string(f, "name ", rom.name, " ");
+            stream << "\t" << (ft == TYPE_ROM ? "rom" : "disk") << " ( ";
+            cond_print_string("name ", rom.name, " ");
             if (rom.where != FILE_INGAME) {
-                cond_print_string(f, "merge ", rom.merge.empty() ? rom.name : rom.merge, " ");
+                cond_print_string("merge ", rom.merge.empty() ? rom.name : rom.merge, " ");
             }
-            fprintf(f.get(), "size %" PRIu64 " ", rom.hashes.size);
-            cond_print_hash(f, "crc ", Hashes::TYPE_CRC, &rom.hashes, " ");
-            cond_print_hash(f, "md5 ", Hashes::TYPE_MD5, &rom.hashes, " ");
-            cond_print_hash(f, "sha1 ", Hashes::TYPE_SHA1, &rom.hashes, " ");
-            cond_print_string(f, "flags ", rom.status_name(), " ");
-            fputs(")\n", f.get());
+            stream << "size " << rom.hashes.size << " ";
+            cond_print_hash("crc ", Hashes::TYPE_CRC, &rom.hashes, " ");
+            cond_print_hash("md5 ", Hashes::TYPE_MD5, &rom.hashes, " ");
+            cond_print_hash("sha1 ", Hashes::TYPE_SHA1, &rom.hashes, " ");
+            cond_print_string("flags ", rom.status_name(), " ");
+            stream << ")\n";
         }
     }
-    fputs(")\n\n", f.get());
+    stream << ")\n\n";
 
     return true;
 }

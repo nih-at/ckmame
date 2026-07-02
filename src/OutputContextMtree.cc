@@ -40,36 +40,6 @@
 #include "globals.h"
 
 
-OutputContextMtree::OutputContextMtree(const std::string& fname_, int flags)
-    : fname(fname_), runtest(flags & OUTPUT_FL_RUNTEST) {
-    if (fname.empty()) {
-        f = make_shared_stdout();
-        fname = "*stdout*";
-    }
-    else {
-        f = make_shared_file(fname, "w");
-        if (!f) {
-            output.error("cannot create '{}': {}", fname, strerror(errno));
-            throw std::exception();
-        }
-    }
-}
-
-OutputContextMtree::~OutputContextMtree() { close(); }
-
-
-bool OutputContextMtree::close() {
-    auto ok = true;
-
-    if (f != nullptr) {
-        ok = fflush(f.get()) == 0;
-        f = nullptr;
-    }
-
-    return ok;
-}
-
-
 static std::string strsvis_cstyle(const std::string& in) {
     /* maximal extension = 2/char */
     auto out = std::string(2 * in.length(), 0);
@@ -132,12 +102,12 @@ bool OutputContextMtree::write_game(const GamePtr game) {
             if (game->files[ft].empty()) {
                 continue;
             }
-            fprintf(f.get(), "./%s type=dir\n", dirname.c_str());
+            stream << "./" << dirname << " type=dir\n";
             write_files(dirname, game->files[ft]);
         }
     }
     else {
-        fprintf(f.get(), "./%s type=dir\n", dirname.c_str());
+        stream << "./" << dirname << " type=dir\n";
         for (size_t ft = 0; ft < TYPE_MAX; ft++) {
             write_files(dirname, game->files[ft]);
         }
@@ -147,7 +117,7 @@ bool OutputContextMtree::write_game(const GamePtr game) {
 
 
 bool OutputContextMtree::write_header(const DatEntry& dat) {
-    fprintf(f.get(), ". type=dir\n");
+    stream << ". type=dir\n";
 
     return true;
 }
@@ -155,20 +125,20 @@ bool OutputContextMtree::write_header(const DatEntry& dat) {
 
 void OutputContextMtree::write_files(const std::string& dirname, const std::vector<Rom>& files) {
     for (auto& file : files) {
-        fprintf(f.get(), "./%s/%s type=file", dirname.c_str(), strsvis_cstyle(file.name).c_str());
+        stream << "./" << dirname << "/" << strsvis_cstyle(file.name) << " type=file";
         /* For disks, this is the internal size and checksums and not information of the file on-disk. Disks are only
          * supported in zipped mode, where the mtree file can not be taken literally anyway, so this is ok. */
         if (file.is_size_known()) {
-            fprintf(f.get(), " size=%" PRIu64, file.hashes.size);
+            stream << " size=" << file.hashes.size;
         }
-        cond_print_hash(f, " sha256=", Hashes::TYPE_SHA256, &file.hashes, "");
-        cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &file.hashes, "");
-        cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &file.hashes, "");
-        cond_print_string(f, " status=", file.status_name(), "");
+        cond_print_hash(" sha256=", Hashes::TYPE_SHA256, &file.hashes, "");
+        cond_print_hash(" sha1=", Hashes::TYPE_SHA1, &file.hashes, "");
+        cond_print_hash(" md5=", Hashes::TYPE_MD5, &file.hashes, "");
+        cond_print_string(" status=", file.status_name(), "");
         if (runtest) {
-            cond_print_hash(f, " crc=", Hashes::TYPE_CRC, &file.hashes, "");
-            fprintf(f.get(), " time=%llu", static_cast<unsigned long long>(file.mtime));
+            cond_print_hash(" crc=", Hashes::TYPE_CRC, &file.hashes, "");
+            stream << " time=" << static_cast<unsigned long long>(file.mtime);
         }
-        fputs("\n", f.get());
+        stream << "\n";
     }
 }

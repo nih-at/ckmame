@@ -46,15 +46,15 @@ struct fbh_context {
 };
 
 
-OutputContextDb::OutputContextDb(const std::string& dbname, int flags) : file_name(dbname) {
-    temp_file_name = file_name + "-mkmamedb";
+OutputContextDb::OutputContextDb(const std::filesystem::path& file_name) : file_name(file_name) {
+    temp_file_name = file_name.string() + "-mkmamedb";
     if (configuration.use_temp_directory) {
         auto tmpdir = getenv("TMPDIR");
         std::filesystem::path basename = temp_file_name;
         basename = basename.filename();
-        temp_file_name = std::string(tmpdir ? tmpdir : "/tmp") + "/" + basename.string();
+        temp_file_name = std::filesystem::path(tmpdir ? tmpdir : "/tmp") / temp_file_name.filename();
     }
-    temp_file_name = make_unique_name(temp_file_name, "");
+    temp_file_name = make_unique_path(temp_file_name);
 
     db = std::make_unique<RomDB>(temp_file_name, DBH_NEW);
 }
@@ -67,7 +67,6 @@ OutputContextDb::~OutputContextDb() {
     catch (...) {
     }
 }
-
 
 
 bool OutputContextDb::close() {
@@ -102,9 +101,7 @@ bool OutputContextDb::write_game(const GamePtr game) {
 }
 
 
-bool OutputContextDb::write_header(const DatEntry& entry) {
-    return true;
-}
+bool OutputContextDb::write_header(const DatEntry& entry) { return true; }
 
 
 bool OutputContextDb::write_dat(size_t index, const DatEntry& entry) {

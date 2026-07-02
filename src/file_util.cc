@@ -102,7 +102,7 @@ void remove_directories_up_to(const std::filesystem::path& directory, const std:
 std::string make_unique_name(const std::string& prefix, const std::string& ext) {
     for (int i = 0; i < 1000; i++) {
         std::error_code ec;
-        auto testname = prefix + std::format("-{:03d}", i) + ext;
+        auto testname = std::format("{}-{:03d}{}", prefix, i, ext);
         if (std::filesystem::exists(testname, ec)) {
             continue;
         }

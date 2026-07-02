@@ -352,7 +352,7 @@ class CkmameDBComparator:
         archive = db.get_archive_by_id(int(fields[0]))
         if archive is None:
             # TODO error
-            0 == 0
+            pass
         else:
             archive.files.append(File(fields[2], fields[1], fields[3], fields[4], fields[5], fields[6], fields[7], fields[8], fields[9], fields[10]))
 

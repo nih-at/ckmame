@@ -37,21 +37,22 @@
 #include <cinttypes>
 #include <cstring>
 
+#include "format.h"
 #include "globals.h"
 #include "util.h"
 
 
 #define xml_string(X) (reinterpret_cast<const xmlChar*>(X))
 
-OutputContextXml::OutputContextXml(const std::string& fname_, int flags) : fname(fname_) {
-    if (fname.empty()) {
+OutputContextXml::OutputContextXml(const std::optional<std::filesystem::path>& file_name_) : file_name(file_name_) {
+    if (!file_name.has_value()) {
         f = make_shared_stdout();
-        fname = "*stdout*";
+        file_name = "*stdout*";
     }
     else {
-        f = make_shared_file(fname, "w");
+        f = make_shared_file(*file_name, "w");
         if (!f) {
-            output.error("cannot create '{}': {}", fname, strerror(errno));
+            output.error("cannot create '{}': {}", *file_name, strerror(errno));
             throw std::exception();
         }
     }

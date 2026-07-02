@@ -34,20 +34,18 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "OutputContext.h"
+#include <fstream>
 
-class OutputContextCm : public OutputContext {
+#include "OutputContextFile.h"
+
+class OutputContextCm : public OutputContextFile {
   public:
-    OutputContextCm(const std::string& fname, int flags);
-    ~OutputContextCm() override;
+    OutputContextCm(const std::optional<std::filesystem::path>& file_name) : OutputContextFile(file_name) {}
 
-    bool close() override;
     bool write_game(GamePtr game) override;
     bool write_header(const DatEntry& dat) override;
 
   private:
-    FILEPtr f;
-    std::string fname;
 };
 
 #endif // HAD_OUTPUT_CM_H

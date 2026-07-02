@@ -57,7 +57,7 @@ void Stats::add_rom(enum filetype type, const FileData* rom, Match::Quality stat
 }
 
 
-void Stats::print(FILE* f, bool total_only) {
+void Stats::print(std::ostream& stream, bool total_only) {
     static const char* ft_name[] = {"ROMs: ", "Disks:"};
 
     std::string message = "Games: ";
@@ -75,7 +75,7 @@ void Stats::print(FILE* f, bool total_only) {
     }
     message += std::to_string(games_total);
 
-    output.message(message);
+    stream << message << std::endl;
 
     for (int type = 0; type < TYPE_MAX; type++) {
         if (files[type].files_total > 0) {
@@ -93,7 +93,7 @@ void Stats::print(FILE* f, bool total_only) {
                 }
                 message += human_number(files[type].bytes_total) + ")";
             }
-            output.message(message);
+            stream << message << std::endl;
         }
     }
 }

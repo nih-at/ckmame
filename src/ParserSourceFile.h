@@ -34,9 +34,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <fstream>
+
 #include "Hashes.h"
 #include "ParserSource.h"
 #include "SharedFile.h"
+
 
 class ParserSourceFile : public ParserSource {
   public:
@@ -50,7 +53,12 @@ class ParserSourceFile : public ParserSource {
 
   private:
     std::string file_name;
-    FILEPtr f;
+
+    std::ifstream input_stream;
+    std::istream& input;
+
+    [[nodiscard]] bool is_stdin() const { return file_name.empty(); }
+    [[nodiscard]] bool is_open() const { return is_stdin() || input_stream.is_open(); }
 };
 
 #endif // HAD_PARSER_SOURCE_FILE_H

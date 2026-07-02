@@ -40,16 +40,16 @@
 #include "Exception.h"
 #include "globals.h"
 
-ParserSourceFile::ParserSourceFile(const std::string& fname) : file_name(fname), f(nullptr) {
+ParserSourceFile::ParserSourceFile(const std::string& fname)
+    : file_name(fname), input(fname.empty() ? std::cin : input_stream) {
     if (!file_name.empty()) {
-        f = make_shared_file(file_name, "r");
-        if (!f) {
-            throw Exception("can't open '{}': {}", file_name, strerror(errno));
+        input_stream.open(file_name, std::ios::in);
+        if (!input_stream) {
+            throw Exception(std::format("cannot open file '{}': {}", file_name, std::strerror(errno)));
         }
         error_file_info = Output::FileInfo(file_name);
     }
     else {
-        f = make_shared_stdin();
         error_file_info = Output::FileInfo("*stdin*");
     }
 
@@ -64,11 +64,10 @@ ParserSourceFile::~ParserSourceFile() {
 bool ParserSourceFile::close() {
     auto ok = true;
 
-    if (!file_name.empty() && f) {
-        ok = fflush(f.get()) == 0;
+    if (input_stream.is_open()) {
+        ok = input_stream.good();
+        input_stream.close();
     }
-
-    f = nullptr;
 
     return ok;
 }
@@ -89,18 +88,25 @@ ParserSourcePtr ParserSourceFile::open(const std::string& name) {
 
 
 size_t ParserSourceFile::read_xxx(void* data, size_t length) {
-    if (f == nullptr) {
+    if (!is_open()) {
         return 0;
     }
 
-    return fread(data, 1, length, f.get());
+    input.read(static_cast<char*>(data), length);
+    return input.gcount();
 }
 
 
 time_t ParserSourceFile::get_mtime() {
+    if (is_stdin()) {
+        // TODO: return current time or 0?
+        return 0;
+    }
+
     struct stat st;
 
-    if (fstat(fileno(f.get()), &st) < 0) {
+    // TODO: convert to C++ filesystem API
+    if (stat(file_name.c_str(), &st) < 0) {
         return 0;
     }
     return st.st_mtime;
@@ -111,16 +117,18 @@ uint32_t ParserSourceFile::get_crc() {
     if (file_name.empty()) {
         return 0;
     }
-    auto file = make_shared_file(file_name, "r");
+    std::ifstream stream(file_name, std::ios::binary);
 
     Hashes h;
     h.add_types(Hashes::TYPE_CRC);
     Hashes::Update hu(&h);
 
     size_t n;
-    while (!feof(file.get())) {
+    while (!stream.eof()) {
         char buffer[8192];
-        if ((n = fread(buffer, 1, sizeof(buffer), file.get())) < 0) {
+        stream.read(buffer, sizeof(buffer));
+        n = stream.gcount();
+        if (n < 0) {
             // TODO: handle error
             return 0;
         }

@@ -54,6 +54,7 @@ set(COMMON_SOURCES
   OutputContext.cc
   OutputContextCm.cc
   OutputContextDb.cc
+  OutputContextFile.cc
   OutputContextHeader.cc
   OutputContextMtree.cc
   ParserCm.cc

@@ -59,7 +59,7 @@ void Fixdat::end() {
         }
     }
 
-    fixdats.clear(); 
+    fixdats.clear();
 }
 
 void Fixdat::cleanup() {
@@ -68,21 +68,24 @@ void Fixdat::cleanup() {
         output = nullptr;
     }
 
-    auto directory = configuration.fixdat_directory.empty() ? std::filesystem::current_path() : std::filesystem::path(configuration.fixdat_directory);
+    auto directory = configuration.fixdat_directory.empty() ? std::filesystem::current_path()
+                                                            : std::filesystem::path(configuration.fixdat_directory);
     if (!std::filesystem::is_directory(directory)) {
         return;
     }
     auto current_filename = empty ? "" : fixdat_filename();
     auto prefix = fixdat_filename_prefix();
-    for (auto file: std::filesystem::directory_iterator(directory)) {
+    for (auto file : std::filesystem::directory_iterator(directory)) {
         auto fname = file.path().filename().string();
-        if (file.is_regular_file() && fname.starts_with(prefix) && fname.ends_with(".dat") && fname != current_filename && fname.substr(prefix.size(), fname.size() - prefix.size() - 4).find('(') == std::string::npos) {
+        if (file.is_regular_file() && fname.starts_with(prefix) && fname.ends_with(".dat") &&
+            fname != current_filename &&
+            fname.substr(prefix.size(), fname.size() - prefix.size() - 4).find('(') == std::string::npos) {
             std::filesystem::remove(file);
         }
     }
 }
 
-void Fixdat::write_entry(const Game* game, const Result* result) { 
+void Fixdat::write_entry(const Game* game, const Result* result) {
     if (fixdats[game->dat_no]) {
         fixdats[game->dat_no]->write(game, result);
     }
@@ -128,12 +131,8 @@ void Fixdat::write(const Game* game, const Result* result) {
     }
 }
 
-std::string Fixdat::fixdat_filename_prefix() const {
-    return "fixdat_" + dat.name + " ";
-}
-std::string Fixdat::fixdat_filename() const {
-    return fixdat_filename_prefix() + "(" + dat.version + ").dat";
-} 
+std::string Fixdat::fixdat_filename_prefix() const { return "fixdat_" + dat.name + " "; }
+std::string Fixdat::fixdat_filename() const { return fixdat_filename_prefix() + "(" + dat.version + ").dat"; }
 
 bool Fixdat::ensure_output() {
     if (output) {
@@ -156,7 +155,7 @@ bool Fixdat::ensure_output() {
     de.description = "Fixdat by ckmame";
     de.version = format_time("%Y-%m-%d %H:%M:%S", time(nullptr));
 
-    if ((output = OutputContext::create(OutputContext::FORMAT_DATAFILE_XML, fixdat_fname, 0)) == nullptr) {
+    if ((output = OutputContext::create(OutputContext::FORMAT_DATAFILE_XML, fixdat_fname)) == nullptr) {
         failed = true;
         return false;
     }

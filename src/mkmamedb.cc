@@ -163,8 +163,6 @@ void MkMameDB::global_setup(const ParsedCommandline& commandline) {
             skip_files.insert(option.argument);
         }
     }
-
-
 }
 
 bool MkMameDB::execute(const std::vector<std::string>& arguments) {
@@ -227,7 +225,9 @@ bool MkMameDB::execute(const std::vector<std::string>& arguments) {
 
     try {
         OutputContextPtr out;
-        if ((out = OutputContext::create(fmt, dbname, flags)) == nullptr) {
+        if ((out = OutputContext::create(
+                 fmt, dbname == "/dev/stdout" ? std::nullopt : std::optional<std::filesystem::path>(dbname),
+                 runtest)) == nullptr) {
             exit(1);
         }
         out->add_header_overrides(header_overrides);
@@ -345,8 +345,7 @@ bool MkMameDB::process_file(const std::string& fname, OutputContext* out) {
                 ckmame_cache->register_directory(fname, FILE_ROMSET);
             }
 
-            auto ctx =
-                ParserDir(nullptr, exclude, out, parser_options, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
+            auto ctx = ParserDir(nullptr, exclude, out, parser_options, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
             ok = ctx.parse();
         }
         else {
@@ -362,7 +361,8 @@ bool MkMameDB::process_file(const std::string& fname, OutputContext* out) {
                     ok = Parser::parse(ps, exclude, out, parser_options);
                 }
                 catch (std::exception& exception) {
-                    std::cerr << ProgramName::get() << ": can't process " << fname << ": " << exception.what() << std::endl;
+                    std::cerr << ProgramName::get() << ": can't process " << fname << ": " << exception.what()
+                              << std::endl;
                     ok = false;
                 }
             } while (false);

@@ -468,7 +468,7 @@ void Dumpgame::dump_detector() {
 void Dumpgame::dump_stats() {
     auto stats = db->get_stats();
 
-    stats.print(stdout, true);
+    stats.print(std::cout, true);
 }
 
 

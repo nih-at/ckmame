@@ -130,7 +130,7 @@ bool update_romdb(bool force) {
         if (!configuration.use_temp_directory) {
             filename = make_unique_path(filename);
         }
-        output = OutputContext::create(OutputContext::FORMAT_DB, filename, 0);
+        output = OutputContext::create(OutputContext::FORMAT_DB, filename);
         // auto new_db = dynamic_cast<OutputContextDb*>(output.get())->get_db();
 
         size_t dat_idx = 0;

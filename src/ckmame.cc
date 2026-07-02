@@ -322,7 +322,7 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
     }
 
     if (configuration.report_summary) {
-        ckmame_cache->stats.print(stdout, false);
+        ckmame_cache->stats.print(std::cout, false);
     }
 
     if (checking_all_games && (!configuration.complete_list.empty() || !configuration.missing_list.empty())) {

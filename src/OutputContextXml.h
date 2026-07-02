@@ -40,7 +40,7 @@
 
 class OutputContextXml : public OutputContext {
   public:
-    OutputContextXml(const std::string& fname, int flags);
+    OutputContextXml(const std::optional<std::filesystem::path>& file_name);
     ~OutputContextXml() override;
 
     bool close() override;
@@ -51,7 +51,7 @@ class OutputContextXml : public OutputContext {
     xmlDocPtr doc;
     xmlNodePtr root;
     FILEPtr f;
-    std::string fname;
+    std::optional<std::filesystem::path> file_name;
 };
 
 #endif // HAD_OUTPUT_XML_H

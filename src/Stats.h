@@ -34,6 +34,8 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <ostream>
+
 #include "FileData.h"
 #include "Match.h"
 #include "Result.h"
@@ -58,7 +60,7 @@ class Stats {
 
     void add_game(GameStatus status);
     void add_rom(enum filetype type, const FileData* rom, Match::Quality status);
-    void print(FILE* f, bool total_only);
+    void print(std::ostream& stream, bool total_only);
 
   private:
     void add_file(enum filetype type, uint64_t size, Match::Quality status);

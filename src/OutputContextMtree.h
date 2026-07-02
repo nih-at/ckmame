@@ -34,21 +34,18 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "OutputContext.h"
+#include "OutputContextFile.h"
 
-class OutputContextMtree : public OutputContext {
+class OutputContextMtree : public OutputContextFile {
   public:
-    OutputContextMtree(const std::string& fname, int flags);
-    ~OutputContextMtree() override;
+    OutputContextMtree(const std::optional<std::filesystem::path>& file_name, bool runtest = false)
+        : OutputContextFile(file_name), runtest(runtest) {}
 
-    bool close() override;
     bool write_game(const GamePtr game) override;
     bool write_header(const DatEntry& dat) override;
 
   private:
-    std::string fname;
     bool runtest;
-    FILEPtr f;
 
     void write_files(const std::string& dirname, const std::vector<Rom>& files);
 };

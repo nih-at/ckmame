@@ -40,7 +40,7 @@
 
 class OutputContextDb : public OutputContext {
   public:
-    OutputContextDb(const std::string& fname, int flags);
+    OutputContextDb(const std::filesystem::path& file_name);
     ~OutputContextDb() override;
 
     bool close() override;
@@ -52,8 +52,8 @@ class OutputContextDb : public OutputContext {
     RomDB* get_db() const { return db.get(); }
 
   private:
-    std::string file_name;
-    std::string temp_file_name;
+    std::filesystem::path file_name;
+    std::filesystem::path temp_file_name;
 
     std::unique_ptr<RomDB> db;
 };

@@ -62,15 +62,16 @@ class DatEntryOverrides {
 
     /**
      * Apply the overrides to the given dat info. If an override is not set, the original value from `dat` will be used.
-     * 
+     *
      * @param dat The original dat info to apply the overrides to.
      * @return The dat info with the overrides applied.
      */
     DatEntry apply(const DatEntry& dat) const;
 
     /**
-     * Merge additional overrides into the existing ones. If an override is set in `additional_overrides`, it will overwrite the existing override.
-     * 
+     * Merge additional overrides into the existing ones. If an override is set in `additional_overrides`, it will
+     * overwrite the existing override.
+     *
      * @param additional_overrides The new overrides to merge into the existing overrides.
      */
     void merge(const DatEntryOverrides& additional_overrides);
@@ -104,11 +105,12 @@ class DatOptions {
 
     /// If set to `true`, use the description as the game name. (default: `false`)
     bool use_description_as_name = false;
-    
+
     /// A set of game names that should be considered MIA. (default: empty)
     std::unordered_set<std::string> mia_games;
-    
-    /// If set to `true`, only the last game with duplicate name will be kept. This is used when creating fixdats. (default: `false`)
+
+    /// If set to `true`, only the last game with duplicate name will be kept. This is used when creating fixdats.
+    /// (default: `false`)
     bool only_last_duplicate = false;
 
     /**
@@ -123,12 +125,12 @@ class DatOptions {
      *
      * @return The suffix to add to the game name.
      */
-    std::string duplicate_name_suffix() const {return suffix_only_duplicates ? game_name_suffix : "";}
+    std::string duplicate_name_suffix() const { return suffix_only_duplicates ? game_name_suffix : ""; }
 };
 
 /**
  * OutputContext is used to collect information and write the actual dat file.
- * 
+ *
  * Interface for parser:
  * - set_dat_info: Optional, must be called first. Set info for created dat, otherwise use info from first dat.
  * - start_dat: Must be called once for each dat. Start a new dat with the given options.
@@ -138,7 +140,7 @@ class DatOptions {
  * - found_game: Optional. Only called when the parser is run with header-only mode.
  * - error_occurred: Optional. Signal that an error occurred during parsing.
  * - finish: Must be called last. Write output.
- * 
+ *
  * Methods that must be implemented by subclasses, called in this order:
  * - write_header: Will be called once. Write header info for current dat.
  * - write_dat: Will be called once for each dat. Write dat info for current dat.
@@ -159,7 +161,7 @@ class OutputContext {
      * @param flags Additional flags.
      * @return The created OutputContext, or nullptr on failure.
      */
-    static OutputContextPtr create(Format format, const std::string& fname, int flags);
+    static OutputContextPtr create(Format format, const std::optional<std::filesystem::path>& fname, bool runtest = false);
 
     // Called by Parser.
 
@@ -168,10 +170,11 @@ class OutputContext {
      *
      * @param overrides The header overrides to set.
      */
-    void add_header_overrides(const DatEntryOverrides& overrides) {header_overrides.merge(overrides);}
+    void add_header_overrides(const DatEntryOverrides& overrides) { header_overrides.merge(overrides); }
 
     /**
-     * Add detector for the current dat. This is called by the parser for each detector found in the dat. `start_dat()` must have been called before.
+     * Add detector for the current dat. This is called by the parser for each detector found in the dat. `start_dat()`
+     * must have been called before.
      *
      * @param detector The detector to add.
      * @return `true` on success, `false` on failure.
@@ -183,7 +186,7 @@ class OutputContext {
      * Add a game to the created dat.
      *
      * This is called by the parser for each game found in the dat. `start_dat()` must have been called before.
-     * 
+     *
      * The `OutputContext` takes ownership of `game` and will modify it.
      *
      * @param game The game to add.
@@ -192,7 +195,8 @@ class OutputContext {
     bool add_game(GamePtr game);
 
     /**
-     * Add a header for the current dat. This is called by the parser once for each dat. `start_dat()` must have been called before.
+     * Add a header for the current dat. This is called by the parser once for each dat. `start_dat()` must have been
+     * called before.
      *
      * @param dat The header info for the dat.
      * @return `true` on success, `false` on failure.
@@ -227,28 +231,26 @@ class OutputContext {
     virtual bool write_header(const DatEntry& dat) { return true; }
     virtual bool write_dat(size_t index, const DatEntry& dat) { return true; }
 
-    // Utility methods for subclasses.
-    void cond_print_string(FILEPtr f, const std::string& pre, const std::string& str, const std::string& post);
-    void cond_print_hash(FILEPtr f, const std::string& pre, int t, const Hashes* h, const std::string& post);
-
     /**
      * Set to `false` if an error occurred during parsing.
      */
     bool ok = true;
 
     /**
-     * If set to `true`, the parser will only parse far enough to get the header and whether there are any games in the dat.
+     * If set to `true`, the parser will only parse far enough to get the header and whether there are any games in the
+     * dat.
      */
     bool header_only = false;
 
   private:
     class Dat {
-        public:
-            Dat(DatOptions options, Output::FileInfo error_info) : options(std::move(options)), error_info(std::move(error_info)) {}
-    
-            std::optional<DatEntry> dat;
-            DatOptions options;
-            Output::FileInfo error_info;
+      public:
+        Dat(DatOptions options, Output::FileInfo error_info)
+            : options(std::move(options)), error_info(std::move(error_info)) {}
+
+        std::optional<DatEntry> dat;
+        DatOptions options;
+        Output::FileInfo error_info;
     };
 
     class Name {
@@ -272,16 +274,17 @@ class OutputContext {
 
     /**
      * Get the final header information for the created dat.
-     * 
-     * If only one input dat was used, header information from that dat will be used, otherwise only the overrides will be used.
-     * 
+     *
+     * If only one input dat was used, header information from that dat will be used, otherwise only the overrides will
+     * be used.
+     *
      * @return The final header information for the created dat, with overrides applied.
      */
     DatEntry get_header() const;
 
     /**
      * Fix inconsistencies in the given game and adjust where ROMs are located.
-     * 
+     *
      * @param game The game to fix.
      * @param fixing The set of games currently being fixed, used to detect cycles in cloneof relationships.
      * @return `true` if the game was successfully fixed, `false` if an error occurred.
@@ -290,21 +293,21 @@ class OutputContext {
 
     /**
      * Get the current dat number. Must not be called if no dat has been started.
-     * 
+     *
      * @return The current dat number.
      */
     size_t current_dat_no() const { return dats.size() - 1; }
 
     /**
      * Get info for the current dat. Must not be called if no dat has been started.
-     * 
+     *
      * @return The current dat info.
      */
     const Dat& current_dat() const { return dats.back(); }
 
     /**
      * Check if a dat has been started. Must be called before calling any method that requires a dat to be started.
-     * 
+     *
      * @return true if a dat has been started, false otherwise.
      */
     bool dat_started() const { return !dats.empty(); }
