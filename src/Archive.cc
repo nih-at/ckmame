@@ -122,11 +122,11 @@ ArchivePtr Archive::open(const ArchiveContentsPtr& contents, int flags) {
             return nullptr;
         }
 
-        // printf("# reopening %s\n", archive->name.c_str());
+        // std::cout << "# reopening " << archive->name << "\n";
         contents->open_archive = archive;
     }
     else {
-        // printf("# already open %s\n", archive->name.c_str());
+        // std::cout << "# already open " << archive->name << "\n";
         archive = contents->open_archive.lock();
     }
 
@@ -148,7 +148,7 @@ int Archive::close() {
 void Archive::move_broken_archive() {
     auto new_name = ::make_unique_name(name, ".broken");
 
-    output.message_verbose("rename broken archive '%s' to '%s'", name.c_str(), new_name.c_str());
+    output.message_verbose("rename broken archive '{}' to '{}'", name, new_name);
     if (!rename_or_move(name, new_name)) {
         throw(Exception("can't rename file")); // TODO: rename_or_move should throw
     }
@@ -193,7 +193,7 @@ bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes
             f->open();
         }
         catch (Exception& e) {
-            output.error("%s: %s: can't open: %s", name.c_str(), file.name.c_str(), e.what());
+            output.error("{}: {}: can't open: {}", name, file.name, e.what());
             set_cache_changed(FILES);
             file.broken = true;
             return false;
@@ -204,14 +204,13 @@ bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes
             break;
 
         case READ_ERROR:
-            output.error("%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), strerror(errno));
+            output.error("{}: {}: can't compute hashes: {}", name, file.name, strerror(errno));
             set_cache_changed(FILES);
             file.broken = true;
             return false;
 
         case CRC_ERROR:
-            output.error("%s: %s: CRC error: %08x != %08x", name.c_str(), file.name.c_str(), hashes.crc,
-                         file.hashes.crc);
+            output.error("{}: {}: CRC error: {:08x} != {:08x}", name, file.name, hashes.crc, file.hashes.crc);
             set_cache_changed(FILES);
             file.broken = true;
             return false;
@@ -290,9 +289,7 @@ std::string Archive::make_unique_name_in_archive(const std::string& filename) {
     std::string ext = std::filesystem::path(filename).extension().string();
 
     for (int i = 0; i < 1000; i++) {
-        char n[5];
-        snprintf(n, sizeof(n), "-%03d", i);
-        auto unique = filename.substr(0, filename.length() - ext.length()) + n + ext;
+        auto unique = filename.substr(0, filename.length() - ext.length()) + std::format("-{:03}", i) + ext;
 
         auto exists = false;
 
@@ -652,13 +649,13 @@ bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<siz
     try {
         auto source = get_source(index);
         if (!source) {
-            throw Exception("can't open: %s", strerror(errno));
+            throw Exception("can't open: {}", strerror(errno));
         }
         source->open();
         source->read(data.data(), data.size());
     }
     catch (std::exception& e) {
-        output.error("%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), e.what());
+        output.error("{}: {}: can't compute hashes: {}", name, file.name, e.what());
         file.broken = true;
 
         return false;

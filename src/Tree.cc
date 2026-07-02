@@ -167,7 +167,7 @@ void Tree::process(GameArchives* archives) {
     auto game = db->read_game(name);
 
     if (!game) {
-        output.error("db error: %s not found", name.c_str());
+        output.error("db error: {} not found", name);
         return;
     }
 

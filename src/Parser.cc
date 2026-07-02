@@ -56,22 +56,22 @@ std::unordered_map<std::string, Parser::Format> Parser::format_start = {
 
 
 /**
- * Check that the parser is in the expected state and whether parsing should stop.  
- * 
+ * Check that the parser is in the expected state and whether parsing should stop.
+ *
  * This macro returns from the calling function if there is an error or parsing should stop.
- * 
+ *
  * @param s The expected state.
  */
-#define CHECK_STATE(s)                                                                                               \
-    do {                                                                                                             \
-        if (end_parsing) {                                                                                           \
-            return true;                                                                                             \
-        }                                                                                                            \
-        if (state != (s)) {                                                                                          \
-            output.line_error(lineno, "state is %s, expected %s", state_name(state).c_str(), state_name(s).c_str()); \
-            error = true;                                                                                            \
-            return false;                                                                                            \
-        }                                                                                                            \
+#define CHECK_STATE(s)                                                                               \
+    do {                                                                                             \
+        if (end_parsing) {                                                                           \
+            return true;                                                                             \
+        }                                                                                            \
+        if (state != (s)) {                                                                          \
+            output.line_error(lineno, "state is {}, expected {}", state_name(state), state_name(s)); \
+            error = true;                                                                            \
+            return false;                                                                            \
+        }                                                                                            \
     } while (0)
 
 
@@ -125,8 +125,8 @@ ParserPtr Parser::create(const ParserSourcePtr& source, const std::unordered_set
     return {};
 }
 
-bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
-                   OutputContext* out, const DatOptions& options) {
+bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude, OutputContext* out,
+                   const DatOptions& options) {
     auto parser = create(source, exclude, out, options);
 
     if (!parser) {
@@ -146,7 +146,6 @@ bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::
 
     return true;
 }
-
 
 
 bool Parser::do_parse() {
@@ -218,7 +217,7 @@ bool Parser::file_status(filetype_t ft, const std::string& attr) {
         status = Rom::NO_DUMP;
     }
     else {
-        output.line_error(lineno, "illegal status '%s'", attr.c_str());
+        output.line_error(lineno, "illegal status '{}'", attr);
         error = true;
         return false;
     }
@@ -247,7 +246,7 @@ bool Parser::file_hash(filetype_t ft, int ht, const std::string& attr) {
     h = &r[ft]->hashes;
 
     if (h->set_from_string(attr) != ht) {
-        output.line_error(lineno, "invalid argument for %s: '%s'", Hashes::type_name(ht).c_str(), attr.c_str());
+        output.line_error(lineno, "invalid argument for {}: '{}'", Hashes::type_name(ht), attr);
         error = true;
         return false;
     }
@@ -323,7 +322,7 @@ bool Parser::file_size(filetype_t ft, const std::string& attr) {
         return file_size(ft, std::stoull(attr, nullptr, 0));
     }
     catch (...) {
-        output.line_error(lineno, "invalid size '%s'", attr.c_str());
+        output.line_error(lineno, "invalid size '{}'", attr);
         error = true;
         return false;
     }
@@ -484,7 +483,7 @@ bool Parser::prog_header(const std::string& attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
     if (detector) {
-        output.line_error(lineno, "warning: detector already defined, header '%s' ignored", attr.c_str());
+        output.line_error(lineno, "warning: detector already defined, header '{}' ignored", attr);
         return true;
     }
 
@@ -496,7 +495,7 @@ bool Parser::prog_header(const std::string& attr) {
 
     ParserSourcePtr dps = ps->open(attr);
     if (!dps) {
-        output.line_error_system(lineno, "cannot open detector '%s'", attr.c_str());
+        output.line_error_system(lineno, "cannot open detector '{}'", attr);
         error = true;
         return false;
     }
@@ -537,7 +536,8 @@ bool Parser::prog_version(const std::string& attr) {
 }
 
 
-Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, OutputContext* output_context_, const DatOptions& options)
+Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, OutputContext* output_context_,
+               const DatOptions& options)
     : options(options),
       lineno(0),
       header_only(false),
@@ -595,8 +595,7 @@ void Parser::rom_end(filetype_t ft) {
         auto& hashes = r[ft]->hashes;
 
         if (hashes.compare(Hashes::zero) == Hashes::MISMATCH) {
-            output.line_error(lineno, "warning: zero-size ROM '%s' with wrong checksums, corrected",
-                              r[ft]->name.c_str());
+            output.line_error(lineno, "warning: zero-size ROM '{}' with wrong checksums, corrected", r[ft]->name);
             hashes.set_crc(Hashes::zero.crc);
             if (hashes.has_type(Hashes::TYPE_MD5)) {
                 hashes.set_md5(Hashes::zero.md5);
@@ -644,16 +643,16 @@ void Parser::rom_end(filetype_t ft) {
                     }
                     i += 1;
                 }
-                output.line_error(lineno, "warning: two different ROMs with same name '%s', renamed to '%s'",
-                                  r[ft]->name.c_str(), name.c_str());
+                output.line_error(lineno, "warning: two different ROMs with same name '{}', renamed to '{}'",
+                                  r[ft]->name, name);
                 r[ft]->name = name;
                 break;
             }
         }
     }
     if (!r[ft]->merge.empty() && g->cloneof[0].empty()) {
-        output.line_error(lineno, "warning: ROM '%s' has merge information but game '%s' has no parent",
-                          r[ft]->name.c_str(), g->name.c_str());
+        output.line_error(lineno, "warning: ROM '{}' has merge information but game '{}' has no parent", r[ft]->name,
+                          g->name);
         r[ft]->merge = "";
     }
     if (deleted) {

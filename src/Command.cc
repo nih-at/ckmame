@@ -33,6 +33,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Command.h"
 
+#include <iostream>
+
 #include "config.h"
 
 #include "compat.h"
@@ -102,8 +104,8 @@ int Command::run(int argc, char* const* argv) {
                         auto name = option.argument;
                         auto it = configuration.sets.find(name);
                         if (it == configuration.sets.end() && name.ends_with("/")) {
-                                name.pop_back();
-                                it = configuration.sets.find(name);
+                            name.pop_back();
+                            it = configuration.sets.find(name);
                         }
                         if (it == configuration.sets.end()) {
                             throw Exception("unknown set '" + option.argument + "'");
@@ -129,7 +131,7 @@ int Command::run(int argc, char* const* argv) {
         }
     }
     catch (std::exception& ex) {
-        fprintf(stderr, "%s: %s\n", ProgramName::get().c_str(), ex.what());
+        std::cerr << ProgramName::get() << ": " << ex.what() << std::endl;
         // TODO: handle error
         exit_code = 1;
     }
@@ -143,7 +145,7 @@ int Command::run(int argc, char* const* argv) {
         }
     }
     catch (std::exception& ex) {
-        fprintf(stderr, "%s: %s\n", ProgramName::get().c_str(), ex.what());
+        std::cerr << ProgramName::get() << ": " << ex.what() << std::endl;
         // TODO: handle error
         exit_code = 1;
     }
@@ -166,11 +168,11 @@ bool Command::do_for(const std::string& set, const ParsedCommandline& arguments,
     }
     catch (std::exception& ex) {
         cleanup();
-        fprintf(stderr, "%s: ", ProgramName::get().c_str());
+        std::cerr << ProgramName::get() << ": ";
         if (multi_set_invocation) {
-            fprintf(stderr, "%s: ", set.c_str());
+            std::cerr << set << ": ";
         }
-        fprintf(stderr, "%s\n", ex.what());
+        std::cerr << ex.what() << std::endl;
         return false;
     }
 }

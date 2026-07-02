@@ -101,7 +101,7 @@ void Archive::update_cache() {
                 }
                 catch (Exception& exception) {
                     contents->cache_db->seterr();
-                    output.error_database("%s: error deleting from %s", name.c_str(), CkmameDB::db_name.c_str());
+                    output.error_database("{}: error deleting from {}", name, CkmameDB::db_name);
                     /* TODO: handle errors */
                 }
             }
@@ -139,7 +139,7 @@ void Archive::update_cache() {
                 }
                 catch (Exception& exception) {
                     contents->cache_db->seterr();
-                    output.error_database("%s: error writing to %s", name.c_str(), CkmameDB::db_name.c_str());
+                    output.error_database("{}: error writing to {}", name, CkmameDB::db_name);
                     contents->cache_id = 0;
                 }
             }
@@ -199,7 +199,7 @@ bool Archive::file_copy_part(Archive* source_archive, uint64_t source_index, con
     if (file_index_by_name(filename).has_value()) {
         output.set_error_file(name);
         errno = EEXIST;
-        output.archive_error("can't copy to %s: %s", filename.c_str(), strerror(errno));
+        output.archive_error("can't copy to '{}': {}", filename, strerror(errno));
         return false;
     }
     output.set_error_archive(source_archive->files[source_index].name, name);
@@ -295,7 +295,7 @@ bool Archive::file_rename(uint64_t index, const std::string& filename) {
 
     if (file_index_by_name(filename).has_value()) {
         errno = EEXIST;
-        output.archive_error("can't rename %s to %s: %s", files[index].name.c_str(), filename.c_str(), strerror(errno));
+        output.archive_error("can't rename '{}' to '{}': {}", files[index].name, filename, strerror(errno));
         return false;
     }
 

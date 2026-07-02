@@ -37,6 +37,7 @@
 #include "compat.h"
 
 #include <filesystem>
+#include <iostream>
 #include <zip.h>
 
 #include "CkmameCache.h"
@@ -120,15 +121,14 @@ void MkMameDB::global_setup(const ParsedCommandline& commandline) {
                 fmt = OutputContext::FORMAT_MTREE;
             }
             else {
-                fprintf(stderr, "%s: unknown output format '%s'\n", ProgramName::get().c_str(),
-                        option.argument.c_str());
+                std::cerr << ProgramName::get() << ": unknown output format '" << option.argument << "'" << std::endl;
                 exit(1);
             }
         }
         else if (option.name == "hash-types") {
             hashtypes = Hashes::types_from_string(option.argument);
             if (hashtypes == 0) {
-                fprintf(stderr, "%s: illegal hash types '%s'\n", ProgramName::get().c_str(), option.argument.c_str());
+                std::cerr << ProgramName::get() << ": illegal hash types '" << option.argument << "'" << std::endl;
                 exit(1);
             }
         }
@@ -208,7 +208,7 @@ bool MkMameDB::execute(const std::vector<std::string>& arguments) {
                 update_romdb(force);
             }
             catch (Exception& ex) {
-                output.error("can't update ROM database: %s", ex.what());
+                output.error("can't update ROM database: {}", ex.what());
                 return false;
             }
             return true;
@@ -275,7 +275,7 @@ bool MkMameDB::execute(const std::vector<std::string>& arguments) {
         }
     }
     catch (const std::exception& exception) {
-        fprintf(stderr, "%s: unexpected error: %s\n", ProgramName::get().c_str(), exception.what());
+        std::cerr << ProgramName::get() << ": unexpected error: " << exception.what() << std::endl;
         exit(1);
     }
 
@@ -325,7 +325,7 @@ bool MkMameDB::process_file(const std::string& fname, OutputContext* out) {
                 }
             }
             catch (Exception& e) {
-                output.file_error("can't parse: %s", e.what());
+                output.file_error("can't parse: {}", e.what());
                 ok = false;
                 continue;
             }
@@ -352,7 +352,7 @@ bool MkMameDB::process_file(const std::string& fname, OutputContext* out) {
         else {
             do {
                 if (ec) {
-                    output.error("cannot stat() file '%s': %s", fname.c_str(), ec.message().c_str());
+                    output.error("cannot stat() file '{}': {}", fname, ec.message());
                     ok = false;
                     break;
                 }
@@ -362,8 +362,7 @@ bool MkMameDB::process_file(const std::string& fname, OutputContext* out) {
                     ok = Parser::parse(ps, exclude, out, parser_options);
                 }
                 catch (std::exception& exception) {
-                    fprintf(stderr, "%s: can't process %s: %s\n", ProgramName::get().c_str(), fname.c_str(),
-                            exception.what());
+                    std::cerr << ProgramName::get() << ": can't process " << fname << ": " << exception.what() << std::endl;
                     ok = false;
                 }
             } while (false);
@@ -383,7 +382,7 @@ bool MkMameDB::process_stdin(OutputContext* out) {
         return Parser::parse(ps, exclude, out, parser_options);
     }
     catch (std::exception& exception) {
-        fprintf(stderr, "%s: can't process stdin: %s\n", ProgramName::get().c_str(), exception.what());
+        std::cerr << ProgramName::get() << ": can't process stdin: " << exception.what() << std::endl;
         return false;
     }
 }

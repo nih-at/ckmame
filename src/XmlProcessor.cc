@@ -105,7 +105,7 @@ void XmlProcessor::process_tree(void* reader_) {
                         handle_callback_status(entity->cb_open(context, entity->arguments));
                     }
                     catch (std::exception& e) {
-                        output.file_error("parse error: %s", e.what());
+                        output.file_error("parse error: {}", e.what());
                         ok = false;
                     }
 
@@ -124,7 +124,7 @@ void XmlProcessor::process_tree(void* reader_) {
                             handle_callback_status(attribute.cb_attr(context, attribute.arguments, value));
                         }
                         catch (std::exception& e) {
-                            output.file_error("parse error: %s", e.what());
+                            output.file_error("parse error: {}", e.what());
                             ok = false;
                         }
                         free(value);
@@ -157,7 +157,7 @@ void XmlProcessor::process_tree(void* reader_) {
                         handle_callback_status(entity->cb_close(context, entity->arguments));
                     }
                     catch (std::exception& e) {
-                        output.file_error("parse error: %s", e.what());
+                        output.file_error("parse error: {}", e.what());
                         ok = false;
                     }
 
@@ -180,7 +180,7 @@ void XmlProcessor::process_tree(void* reader_) {
                                                                 (const char*)xmlTextReaderConstValue(reader)));
                 }
                 catch (std::exception& e) {
-                    output.file_error("parse error: %s", e.what());
+                    output.file_error("parse error: {}", e.what());
                     ok = false;
                 }
 

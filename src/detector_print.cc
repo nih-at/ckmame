@@ -34,63 +34,64 @@
 #include "Detector.h"
 
 #include <cinttypes>
+#include <iostream>
 
 #include "util.h"
 
 
-static void pr_string(FILE* fout, const char* name, const std::string& value) {
+static void pr_string(std::ostream& out, const char* name, const std::string& value) {
     if (value.empty()) {
         return;
     }
 
-    fprintf(fout, "  <%s>%s</%s>\n", name, value.c_str(), name);
+    out << "  <" << name << ">" << value << "</" << name << ">" << std::endl;
 }
 
-bool Detector::print(FILE* fout) const {
-    fprintf(fout, "<?xml version=\"1.0\"?>\n\n<detector>\n\n");
-    pr_string(fout, "name", name);
-    pr_string(fout, "author", author);
-    pr_string(fout, "version", version);
-    fprintf(fout, "\n");
+bool Detector::print(std::ostream& out) const {
+    out << "<?xml version=\"1.0\"?>" << std::endl << "<detector>" << std::endl << std::endl;
+    pr_string(out, "name", name);
+    pr_string(out, "author", author);
+    pr_string(out, "version", version);
+    out << std::endl;
 
     for (auto& rule : rules) {
-        rule.print(fout);
+        rule.print(out);
     }
 
-    fprintf(fout, "</detector>\n");
+    out << "</detector>" << std::endl;
 
-    return (ferror(fout) == 0);
+    return (out.good());
 }
 
 
-void Detector::Rule::print(FILE* fout) const {
-    fprintf(fout, "  <rule");
+void Detector::Rule::print(std::ostream& out) const {
+    out << "  <rule";
     if (start_offset != 0) {
-        fprintf(fout, " start_offset=\"%" PRId64 "\"", start_offset);
+        out << " start_offset=\"" << start_offset << "\"";
         if (end_offset != DETECTOR_OFFSET_EOF) {
-            fprintf(fout, " end_offset=\"%" PRId64 "\"", end_offset);
+            out << " end_offset=\"" << end_offset << "\"";
         }
     }
 
     if (operation != OP_NONE) {
-        fprintf(fout, " operation=\"%s\"", operation_name(operation).c_str());
+        out << " operation=\"" << operation_name(operation) << "\"";
     }
 
     if (tests.empty()) {
-        fprintf(fout, "/>\n\n");
+        out << "/>" << std::endl << std::endl;
     }
     else {
-        fprintf(fout, ">\n");
+        out << ">" << std::endl;
         for (auto& test : tests) {
-            test.print(fout);
+            test.print(out);
         }
-        fprintf(fout, "  </rule>\n\n");
+        out << "  </rule>" << std::endl << std::endl;
     }
 }
 
 
-void Detector::Test::print(FILE* fout) const {
-    fprintf(fout, "    <%s", test_type_name(type).c_str());
+void Detector::Test::print(std::ostream& out) const {
+    out << "    <" << test_type_name(type) << "\"";
 
     switch (type) {
     case TEST_DATA:
@@ -98,34 +99,34 @@ void Detector::Test::print(FILE* fout) const {
     case TEST_AND:
     case TEST_XOR:
         if (offset != 0) {
-            fprintf(fout, " offset=\"%" PRId64 "\"", offset);
+            out << " offset=\"" << offset << "\"";
         }
         if (!mask.empty()) {
-            fprintf(fout, " mask=\"%s\"", bin2hex(mask).c_str());
+            out << " mask=\"" << bin2hex(mask) << "\"";
         }
-        fprintf(fout, " value=\"%s\"", bin2hex(value).c_str());
+        out << " value=\"" << bin2hex(value) << "\"";
         break;
 
     case TEST_FILE_EQ:
     case TEST_FILE_LE:
     case TEST_FILE_GR:
-        fprintf(fout, " size=\"");
+        out << " size=\"";
         if (offset == DETECTOR_SIZE_POWER_OF_2) {
-            fprintf(fout, "PO2");
+            out << "PO2";
         }
         else {
-            fprintf(fout, "%" PRId64, offset);
+            out << offset;
         }
-        fprintf(fout, "\"");
+        out << "\"";
         if (type != TEST_FILE_EQ) {
-            fprintf(fout, " operator=\"%s\"", file_test_type_name(type).c_str());
+            out << " operator=\"" << file_test_type_name(type) << "\"";
         }
         break;
     }
 
     if (!result) {
-        fprintf(fout, " result=\"false\"");
+        out << " result=\"false\"";
     }
 
-    fprintf(fout, "/>\n");
+    out << "/>" << std::endl;
 }

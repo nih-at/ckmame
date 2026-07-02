@@ -33,10 +33,14 @@
 
 #include "Output.h"
 
+#include <iostream>
+
 #include "compat.h"
 #include "globals.h"
 
 #include "ProgramName.h"
+
+std::string Output::empty_string;
 
 Output::Output()
     : first_header(true), header_done(false), subheader_done(false), file_infos({FileInfo("", "")}), db(nullptr) {}
@@ -55,12 +59,20 @@ void Output::set_subheader(std::string new_subheader) {
 
 
 void Output::set_error_archive(std::string new_archive_name, std::string new_file_name) {
+    if (file_infos.size() == 1) {
+        file_infos.push_back(FileInfo());
+    }
     file_infos.back().archive_name = std::move(new_archive_name);
     set_error_file(std::move(new_file_name));
 }
 
 
-void Output::set_error_file(std::string new_file_name) { file_infos.back().file_name = std::move(new_file_name); }
+void Output::set_error_file(std::string new_file_name) {
+    if (file_infos.size() == 1) {
+        file_infos.push_back(FileInfo());
+    }
+    file_infos.back().file_name = std::move(new_file_name);
+}
 
 
 void Output::set_error_database(DB* new_db) { db = new_db; }
@@ -72,233 +84,63 @@ void Output::print_header() {
             first_header = false;
         }
         else {
-            printf("\n");
+            std::cout << std::endl;
         }
-        printf("%s:\n", header.c_str());
+        std::cout << header << ":" << std::endl;
     }
     if (!subheader_done && !subheader.empty()) {
-        printf("%s:\n", subheader.c_str());
+        std::cout << subheader << ":" << std::endl;
     }
     header_done = true;
     subheader_done = true;
 }
 
 
-void Output::message(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_message_v(fmt, va);
-    va_end(va);
-}
-
-
-void Output::message_verbose(const char* fmt, ...) {
+void Output::print_message_verbose(std::string_view string) {
     if (!configuration.verbose) {
         return;
     }
-    va_list va;
-    va_start(va, fmt);
-    print_message_v(fmt, va);
-    va_end(va);
+    print_message(string);
 }
 
-void Output::print_message_v(const char* fmt, va_list va) {
+void Output::print_message(std::string_view string) {
     print_header();
-    vprintf(fmt, va);
-    printf("\n");
+    std::cout << string << std::endl;
 }
 
 
-void Output::error(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va);
-    va_end(va);
+void Output::print_error(std::string_view string, std::string_view prefix, std::string_view postfix) {
+    // Don't print header to stdout for error messages printed to stderr.
+
+    std::cerr << ProgramName::get() << ": ";
+    if (!prefix.empty()) {
+        std::cerr << prefix << ": ";
+    }
+    std::cerr << string;
+    if (!postfix.empty()) {
+        std::cerr << ": " << postfix;
+    }
+    std::cerr << std::endl;
 }
 
 
-void Output::error_database(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, "", postfix_database());
-    va_end(va);
+const std::string& Output::prefix_archive() {
+    if (!file_infos.back().archive_name.empty()) {
+        return file_infos.back().archive_name;
+    }
+    else {
+        return empty_string;
+    }
 }
 
-void Output::error_system(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, "", postfix_system());
-    va_end(va);
+const std::string& Output::prefix_file() {
+    if (!file_infos.back().file_name.empty()) {
+        return file_infos.back().file_name;
+    }
+    else {
+        return empty_string;
+    }
 }
-
-
-void Output::error_error_code(const std::error_code& ec, const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, "", ec.message());
-    va_end(va);
-}
-
-
-void Output::archive_error(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_infos.back().archive_name);
-    va_end(va);
-}
-
-
-void Output::archive_error_database(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_infos.back().archive_name, postfix_database());
-    va_end(va);
-}
-
-
-void Output::archive_error_system(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_infos.back().archive_name, postfix_system());
-    va_end(va);
-}
-
-
-void Output::archive_error_error_code(const std::error_code& ec, const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_infos.back().archive_name, ec.message());
-    va_end(va);
-}
-
-
-void Output::archive_file_error(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, prefix_archive_file());
-    va_end(va);
-}
-
-
-void Output::archive_file_error_database(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, prefix_archive_file(), postfix_database());
-    va_end(va);
-}
-
-
-void Output::archive_file_error_error_code(const std::error_code& ec, const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, prefix_archive_file(), ec.message());
-    va_end(va);
-}
-
-
-void Output::file_error(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_infos.back().file_name);
-    va_end(va);
-}
-
-
-void Output::file_error_database(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_infos.back().file_name, postfix_database());
-    va_end(va);
-}
-
-
-void Output::file_error_system(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_infos.back().file_name, postfix_system());
-    va_end(va);
-}
-
-
-void Output::file_info_error(const FileInfo& file_info, const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_info.full_name());
-    va_end(va);
-}
-
-
-void Output::file_info_error_database(const FileInfo& file_info, const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_info.full_name(), postfix_database());
-    va_end(va);
-}
-
-
-void Output::file_info_error_system(const FileInfo& file_info, const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_info.full_name(), postfix_system());
-    va_end(va);
-}
-
-
-void Output::file_info_error_error_code(const FileInfo& file_info, const std::error_code& ec, const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_info.full_name(), ec.message());
-    va_end(va);
-}
-
-
-void Output::archive_file_error_system(const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_infos.back().file_name, postfix_system());
-    va_end(va);
-}
-
-
-void Output::file_error_error_code(const std::error_code& ec, const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, file_infos.back().file_name, ec.message());
-    va_end(va);
-}
-
-
-void Output::line_error(size_t line_number, const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, prefix_line(line_number));
-    va_end(va);
-}
-
-
-void Output::line_error_database(size_t line_number, const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, prefix_line(line_number), postfix_database());
-    va_end(va);
-}
-
-
-void Output::line_error_system(size_t line_number, const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, prefix_line(line_number), postfix_system());
-    va_end(va);
-}
-
-
-void Output::line_error_error_code(size_t line_number, const std::error_code& ec, const char* fmt, ...) {
-    va_list va;
-    va_start(va, fmt);
-    print_error_v(fmt, va, prefix_line(line_number), ec.message());
-    va_end(va);
-}
-
 
 std::string Output::prefix_archive_file() {
     if (!file_infos.back().archive_name.empty() && !file_infos.back().file_name.empty()) {
@@ -334,19 +176,7 @@ std::string Output::postfix_system() {
     }
 }
 
-void Output::print_error_v(const char* fmt, va_list va, const std::string& prefix, const std::string& postfix) {
-    // Don't print header to stdout for error messages printed to stderr.
 
-    fprintf(stderr, "%s: ", ProgramName::get().c_str());
-    if (!prefix.empty()) {
-        fprintf(stderr, "%s: ", prefix.c_str());
-    }
-    vfprintf(stderr, fmt, va);
-    if (!postfix.empty()) {
-        fprintf(stderr, ": %s", postfix.c_str());
-    }
-    fprintf(stderr, "\n");
-}
 void Output::push_error_archive(std::string archive_name, std::string file_name) {
     push_error_info(FileInfo(std::move(archive_name), std::move(file_name)));
 }

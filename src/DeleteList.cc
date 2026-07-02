@@ -72,7 +72,7 @@ void DeleteList::add_directory(const std::string& directory, bool omit_known) {
             known_games.insert(list.begin(), list.end());
         }
         catch (Exception& e) {
-            output.error("list of games not found in ROM database: %s", e.what());
+            output.error("list of games not found in ROM database: {}", e.what());
             exit(1);
         }
     }
@@ -191,7 +191,7 @@ int DeleteList::execute() {
             }
         }
         if (a && a->is_writable()) {
-            output.message_verbose("delete used file '%s'", a->files[entry.index].filename().c_str());
+            output.message_verbose("delete used file '{}'", a->files[entry.index].filename().c_str());
             /* TODO: check for error */
             a->file_delete(entry.index);
         }

@@ -53,7 +53,7 @@ ArchiveImages::ArchiveImages(const std::string& name, filetype_t filetype, where
 
 ZipSourcePtr ArchiveImages::Archive::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) {
     output.set_error_archive(name);
-    throw Exception("cannot open '%s': reading from CHDs not supported", files[index].name.c_str());
+    throw Exception("cannot open '{}': reading from CHDs not supported", files[index].name);
 }
 
 
@@ -86,7 +86,7 @@ bool ArchiveImages::read_infos_xxx() {
                 struct stat sb;
 
                 if (stat(entry.path().c_str(), &sb) != 0) {
-                    throw Exception("%s", strerror(errno));
+                    throw Exception("{}", strerror(errno));
                 }
 
                 f.mtime = sb.st_mtime;
@@ -97,7 +97,7 @@ bool ArchiveImages::read_infos_xxx() {
                 f.hashes.set_hashes(chd.hashes);
             }
             catch (Exception& e) {
-                output.error("%s: can't open: %s", filename.c_str(), e.what());
+                output.error("{}: can't open: {}", filename, e.what());
                 f.broken = true;
             }
         }

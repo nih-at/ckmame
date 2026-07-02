@@ -36,6 +36,7 @@
 #include <algorithm>
 #include <cstring>
 #include <filesystem>
+#include <iostream>
 #include <string>
 
 #include "config.h"
@@ -155,7 +156,7 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
             }
         }
         catch (std::exception& e) {
-            output.error("can't update database '%s': %s", configuration.rom_db.c_str(), e.what());
+            output.error("can't update database '{}': {}", configuration.rom_db, e.what());
             return false;
         }
     }
@@ -164,7 +165,7 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
         db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
     }
     catch (std::exception& e) {
-        output.error("can't open database '%s': %s", configuration.rom_db.c_str(), e.what());
+        output.error("can't open database '{}': {}", configuration.rom_db, e.what());
         return false;
     }
     try {
@@ -175,7 +176,7 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
     }
 
     if (!configuration.roms_zipped && db->has_disks() == 1) {
-        fprintf(stderr, "%s: unzipped mode is not supported for ROM sets with disks\n", ProgramName::get().c_str());
+        std::cerr << ProgramName::get() << ": unzipped mode is not supported for ROM sets with disks" << std::endl;
         return false;
     }
 
@@ -184,7 +185,7 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
     rom_dir_normalized = std::filesystem::relative(configuration.rom_directory, "/", ec);
     if (ec || rom_dir_normalized.empty()) {
         /* TODO: treat as warning only? (this exits if any ancestor directory is unreadable) */
-        output.error_system("can't normalize directory '%s'", configuration.rom_directory.c_str());
+        output.error_system("can't normalize directory '{}'", configuration.rom_directory);
         return false;
     }
 
@@ -197,8 +198,8 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
         for (const auto& name : configuration.extra_directories) {
             if (contains_romdir(name)) {
                 /* TODO: improve error message: also if extra is in ROM directory. */
-                output.error("current ROM directory '%s' is in extra directory '%s'",
-                             configuration.rom_directory.c_str(), name.c_str());
+                output.error("current ROM directory '{}' is in extra directory '{}'", configuration.rom_directory,
+                             name);
                 return false;
             }
             ckmame_cache->register_directory(name, FILE_EXTRA);
@@ -206,7 +207,7 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
     }
     catch (Exception& exception) {
         // TODO: handle error
-        fprintf(stderr, "%s: %s\n", ProgramName::get().c_str(), exception.what());
+        std::cerr << ProgramName::get() << ": " << exception.what() << std::endl;
         return false;
     }
 
@@ -219,7 +220,7 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
         list = db->read_list(DBH_KEY_LIST_GAME);
     }
     catch (Exception& e) {
-        output.error("list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
+        output.error("list of games not found in database '{}': {}", configuration.rom_db, e.what());
         return false;
     }
     std::sort(list.begin(), list.end());
@@ -247,7 +248,7 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
                 check_tree.add(b);
             }
             else {
-                output.error("game '%s' unknown", b);
+                output.error("game '{}' unknown", b);
             }
         }
     }
@@ -264,7 +265,7 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
                     check_tree.add(argument);
                 }
                 else {
-                    output.error("game '%s' unknown", argument.c_str());
+                    output.error("game '{}' unknown", argument);
                 }
             }
             else {
@@ -276,7 +277,7 @@ bool CkMame::execute(const std::vector<std::string>& arguments) {
                     }
                 }
                 if (!found)
-                    output.error("no game matching '%s' found", argument.c_str());
+                    output.error("no game matching '{}' found", argument);
             }
         }
     }

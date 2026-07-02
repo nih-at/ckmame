@@ -64,7 +64,7 @@ bool ParserCm::parse() {
                 parse_state = GAME;
                 auto brace = tokenizer.get();
                 if (brace != "(") {
-                    output.line_error(lineno, "expected '(', got '%s'", brace.c_str());
+                    output.line_error(lineno, "expected '(', got '{}'", brace);
                     ok = false;
                     break;
                 }
@@ -73,7 +73,7 @@ bool ParserCm::parse() {
                 parse_state = PROG;
                 auto brace = tokenizer.get();
                 if (brace != "(") {
-                    output.line_error(lineno, "expected '(', got '%s'", brace.c_str());
+                    output.line_error(lineno, "expected '(', got '{}'", brace);
                     ok = false;
                     break;
                 }
@@ -104,13 +104,13 @@ bool ParserCm::parse() {
             else if (cmd == "rom") {
                 auto brace = tokenizer.get();
                 if (brace != "(") {
-                    output.line_error(lineno, "expected '(', got '%s'", brace.c_str());
+                    output.line_error(lineno, "expected '(', got '{}'", brace);
                     ok = false;
                     break;
                 }
                 auto name = tokenizer.get();
                 if (name != "name") {
-                    output.line_error(lineno, "expected 'name', got '%s'", name.c_str());
+                    output.line_error(lineno, "expected 'name', got '{}'", name);
                     ok = false;
                     break;
                 }
@@ -189,7 +189,7 @@ bool ParserCm::parse() {
                         break;
                     }
                     else {
-                        output.line_error(lineno, "warning: ignoring unknown token '%s'", token.c_str());
+                        output.line_error(lineno, "warning: ignoring unknown token '{}'", token);
                     }
                 }
 
@@ -198,15 +198,14 @@ bool ParserCm::parse() {
             else if (cmd == "disk") {
                 auto brace = tokenizer.get();
                 if (brace != "(") {
-                    output.line_error(lineno, "expected '(', got '%s'", brace.c_str());
+                    output.line_error(lineno, "expected '(', got '{}'", brace);
                     ok = false;
                     break;
                 }
                 auto name = tokenizer.get();
                 //                    if (tokenizer.get() != "name") {
                 if (name != "name") {
-                    output.line_error(lineno, "expected token 'name' not found ('%s', '%s')", brace.c_str(),
-                                      name.c_str());
+                    output.line_error(lineno, "expected token 'name' not found ('{}', '{}')", brace, name);
                     ok = false;
                     break;
                 }
@@ -317,7 +316,7 @@ bool ParserCm::parse() {
         if (!ignoring_line) {
             std::string leftover = tokenizer.get();
             while (!leftover.empty()) {
-                output.line_error(lineno, "ignoring unknown token '%s'", leftover.c_str());
+                output.line_error(lineno, "ignoring unknown token '{}'", leftover);
                 leftover = tokenizer.get();
             }
         }
@@ -406,7 +405,7 @@ std::string ParserCm::Tokenizer::get() {
 
 void ParserCm::warn_unknown_keyword(const std::string& keyword) {
     if (warned_keywords.find(keyword) == warned_keywords.end()) {
-        output.line_error(lineno, "unexpected token '%s'", keyword.c_str());
+        output.line_error(lineno, "unexpected token '{}'", keyword);
         warned_keywords.insert(keyword);
     }
     ignoring_line = true;

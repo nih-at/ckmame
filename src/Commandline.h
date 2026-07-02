@@ -34,6 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <iostream>
 #include <optional>
 #include <string>
 #include <utility>
@@ -110,7 +111,7 @@ class Commandline {
 
     ParsedCommandline parse(int argc, char* const argv[]);
 
-    void usage(bool full = false, FILE* fout = stdout);
+    void usage(bool full = false, std::ostream& out = std::cout);
 
   private:
     bool options_sorted;

@@ -34,6 +34,7 @@
 #include "file_util.h"
 
 #include <filesystem>
+#include <format>
 
 #include "Exception.h"
 #include "globals.h"
@@ -43,7 +44,7 @@ bool link_or_copy(const std::string& old, const std::string& new_name) {
     std::filesystem::create_hard_link(old, new_name, ec);
     if (ec) {
         if (!std::filesystem::copy_file(old, new_name, ec) || ec) {
-            output.error_error_code(ec, "cannot copy '%s' to '%s'", old.c_str(), new_name.c_str());
+            output.error_error_code(ec, "cannot copy '{}' to '{}'", old, new_name);
             return false;
         }
     }
@@ -56,7 +57,7 @@ bool my_remove(const std::string& name) {
     std::error_code ec;
     std::filesystem::remove(name, ec);
     if (ec) {
-        output.error_error_code(ec, "cannot remove '%s'", name.c_str());
+        output.error_error_code(ec, "cannot remove '{}'", name);
         return false;
     }
 
@@ -70,7 +71,7 @@ bool rename_or_move(const std::string& old, const std::string& new_name) {
     if (ec) {
         std::filesystem::copy_file(old, new_name, std::filesystem::copy_options::overwrite_existing, ec);
         if (ec) {
-            output.error_error_code(ec, "cannot rename '%s' to '%s'", old.c_str(), new_name.c_str());
+            output.error_error_code(ec, "cannot rename '{}' to '{}'", old, new_name);
             return false;
         }
         std::filesystem::remove(old);
@@ -99,12 +100,9 @@ void remove_directories_up_to(const std::filesystem::path& directory, const std:
 
 
 std::string make_unique_name(const std::string& prefix, const std::string& ext) {
-    char buf[5];
-
     for (int i = 0; i < 1000; i++) {
         std::error_code ec;
-        snprintf(buf, sizeof(buf), "-%03d", i);
-        auto testname = prefix + buf + ext;
+        auto testname = prefix + std::format("-{:03d}", i) + ext;
         if (std::filesystem::exists(testname, ec)) {
             continue;
         }

@@ -170,7 +170,7 @@ static void cleanup_archive(filetype_t filetype, Archive* a, Result* result, int
                 break;
             }
 
-            output.message_verbose("delete %s file '%s'", reason, a->files[i].filename().c_str());
+            output.message_verbose("delete {} file '{}'", reason, a->files[i].filename());
             a->file_delete(i);
             break;
         }
@@ -194,7 +194,7 @@ static void cleanup_archive(filetype_t filetype, Archive* a, Result* result, int
         case FS_UNKNOWN:
             if (flags & CLEANUP_UNKNOWN) {
                 if (a->files[i].hashes.size == 0) {
-                    output.message_verbose("delete empty file '%s'", a->files[i].filename().c_str());
+                    output.message_verbose("delete empty file '{}'", a->files[i].filename());
                     a->file_delete(i);
                 }
                 else {
@@ -205,11 +205,11 @@ static void cleanup_archive(filetype_t filetype, Archive* a, Result* result, int
                     }
 
                     if (delete_file) {
-                        output.message_verbose("delete unknown file '%s' (matching delete-unknown-pattern)",
-                                               a->files[i].filename().c_str());
+                        output.message_verbose("delete unknown file '{}' (matching delete-unknown-pattern)",
+                                               a->files[i].filename());
                     }
                     else {
-                        output.message_verbose("move unknown file '%s'", a->files[i].filename().c_str());
+                        output.message_verbose("move unknown file '{}'", a->files[i].filename());
                     }
 
                     /* TODO: handle error (how?) */

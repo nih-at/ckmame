@@ -35,6 +35,7 @@
 
 #include <cstring>
 #include <filesystem>
+#include <format>
 #include <vector>
 
 #include "Exception.h"
@@ -51,7 +52,7 @@ static const char* format_name[] = {"mame.db", "in-memory", ".ckmame.db"};
 #define USER_VERSION_FORMAT(user_version) (((user_version) - USER_VERSION_MAGIC) >> 8)
 #define USER_VERSION_VERSION(user_version) (((user_version) - USER_VERSION_MAGIC) & 0xff)
 
-#define SET_VERSION_FMT "pragma user_version = %d"
+constexpr char SET_VERSION_FMT[] = "pragma user_version = {}";
 
 #define PRAGMAS "PRAGMA synchronous = OFF; "
 
@@ -61,7 +62,7 @@ int DB::get_version(const DBFormat& format) const {
     auto stmt = DBStatement(db, "pragma user_version");
 
     if (!stmt.step()) {
-        throw Exception("can't get version: %s", sqlite3_errmsg(db));
+        throw Exception("can't get version: {}", sqlite3_errmsg(db));
     }
 
     auto db_user_version = stmt.get_int("user_version");
@@ -75,10 +76,10 @@ int DB::get_version(const DBFormat& format) const {
 
     if (db_format != format.id) {
         if (db_format >= 0 && static_cast<size_t>(db_format) < sizeof(format_name) / sizeof(format_name[0])) {
-            throw Exception("invalid db format '%s', expected '%s'", format_name[db_format], format_name[format.id]);
+            throw Exception("invalid db format '{}', expected '{}'", format_name[db_format], format_name[format.id]);
         }
         else {
-            throw Exception("invalid db format %d, expected '%s'", db_format, format_name[format.id]);
+            throw Exception("invalid db format {}, expected '{}'", db_format, format_name[format.id]);
         }
     }
 
@@ -94,7 +95,7 @@ void DB::check_version(const DBFormat& format) {
     }
 
     if (db_version > format.version) {
-        throw Exception("database version too new: %d, expected %d", db_version, format.version);
+        throw Exception("database version too new: {}, expected {}", db_version, format.version);
     }
 
     migrate(format, db_version, format.version);
@@ -117,7 +118,7 @@ void DB::migrate(const DBFormat& format, int from_version, int to_version) {
         }
 
         if (!made_progress) {
-            throw Exception("can't migrate from version %d to %d", from_version, to_version);
+            throw Exception("can't migrate from version {} to {}", from_version, to_version);
         }
     }
 
@@ -125,7 +126,7 @@ void DB::migrate(const DBFormat& format, int from_version, int to_version) {
     if (sqlite3_db_readonly(db, filename.c_str())) {
         sqlite3_close(db);
         if (sqlite3_open_v2(filename.c_str(), &db, SQLITE_OPEN_READWRITE, nullptr) != SQLITE_OK) {
-            throw Exception("%s", sqlite3_errmsg(db));
+            throw Exception(sqlite3_errmsg(db));
         }
     }
 
@@ -163,7 +164,7 @@ DB::DB(const DB::DBFormat& format, std::string filename_, int mode) : db(nullptr
         std::error_code error;
         std::filesystem::remove(filename, error);
         if (error) {
-            throw Exception("can't truncate: %s", error.message().c_str());
+            throw Exception("can't truncate: {}", error.message());
         }
         needs_init = true;
     }
@@ -192,7 +193,7 @@ DB::DB(const DB::DBFormat& format, std::string filename_, int mode) : db(nullptr
             std::error_code error;
             std::filesystem::remove(filename, error);
             if (error) {
-                throw Exception("can't truncate on error: %s", error.message().c_str());
+                throw Exception("can't truncate on error: {}", error.message());
             }
             try {
                 open(format, sql3_flags | SQLITE_OPEN_CREATE, true);
@@ -210,14 +211,13 @@ DB::DB(const DB::DBFormat& format, std::string filename_, int mode) : db(nullptr
 }
 
 
-
 void DB::open(const DBFormat& format, int sql3_flags, bool needs_init) {
     if (sqlite3_open_v2(filename.c_str(), &db, sql3_flags, nullptr) != SQLITE_OK) {
-        throw Exception("%s", sqlite3_errmsg(db));
+        throw Exception("{}", sqlite3_errmsg(db));
     }
 
     if (sqlite3_exec(db, PRAGMAS, nullptr, nullptr, nullptr) != SQLITE_OK) {
-        throw Exception("can't set options: %s", sqlite3_errmsg(db));
+        throw Exception("can't set options: {}", sqlite3_errmsg(db));
     }
 
     if (needs_init) {
@@ -254,19 +254,18 @@ void DB::upgrade(sqlite3* db, int format, int version, const std::string& statem
     if (sqlite3_exec(db, statement.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK) {
         auto error = sqlite3_errmsg(db);
         sqlite3_exec(db, "rollback transaction", nullptr, nullptr, nullptr);
-        throw Exception("can't set schema: %s", error);
+        throw Exception("can't set schema: {}", error);
     }
 
-    char b[256];
-    snprintf(b, sizeof(b), SET_VERSION_FMT, USER_VERSION(format, version));
-    if (sqlite3_exec(db, b, nullptr, nullptr, nullptr) != SQLITE_OK) {
+    if (sqlite3_exec(db, std::format(SET_VERSION_FMT, USER_VERSION(format, version)).c_str(), nullptr, nullptr,
+                     nullptr) != SQLITE_OK) {
         sqlite3_exec(db, "rollback transaction", nullptr, nullptr, nullptr);
-        throw Exception("can't set version: %s", sqlite3_errmsg(db));
+        throw Exception("can't set version: {}", sqlite3_errmsg(db));
     }
 
     if (sqlite3_exec(db, "commit transaction", nullptr, nullptr, nullptr) != SQLITE_OK) {
         sqlite3_exec(db, "rollback transaction", nullptr, nullptr, nullptr);
-        throw Exception("can't commit schema: %s", sqlite3_errmsg(db));
+        throw Exception("can't commit schema: {}", sqlite3_errmsg(db));
     }
 }
 
@@ -292,7 +291,6 @@ DBStatement* DB::get_statement_internal(StatementID statement_id) {
     }
 
     if (statement_id.is_parameterized()) {
-        // printf("#DEBUG expanding %x '%s' to ", statement_id.flags, sql_query.c_str());
         auto start = sql_query.find("@SIZE@");
         if (start != std::string::npos) {
             sql_query.replace(start, 6, statement_id.has_size() ? "and f.size = :size" : "");
@@ -309,7 +307,6 @@ DBStatement* DB::get_statement_internal(StatementID statement_id) {
 
             sql_query.replace(start, 6, expanded);
         }
-        // printf(" '%s'\n", sql_query.c_str());
     }
 
     auto stmt = std::make_shared<DBStatement>(db, sql_query);

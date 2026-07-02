@@ -70,7 +70,7 @@ class Detector {
         bool result;
 
         [[nodiscard]] bool execute(const std::vector<uint8_t>& data) const;
-        void print(FILE* fout) const;
+        void print(std::ostream& out) const;
 
       private:
         bool bit_cmp(const uint8_t* data) const;
@@ -86,7 +86,7 @@ class Detector {
         std::vector<Test> tests;
 
         [[nodiscard]] Hashes execute(const std::vector<uint8_t>& data) const;
-        void print(FILE* fout) const;
+        void print(std::ostream& out) const;
 
       private:
         [[nodiscard]] Hashes compute_values(Operation operation, const std::vector<uint8_t>& data, uint64_t start,
@@ -107,7 +107,7 @@ class Detector {
     static DetectorPtr parse(ParserSource* parser_source);
 
     [[nodiscard]] Hashes execute(const std::vector<uint8_t>& data) const;
-    bool print(FILE*) const;
+    bool print(std::ostream& out) const;
 
     static std::string file_test_type_name(TestType type);
     static std::string operation_name(Operation operation);

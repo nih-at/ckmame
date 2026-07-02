@@ -236,7 +236,7 @@ void CkStatus::list_runs() {
     for (const auto& run : runs) {
         char date_string[20];
         strftime(date_string, sizeof(date_string), "%Y-%m-%d %H:%M:%S", localtime(&run.date));
-        output.message("%" PRId64 ": %s", run.run_id, date_string);
+        output.message("{}: {}", run.run_id, date_string);
     }
 }
 
@@ -295,12 +295,12 @@ void CkStatus::RunDiff::compute() {
         if (diff.new_info && is_complete(diff.new_info->status)) {
             if (is_complete(diff.new_info->status)) {
                 if (!diff.old_info || !is_complete(diff.old_info->status)) {
-                    output.message("+ %s", game.name.c_str());
+                    output.message("+ {}", game.name);
                 }
             }
         }
         else if (diff.old_info && is_complete(diff.old_info->status)) {
-            output.message("- %s", game.name.c_str());
+            output.message("- {}", game.name);
         }
     }
 }

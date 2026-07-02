@@ -49,7 +49,7 @@ OutputContextMtree::OutputContextMtree(const std::string& fname_, int flags)
     else {
         f = make_shared_file(fname, "w");
         if (!f) {
-            output.error("cannot create '%s': %s", fname.c_str(), strerror(errno));
+            output.error("cannot create '{}': {}", fname, strerror(errno));
             throw std::exception();
         }
     }

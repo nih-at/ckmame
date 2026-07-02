@@ -137,7 +137,7 @@ void Dumpgame::print_matches(const Hashes* hash) {
             }
             auto game = db->read_game(match.game_name);
             if (!game) {
-                output.error("db error: %s not found, though in hash index", match.game_name.c_str());
+                output.error("db error: '{}' not found, though in hash index", match.game_name);
                 /* TODO: remember error */
                 continue;
             }
@@ -169,7 +169,7 @@ void Dumpgame::global_setup(const ParsedCommandline& commandline) {
             for (const auto& argument : arguments) {
                 Hashes hashes;
                 if (hashes.set_from_string(argument) == -1) {
-                    output.error("error parsing checksum '%s'", argument.c_str());
+                    output.error("error parsing checksum '{}'", argument);
                     continue;
                 }
                 checksum_arguments.push_back(hashes);
@@ -208,7 +208,7 @@ bool Dumpgame::execute(const std::vector<std::string>& arguments_) {
     }
     catch (std::exception& e) {
         // TODO: catch exception for unsupported database version and report differently
-        output.error("can't open database '%s': %s", configuration.rom_db.c_str(), strerror(errno));
+        output.error("can't open database '{}': {}", configuration.rom_db, strerror(errno));
         return false;
     }
     output.set_error_database(db.get());
@@ -219,7 +219,7 @@ bool Dumpgame::execute(const std::vector<std::string>& arguments_) {
         list = db->read_list(DBH_KEY_LIST_GAME);
     }
     catch (Exception& e) {
-        output.error("list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
+        output.error("list of games not found in database '{}': {}", configuration.rom_db, e.what());
         return false;
     }
     std::sort(list.begin(), list.end());
@@ -310,10 +310,10 @@ bool Dumpgame::global_cleanup() {
         for (const std::string& argument : arguments) {
             if (!found[index]) {
                 if (is_pattern(argument)) {
-                    output.error("no game matching '%s' found", argument.c_str());
+                    output.error("no game matching '{}' found", argument);
                 }
                 else {
-                    output.error("game '%s' not found", argument.c_str());
+                    output.error("game '{}' not found", argument);
                 }
                 ok = false;
             }
@@ -364,7 +364,7 @@ bool Dumpgame::dump_game(const std::string& name) const {
     }
 
     if ((game = db->read_game(name)) == nullptr) {
-        output.error("game unknown (or database error): '%s'", name.c_str());
+        output.error("game unknown (or database error): '{}'", name);
         return false;
     }
 
@@ -421,7 +421,7 @@ bool Dumpgame::dump_list(int type) {
         }
     }
     catch (Exception& e) {
-        output.error_database("db error reading list: %s", e.what());
+        output.error_database("db error reading list: {}", e.what());
         return false;
     }
 

@@ -36,6 +36,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <filesystem>
+#include <iostream>
 #include <set>
 
 #include "Exception.h"
@@ -52,7 +53,7 @@ bool Configuration::read_config_file(std::vector<toml::table>& config_tables, co
             return true;
         }
         else {
-            throw Exception("config file '%s' does not exist", file_name.c_str());
+            throw Exception("config file '{}' does not exist", file_name);
         }
     }
 
@@ -63,7 +64,7 @@ bool Configuration::read_config_file(std::vector<toml::table>& config_tables, co
         config_tables.push_back(table);
     }
     catch (const std::exception& ex) {
-        throw Exception("can't parse '%s': %s", file_name.c_str(), ex.what());
+        throw Exception("can't parse '{}': {}", file_name, ex.what());
     }
 
     return ok;
@@ -397,7 +398,7 @@ void Configuration::handle_commandline(const ParsedCommandline& args) {
 
     if (args.find_first("list-sets").has_value()) {
         for (const auto& set_name : sets) {
-            printf("%s\n", set_name.c_str());
+            std::cout << set_name << std::endl;
         }
 
         exit(0);
@@ -620,7 +621,7 @@ void Configuration::merge_config_table(const toml::table* table_pointer) {
             }
 
             if (!found) {
-                throw Exception("unknown profile '%s'", profile.c_str());
+                throw Exception("unknown profile '{}'", profile);
             }
         }
     }

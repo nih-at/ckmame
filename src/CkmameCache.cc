@@ -63,9 +63,9 @@ bool CkmameCache::close_all() {
             directory.db = nullptr;
             if (empty) {
                 std::error_code ec;
-                std::filesystem::remove(filename);
+                std::filesystem::remove(filename, ec);
                 if (ec) {
-                    output.error("can't remove empty database '%s': %s", filename.c_str(), ec.message().c_str());
+                    output.error("can't remove empty database '{}': {}", filename, ec.message());
                     ok = false;
                 }
             }
@@ -134,7 +134,7 @@ void CkmameCache::CacheDirectory::initialize(bool create) {
     }
     catch (std::exception& e) {
         db = {};
-        output.error_database("can't open rom directory database for '%s': %s", name.c_str(), e.what());
+        output.error_database("can't open rom directory database for '{}': {}", name, e.what());
     }
 }
 
@@ -160,9 +160,9 @@ void CkmameCache::register_directory(const std::string& directory_name, where_t 
         if (name.compare(0, length, directory.name) == 0 && (name.length() == length || name[length] == '/') &&
             (directory.name.length() == length || directory.name[length] == '/')) {
             if (directory.name.length() != name.length()) {
-                output.error("can't cache in directory '%s' and its parent '%s'",
-                             (directory.name.length() < name.length() ? name.c_str() : directory.name.c_str()),
-                             (directory.name.length() < name.length() ? directory.name.c_str() : name.c_str()));
+                output.error("can't cache in directory '{}' and its parent '{}'",
+                             (directory.name.length() < name.length() ? name : directory.name),
+                             (directory.name.length() < name.length() ? directory.name : name));
                 throw Exception();
             }
             return;
@@ -237,6 +237,17 @@ void CkmameCache::ensure_needed_maps() {
 
 bool CkmameCache::enter_dir_in_map_and_list(const DeleteListPtr& list, const std::string& directory_name,
                                             where_t where) {
+    if (!std::filesystem::exists(directory_name)) {
+        if (where == FILE_EXTRA) {
+            return true;
+        }
+        return false;
+    }
+    if (!std::filesystem::is_directory(directory_name)) {
+        output.error("'{}' is not a directory", directory_name);
+        return false;
+    }
+
     bool ret;
     if (configuration.roms_zipped) {
         ret = enter_dir_in_map_and_list_zipped(list, directory_name, where);
@@ -404,7 +415,7 @@ std::vector<CkmameDB::FindResult> CkmameCache::find_file(filetype_t filetype, si
         }
     }
 
-    //    printf("searching for file '%s', got %lu results\n", rom.name.c_str(), results.size());
+    // std::cout << "searching for file '" << rom.name << "', got " << results.size() << " results" << std::endl;
     return results;
 }
 

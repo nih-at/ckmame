@@ -50,6 +50,7 @@
 #include "DatDb.h"
 #include "Exception.h"
 #include "SharedFile.h"
+#include "format.h"
 #include "globals.h"
 
 
@@ -137,7 +138,7 @@ bool ensure_dir(const std::filesystem::path& name, bool strip_filename) {
         ensure_directory(name, strip_filename);
     }
     catch (Exception& ex) {
-        output.error("%s", ex.what());
+        output.error("{}", ex.what());
         return false;
     }
 
@@ -156,7 +157,7 @@ void ensure_directory(const std::filesystem::path& name, bool strip_filename) {
     std::filesystem::create_directories(dir, ec);
 
     if (ec) {
-        throw Exception("cannot create '%s': %s", dir.c_str(), ec.message().c_str());
+        throw Exception("cannot create '{}': {}", dir, ec.message());
     }
 }
 
@@ -187,26 +188,23 @@ bool is_ziplike(const std::filesystem::path& fname) {
     return false;
 }
 
+#define TERRA_BYTE (1024ul * 1024 * 1024 * 1024)
+#define GIGA_BYTE (1024 * 1024 * 1024)
+#define MEGA_BYTE (1024 * 1024)
 
 std::string human_number(uint64_t value) {
-    char s[128];
-    if (value > 1024ul * 1024 * 1024 * 1024) {
-        snprintf(s, sizeof(s), "%" PRIi64 ".%02" PRIi64 "TiB", value / (1024ul * 1024 * 1024 * 1024),
-                 (((value / (1024ul * 1024 * 1024)) * 10 + 512) / 1024) % 100);
+    if (value > TERRA_BYTE) {
+        return std::format("{:.2f} TiB", static_cast<double>(value) / TERRA_BYTE);
     }
-    else if (value > 1024 * 1024 * 1024) {
-        snprintf(s, sizeof(s), "%" PRIi64 ".%02" PRIi64 "GiB", value / (1024 * 1024 * 1024),
-                 (((value / (1024 * 1024)) * 10 + 512) / 1024) % 100);
+    else if (value > GIGA_BYTE) {
+        return std::format("{:.2f} GiB", static_cast<double>(value) / GIGA_BYTE);
     }
-    else if (value > 1024 * 1024) {
-        snprintf(s, sizeof(s), "%" PRIi64 ".%02" PRIi64 "MiB", value / (1024 * 1024),
-                 (((value / 1024) * 10 + 512) / 1024) % 100);
+    else if (value > MEGA_BYTE) {
+        return std::format("{:.2f} MiB", static_cast<double>(value) / MEGA_BYTE);
     }
     else {
-        snprintf(s, sizeof(s), "%" PRIi64 " bytes", value);
+        return std::format("{} bytes", value);
     }
-
-    return s;
 }
 
 bool string_less_case_insensitive(const std::string& lhs, const std::string& rhs) {
@@ -327,9 +325,9 @@ std::string pad_string_left(const std::string& string, size_t width, char c) {
 }
 
 void write_lines(const std::string& file_name, const std::vector<std::string>& lines) {
-    FILEPtr f = make_shared_file(file_name, "w");
+    std::ofstream file(file_name, std::ios::out);
     for (const auto& line : lines) {
-        fprintf(f.get(), "%s\n", line.c_str());
+        file << line << std::endl;
     }
 }
 

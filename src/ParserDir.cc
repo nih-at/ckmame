@@ -38,6 +38,7 @@
 
 #include "Archive.h"
 #include "Dir.h"
+#include "format.h"
 #include "globals.h"
 #include "util.h"
 
@@ -99,14 +100,14 @@ bool ParserDir::parse() {
                                     }
                                 }
                                 else {
-                                    output.error("skipping unknown file '%s/%s'", filepath.c_str(), file.name.c_str());
+                                    output.error("skipping unknown file '{}/{}'", filepath, file.name);
                                 }
                             }
                         }
                     }
 
                     if (dir_empty) {
-                        output.error("skipping empty directory '%s'", filepath.c_str());
+                        output.error("skipping empty directory '{}'", filepath);
                     }
                 }
                 else {
@@ -139,11 +140,11 @@ bool ParserDir::parse() {
                                 have_loose_chds = true;
                             }
                             else {
-                                output.error("skipping top level disk image '%s'", filepath.c_str());
+                                output.error("skipping top level disk image '{}'", filepath);
                             }
                         }
                         else {
-                            output.error("skipping unknown file '%s'", filepath.c_str());
+                            output.error("skipping unknown file '{}'", filepath);
                         }
                         break;
                     }
@@ -169,7 +170,7 @@ bool ParserDir::parse() {
                 if (end_parsing) {
                     break;
                 }
-                
+
                 if (entry.is_directory()) {
                     /* TODO: handle errors */
                     auto a = Archive::open(entry.path(), TYPE_ROM, FILE_NOWHERE, 0);
@@ -186,7 +187,7 @@ bool ParserDir::parse() {
                             have_loose_files = true;
                         }
                         else {
-                            output.error("found file '%s' outside of game subdirectory", entry.path().c_str());
+                            output.error("found file '{}' outside of game subdirectory", entry.path());
                         }
                     }
                 }

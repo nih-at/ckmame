@@ -39,6 +39,7 @@
 #include "Progress.h"
 #include "file_util.h"
 #include "fix_util.h"
+#include "format.h"
 #include "globals.h"
 #include "util.h"
 
@@ -143,7 +144,7 @@ void ArchiveDir::commit_cleanup() {
 void ArchiveDir::copy_source(ZipSource* source, const std::filesystem::path& destination) {
     auto fout = make_shared_file(destination, "w");
     if (!fout) {
-        output.archive_error("cannot open '%s': %s", destination.c_str(), strerror(errno));
+        output.archive_error("cannot open '{}': {}", destination, strerror(errno));
         throw Exception();
     }
 
@@ -155,7 +156,7 @@ void ArchiveDir::copy_source(ZipSource* source, const std::filesystem::path& des
     while ((n = source->read(buffer, sizeof(buffer))) > 0) {
         Progress::update();
         if (fwrite(buffer, 1, n, fout.get()) != n) {
-            output.archive_error("can't write '%s': %s", destination.c_str(), strerror(errno));
+            output.archive_error("can't write '{}': {}", destination, strerror(errno));
             source->close();
             throw Exception();
         }
@@ -312,7 +313,7 @@ ZipSourcePtr ArchiveDir::get_source(uint64_t index, uint64_t start, std::optiona
         filename.c_str(), start, length.has_value() ? static_cast<int64_t>(length.value()) : -1, &error);
 
     if (source == nullptr) {
-        throw Exception("can't open '%s': %s", filename.c_str(), zip_error_strerror(&error));
+        throw Exception("can't open '{}': {}", filename, zip_error_strerror(&error));
     }
     return std::make_shared<ZipSource>(source);
 }

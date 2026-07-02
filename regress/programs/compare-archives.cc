@@ -34,16 +34,15 @@
 #include "config.h"
 
 #include <cinttypes>
-#include <cstdio>
 #include <cstdlib>
-
+#include <iostream>
 #include <map>
 #include <string>
 
 #ifndef HAVE_LIBARCHIVE
 
 int main(int argc, char* argv[]) {
-    fprintf(stderr, "%s: missing libarchive support\n", argv[0]);
+    std::cerr << argv[0] << ": missing libarchive support" << std::endl;
     exit(1);
 }
 
@@ -66,7 +65,7 @@ std::map<std::string, FileData> list_archive(const std::string& name) {
 
     auto archive = archive_read_new();
     if (archive == nullptr) {
-        fprintf(stderr, "%s: out of memory\n", prg);
+        std::cerr << prg << ": out of memory" << std::endl;
         exit(2);
     }
 
@@ -74,7 +73,7 @@ std::map<std::string, FileData> list_archive(const std::string& name) {
     archive_read_support_format_all(archive);
 
     if (archive_read_open_filename(archive, name.c_str(), 10240) < 0) {
-        fprintf(stderr, "%s: error opening archive '%s': %s\n", prg, name.c_str(), archive_error_string(archive));
+        std::cerr << prg << ": error opening archive '" << name << "': " << archive_error_string(archive) << std::endl;
         exit(2);
     }
 
@@ -135,8 +134,8 @@ bool compare(const std::map<std::string, FileData>& a, const std::map<std::strin
 
         if (!changed) {
             if (verbose) {
-                printf("--- %s\n", a_name.c_str());
-                printf("+++ %s\n", b_name.c_str());
+                std::cout << "--- " << a_name << std::endl;
+                std::cout << "+++ " << b_name << std::endl;
             }
 
             changed = true;
@@ -144,15 +143,15 @@ bool compare(const std::map<std::string, FileData>& a, const std::map<std::strin
 
         if (print_a) {
             if (verbose) {
-                printf("- file '%s', size %" PRIu64 ", crc %08x\n", it_a->first.c_str(), it_a->second.size,
-                       it_a->second.crc);
+                std::cout << "- file '" << it_a->first << "', size " << it_a->second.size << ", crc " << std::format("{:08x}", it_a->second.crc)
+                          << std::endl;
             }
             it_a++;
         }
         if (print_b) {
             if (verbose) {
-                printf("+ file '%s', size %" PRIu64 ", crc %08x\n", it_b->first.c_str(), it_b->second.size,
-                       it_b->second.crc);
+                std::cout << "+ file '" << it_b->first << "', size " << it_b->second.size << ", crc " << std::format("{:08x}", it_b->second.crc)
+                          << std::endl;
             }
             it_b++;
         }
@@ -162,7 +161,7 @@ bool compare(const std::map<std::string, FileData>& a, const std::map<std::strin
 }
 
 void usage() {
-    fprintf(stderr, "Usage: %s archive-a archive-b\n", prg);
+    std::cerr << "Usage: " << prg << " archive-a archive-b" << std::endl;
     exit(2);
 }
 
@@ -193,6 +192,5 @@ int main(int argc, char* argv[]) {
 
     exit(0);
 }
-
 
 #endif

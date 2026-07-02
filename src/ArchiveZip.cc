@@ -64,8 +64,8 @@ bool ArchiveZip::ensure_zip() {
     if ((za = zip_open(name.c_str(), zip_flags, &err)) == nullptr) {
         zip_error_t error;
         zip_error_init_with_code(&error, err);
-        output.error("error %s zip archive '%s': %s", (contents->flags & ARCHIVE_FL_CREATE ? "creating" : "opening"),
-                     name.c_str(), zip_error_strerror(&error));
+        output.error("error {} zip archive '{}': {}", (contents->flags & ARCHIVE_FL_CREATE ? "creating" : "opening"),
+                     name, zip_error_strerror(&error));
         zip_error_fini(&error);
 
         if (where == FILE_ROMSET && configuration.fix_romset && std::filesystem::exists(name)) {
@@ -84,7 +84,7 @@ bool ArchiveZip::ensure_zip() {
             modified = true;
         }
         if (zip_set_archive_flag(za, ZIP_AFL_WANT_TORRENTZIP, 1) < 0) {
-            output.error("can't torrentzip '%s'", name.c_str());
+            output.error("can't torrentzip '{}'", name);
             zip_discard(za);
             return false;
         }
@@ -107,7 +107,7 @@ bool ArchiveZip::close_xxx() {
     zip_register_progress_callback_with_state(za, 0.1, close_progress, nullptr, nullptr);
     if (zip_close(za) < 0) {
         /* error closing, so zip is still valid */
-        output.archive_error("error closing zip: %s", zip_strerror(za));
+        output.archive_error("error closing zip: {}", zip_strerror(za));
 
         /* TODO: really do this here? */
         /* discard all changes and close zipfile */
@@ -143,7 +143,7 @@ bool ArchiveZip::commit_xxx() {
 
         if (change.status == Change::DELETED) {
             if (zip_delete(za, index) < 0) {
-                output.archive_error("cannot delete '%s': %s", file.name.c_str(), zip_strerror(za));
+                output.archive_error("cannot delete '{}': {}", file.name, zip_strerror(za));
                 ok = false;
                 break;
             }
@@ -157,10 +157,10 @@ bool ArchiveZip::commit_xxx() {
             if (zip_file_add(za, file.name.c_str(), change.source->source, 0) < 0) {
                 zip_source_free(change.source->source);
                 if (change.source_name.empty()) {
-                    output.archive_file_error("error adding empty file: %s", zip_strerror(za));
+                    output.archive_file_error("error adding empty file: {}", zip_strerror(za));
                 }
                 else {
-                    output.archive_file_error("error adding '%s': %s", change.source_name.c_str(), zip_strerror(za));
+                    output.archive_file_error("error adding '{}': {}", change.source_name, zip_strerror(za));
                 }
                 ok = false;
                 break;
@@ -173,8 +173,8 @@ bool ArchiveZip::commit_xxx() {
                     break;
                 }
                 if (zip_file_rename(za, index, file.name.c_str(), 0) < 0) {
-                    output.archive_error("cannot rename '%s' to `%s': %s", change.original_name.c_str(),
-                                         file.name.c_str(), zip_strerror(za));
+                    output.archive_error("cannot rename '{}' to '{}': {}", change.original_name, file.name,
+                                         zip_strerror(za));
                     ok = false;
                     break;
                 }
@@ -184,11 +184,10 @@ bool ArchiveZip::commit_xxx() {
                 if (zip_file_replace(za, index, change.source->source, 0) < 0) {
                     zip_source_free(change.source->source);
                     if (change.source_name.empty()) {
-                        output.archive_file_error("error adding empty file: %s", zip_strerror(za));
+                        output.archive_file_error("error adding empty file: {}", zip_strerror(za));
                     }
                     else {
-                        output.archive_file_error("error adding '%s': %s", change.source_name.c_str(),
-                                                  zip_strerror(za));
+                        output.archive_file_error("error adding '{}': {}", change.source_name, zip_strerror(za));
                     }
                     ok = false;
                     break;
@@ -228,14 +227,14 @@ void ArchiveZip::commit_cleanup() {
 
             if (zip_stat_index(za, i, 0, &st) < 0) {
                 output.set_error_archive(name);
-                output.archive_error("cannot stat file %" PRIu64 ": %s", i, zip_strerror(za));
+                output.archive_error("cannot stat file {}: {}", i, zip_strerror(za));
                 continue;
             }
 
             auto it = names.find(st.name);
             if (it == names.end()) {
                 output.set_error_archive(name);
-                output.archive_error("unexpected name %s in archive", st.name);
+                output.archive_error("unexpected name '{}' in archive", st.name);
                 continue;
             }
             sorted_files.push_back(files[names[st.name]]);
@@ -251,7 +250,7 @@ void ArchiveZip::commit_cleanup() {
 
             if (zip_stat_index(za, i, 0, &st) < 0) {
                 output.set_error_archive(name);
-                output.archive_error("cannot stat file %" PRIu64 ": %s", i, zip_strerror(za));
+                output.archive_error("cannot stat file {}: {}", i, zip_strerror(za));
                 continue;
             }
 
@@ -291,7 +290,7 @@ bool ArchiveZip::read_infos_xxx() {
     for (zip_uint64_t i = 0; i < n; i++) {
         Progress::update();
         if (zip_stat_index(za, i, 0, &zsb) == -1) {
-            output.archive_error("error stat()ing index %" PRIu64 ": %s", i, zip_strerror(za));
+            output.archive_error("error stat()ing index {}: {}", i, zip_strerror(za));
             continue;
         }
 
@@ -326,7 +325,7 @@ ZipSourcePtr ArchiveZip::get_source(uint64_t index, uint64_t start, std::optiona
     auto source = zip_source_zip_file_create(za, index, ZIP_FL_UNCHANGED, start, length, nullptr, nullptr);
 
     if (source == nullptr) {
-        throw Exception("%s", zip_strerror(za));
+        throw Exception("{}", zip_strerror(za));
     }
 
     return std::make_shared<ZipSource>(source);
@@ -340,7 +339,7 @@ bool ArchiveZip::ensure_file_doesnt_exist(const std::string& filename) {
         auto new_name = make_unique_name_in_archive(filename);
         if (zip_file_rename(za, static_cast<uint64_t>(index), new_name.c_str(), 0) < 0) {
             output.set_error_archive(name, filename);
-            output.file_error("can't move out of the way: %s", zip_error_strerror(zip_get_error(za)));
+            output.file_error("can't move out of the way: {}", zip_error_strerror(zip_get_error(za)));
             return false;
         }
     }

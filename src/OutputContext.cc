@@ -172,8 +172,7 @@ bool OutputContext::finish() {
                 }
                 if (counts[new_name] > 0) {
                     new_name += " (" + std::to_string(counts[new_name]) + ")";
-                    output.error("warning: duplicate game '%s', renamed to '%s'", original_name.c_str(),
-                                 new_name.c_str());
+                    output.error("warning: duplicate game '{}', renamed to '{}'", original_name, new_name);
                 }
                 counts[new_name] += 1;
                 game->name = new_name;
@@ -280,7 +279,7 @@ bool OutputContext::fix_game(Game* game, std::unordered_set<Game*> fixing) {
     const auto& error_info = dats[game->dat_no].error_info;
 
     if (fixing.contains(game)) {
-        output.file_info_error(error_info, "circular cloneof detected for game '%s'", game->name.c_str());
+        output.file_info_error(error_info, "circular cloneof detected for game '{}'", game->name);
         return false;
     }
     fixing.insert(game);
@@ -303,9 +302,8 @@ bool OutputContext::fix_game(Game* game, std::unordered_set<Game*> fixing) {
                 for (size_t j = 0; j < i; j++) {
                     if (!parent->cloneof[j].empty()) {
                         if (i + j > 2) {
-                            output.file_info_error(error_info,
-                                                   "game '%s' has more than 2 ancestors, which is not supported",
-                                                   game->name.c_str());
+                            output.file_info_error(
+                                error_info, "game '{}' has more than 2 ancestors, which is not supported", game->name);
                             return false;
                         }
                         if (game->cloneof[i + j].empty()) {
@@ -313,16 +311,16 @@ bool OutputContext::fix_game(Game* game, std::unordered_set<Game*> fixing) {
                         }
                         else if (game->cloneof[i + j] != parent->cloneof[j]) {
                             output.file_info_error(error_info,
-                                                   "game '%s' has inconsistent cloneof fields with parent '%s'",
-                                                   game->name.c_str(), parent->name.c_str());
+                                                   "game '{}' has inconsistent cloneof fields with parent '{}'",
+                                                   game->name, parent->name);
                             return false;
                         }
                     }
                 }
             }
             else {
-                output.file_info_error(error_info, "inconsistency: %s has non-existent parent %s", game->name.c_str(),
-                                       game->cloneof[i].c_str());
+                output.file_info_error(error_info, "inconsistency: {} has non-existent parent {}", game->name,
+                                       game->cloneof[i]);
                 game->cloneof[i] = "";
                 parents.push_back(nullptr);
             }
@@ -355,8 +353,8 @@ bool OutputContext::fix_game(Game* game, std::unordered_set<Game*> fixing) {
 
                 if (file.where == FILE_INGAME && !file.merge.empty()) {
                     output.file_info_error(
-                        error_info, "In game '%s': '%s': merged from '%s', but ancestors don't contain matching file",
-                        game->name.c_str(), file.name.c_str(), file.merge.c_str());
+                        error_info, "In game '{}': '{}': merged from '{}', but ancestors don't contain matching file",
+                        game->name, file.name, file.merge);
                 }
             }
         }

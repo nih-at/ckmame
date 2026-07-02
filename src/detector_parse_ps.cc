@@ -180,7 +180,7 @@ std::optional<int> DetectorParserContext::parse_enum(const std::string& value,
     auto it = enums.find(value);
 
     if (it == enums.end()) {
-        output.line_error(lineno, "invalid %s: '%s'", field_name.c_str(), value.c_str());
+        output.line_error(lineno, "invalid {}: '{}'", field_name, value);
         errno = EINVAL;
         return {};
     }
@@ -192,13 +192,13 @@ std::optional<int> DetectorParserContext::parse_enum(const std::string& value,
 XmlProcessor::CallbackStatus DetectorParserContext::parse_hex(std::vector<uint8_t>* result, const std::string& value,
                                                               const std::string& field_name) {
     if (value.size() % 2 != 0) {
-        output.line_error(lineno, "invalid %s: odd number of hex digits", field_name.c_str());
+        output.line_error(lineno, "invalid {}: odd number of hex digits", field_name);
         return XmlProcessor::ERROR;
     }
     auto length = value.size() / 2;
 
     if (test->length != 0 && test->length != length) {
-        output.line_error(lineno, "invalid %s: length mismatch", field_name.c_str());
+        output.line_error(lineno, "invalid {}: length mismatch", field_name);
         return XmlProcessor::ERROR;
     }
 
@@ -214,7 +214,7 @@ XmlProcessor::CallbackStatus DetectorParserContext::parse_number(int64_t* result
     int64_t i;
 
     if (value.empty()) {
-        output.line_error(lineno, "invalid %s: '%s'", field_name.c_str(), value.c_str());
+        output.line_error(lineno, "invalid {}: '{}'", field_name, value);
         return XmlProcessor::ERROR;
     }
 
@@ -224,7 +224,7 @@ XmlProcessor::CallbackStatus DetectorParserContext::parse_number(int64_t* result
         i = std::stoll(value, &end, 16);
 
         if (end != value.length()) {
-            output.line_error(lineno, "invalid %s: '%s'", field_name.c_str(), value.c_str());
+            output.line_error(lineno, "invalid {}: '{}'", field_name, value);
             return XmlProcessor::ERROR;
         }
     }

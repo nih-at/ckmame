@@ -41,12 +41,11 @@
 void warn_archive_file(filetype_t ft, const File* r, const std::string& reason) {
     switch (ft) {
     case TYPE_ROM:
-        output.message("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": %s", r->filename().c_str(), r->hashes.size,
-                       r->hashes.crc, reason.c_str());
+        output.message("file {:12}  size {:7}  crc {:08x}: {}", r->filename(), r->hashes.size, r->hashes.crc, reason);
         break;
 
     case TYPE_DISK:
-        output.message("image %-12s: %s", r->filename().c_str(), reason.c_str());
+        output.message("image {:12}: {}", r->filename(), reason);
         break;
 
     default:
@@ -56,7 +55,7 @@ void warn_archive_file(filetype_t ft, const File* r, const std::string& reason) 
 
 
 void warn_game(filetype_t ft, const Game* game, const std::string& reason) {
-    output.message("%s: %s", pad_string("game " + game->name, 45).c_str(), reason.c_str());
+    output.message("game {:40}: {}", game->name, reason);
 }
 
 
@@ -103,7 +102,7 @@ void warn_game_file(filetype_t ft, const Rom* r, const std::string& reason) {
         break;
     }
 
-    output.message("%s: %s", pad_string(message, 45).c_str(), reason.c_str());
+    output.message("{:45}: {}", message, reason);
 }
 
 

@@ -35,6 +35,7 @@
 */
 
 #include <exception>
+#include <format>
 #include <string>
 #include <system_error>
 
@@ -43,8 +44,11 @@
 class Exception : public std::exception {
   public:
     Exception() = default;
-    explicit Exception(const std::string& message_) : message(message_) {}
-    Exception(const char* format, ...) PRINTF_LIKE(2, 3);
+    Exception(std::string_view message_) : message(message_) {}
+
+    template <typename... Args>
+    Exception(std::format_string<Args...> format, Args&&... args)
+        : message(std::format(format, std::forward<Args>(args)...)) {}
 
     Exception append_detail(const std::string& str);
     Exception append_system_error(int code = -1); // default: use current errno

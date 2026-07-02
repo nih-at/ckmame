@@ -44,7 +44,7 @@ ParserSourceFile::ParserSourceFile(const std::string& fname) : file_name(fname),
     if (!file_name.empty()) {
         f = make_shared_file(file_name, "r");
         if (!f) {
-            throw Exception("can't open '%s': %s", fname.c_str(), strerror(errno));
+            throw Exception("can't open '{}': {}", file_name, strerror(errno));
         }
         error_file_info = Output::FileInfo(file_name);
     }

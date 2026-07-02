@@ -80,7 +80,7 @@ ParsedCommandline Commandline::parse(int argc, char* const* argv) {
                 auto option_name = argument.substr(2, equals == std::string::npos ? equals : equals - 2);
                 auto it = long_options.find(option_name);
                 if (it == long_options.end()) {
-                    usage(false, stderr);
+                    usage(false, std::cerr);
                     std::cerr << "unknown option '--" << option_name << "'\n";
                     exit(1);
                 }
@@ -90,7 +90,7 @@ ParsedCommandline Commandline::parse(int argc, char* const* argv) {
                         parsed_commandline.add_option(option_name, argument.substr(equals + 1));
                     }
                     else {
-                        usage(false, stderr);
+                        usage(false, std::cerr);
                         std::cerr << "option '--" << option_name << "' doesn't take an argument\n";
                         exit(1);
                     }
@@ -98,7 +98,7 @@ ParsedCommandline Commandline::parse(int argc, char* const* argv) {
                 else {
                     if (it->second->has_argument()) {
                         if (index == argc - 1) {
-                            usage(false, stderr);
+                            usage(false, std::cerr);
                             std::cerr << "missing argument for option '--" << option_name << "'\n";
                             exit(1);
                         }
@@ -115,7 +115,7 @@ ParsedCommandline Commandline::parse(int argc, char* const* argv) {
                     auto option_name = argument[position];
                     auto it = short_options.find(option_name);
                     if (it == short_options.end()) {
-                        usage(false, stderr);
+                        usage(false, std::cerr);
                         std::cerr << "unknown option '-" << option_name << "'\n";
                         exit(1);
                     }
@@ -126,7 +126,7 @@ ParsedCommandline Commandline::parse(int argc, char* const* argv) {
                         }
                         else {
                             if (index == argc - 1) {
-                                usage(false, stderr);
+                                usage(false, std::cerr);
                                 std::cerr << "missing argument for option '-" << option_name << "'\n";
                                 exit(1);
                             }
@@ -186,7 +186,7 @@ std::optional<std::string> ParsedCommandline::find_first(const std::string& name
 }
 
 
-void Commandline::usage(bool full, FILE* fout) {
+void Commandline::usage(bool full, std::ostream& out) {
     std::stringstream short_options_without_argument;
     std::stringstream short_options_with_argument;
 
@@ -204,23 +204,23 @@ void Commandline::usage(bool full, FILE* fout) {
     }
 
     if (full) {
-        fprintf(fout, "%s\n\n", header.c_str());
+        out << header << std::endl << std::endl;
     }
 
-    fprintf(fout, "Usage: %s", program_name.c_str());
+    out << "Usage: " << program_name;
     if (!short_options_without_argument.str().empty()) {
-        fprintf(fout, " [-%s]", short_options_without_argument.str().c_str());
+        out << " [-" << short_options_without_argument.str() << "]";
     }
     if (!short_options_with_argument.str().empty()) {
-        fprintf(fout, "%s", short_options_with_argument.str().c_str());
+        out << short_options_with_argument.str();
     }
     if (!arguments.empty()) {
-        fprintf(fout, " %s", arguments.c_str());
+        out << " " << arguments;
     }
-    fprintf(fout, "\n");
+    out << std::endl;
 
     if (full) {
-        fprintf(fout, "\n");
+        out << std::endl;
 
         size_t max_length = 0;
         for (const auto& option : options) {
@@ -240,32 +240,32 @@ void Commandline::usage(bool full, FILE* fout) {
                 current_section = option.section;
                 if (*current_section < option_sections.size()) {
                     if (!first) {
-                        fprintf(fout, "\n");
+                        out << std::endl;
                     }
-                    fprintf(fout, "%s:\n", option_sections[*current_section].c_str());
+                    out << option_sections[*current_section] << ":" << std::endl;
                 }
             }
             first = false;
             if (option.short_name.has_value()) {
-                fprintf(fout, "  -%c, ", option.short_name.value());
+                out << "  -" << option.short_name.value() << ", ";
             }
             else {
-                fprintf(fout, "      ");
+                out << "      ";
             }
             size_t length = 8 + option.name.length();
-            fprintf(fout, "--%s", option.name.c_str());
+            out << "--" << option.name;
             if (option.has_argument()) {
-                fprintf(fout, " %s", option.argument_name.c_str());
+                out << " " << option.argument_name;
                 length += option.argument_name.length() + 1;
             }
             while (length < max_length) {
                 length += 1;
-                fputc(' ', fout);
+                out << ' ';
             }
-            fprintf(fout, "  %s\n", option.description.c_str());
+            out << "  " << option.description << std::endl;
         }
 
-        fprintf(fout, "\n%s\n", footer.c_str());
+        out << std::endl << footer << std::endl;
     }
 }
 

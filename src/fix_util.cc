@@ -117,11 +117,11 @@ bool save_needed_part(Archive* sa, size_t sidx, const std::string& gamename, uin
 
     if (needed) {
         if (!length.has_value()) {
-            output.message_verbose("save needed file '%s'", sa->files[sidx].filename().c_str());
+            output.message_verbose("save needed file '{}'", sa->files[sidx].filename());
         }
         else {
-            output.message_verbose("extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed", start,
-                                   length.value(), sa->files[sidx].filename().c_str());
+            output.message_verbose("extract (offset {}, size {}) from '{}' to needed", start, length.value(),
+                                   sa->files[sidx].filename());
         }
 
         auto tmp = make_needed_name(sa->filetype, f);
@@ -144,7 +144,7 @@ bool save_needed_part(Archive* sa, size_t sidx, const std::string& gamename, uin
     }
     else {
         if (!length.has_value()) {
-            output.message_verbose("delete unneeded file '%s'", sa->files[sidx].filename().c_str());
+            output.message_verbose("delete unneeded file '{}'", sa->files[sidx].filename());
         }
     }
 

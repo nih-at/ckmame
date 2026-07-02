@@ -49,7 +49,7 @@
 
 /**
  * Check if RomDB is up to date with the dats in the dat directories.
- * 
+ *
  * @param dats_to_use Output parameter, list of dats to use to update RomDB.
  * @return true if RomDB is up to date, false if newer dats are available.
  * @throw Exception if there is an error accessing the database or dat files or a dat can't be found.
@@ -86,25 +86,25 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo>& dats_to_use) {
         fs_dat_names.insert(dat_name);
 
         if (it == db_dats.end()) {
-            output.message("%s (-> %s)", dat_name.c_str(), fs_dat.version.c_str());
+            output.message("{} (-> {})", dat_name, fs_dat.version);
             up_to_date = false;
             continue;
         }
         const auto& db_dat = it->second;
 
         if (fs_dat.version > db_dat->version) {
-            output.message("%s (%s -> %s)", dat_name.c_str(), db_dat->version.c_str(), fs_dat.version.c_str());
+            output.message("{} ({} -> {})", dat_name, db_dat->version, fs_dat.version);
             up_to_date = false;
         }
         else if (fs_dat.version == db_dat->version && fs_dat.crc != db_dat->crc) {
-            output.message("%s (%s: %x -> %x)", dat_name.c_str(), db_dat->version.c_str(), db_dat->crc, fs_dat.crc);
+            output.message("{} ({}: {:08x} -> {:08x})", dat_name, db_dat->version, db_dat->crc, fs_dat.crc);
             up_to_date = false;
         }
     }
 
     for (const auto& db_dat : db_dat_list) {
         if (!fs_dat_names.contains(db_dat.name)) {
-            output.message("%s (%s ->)", db_dat.name.c_str(), db_dat.version.c_str());
+            output.message("{} ({} ->)", db_dat.name, db_dat.version);
         }
     }
 

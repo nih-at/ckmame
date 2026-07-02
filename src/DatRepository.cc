@@ -43,13 +43,14 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OutputContextHeader.h"
 #include "ParserSourceFile.h"
 #include "ParserSourceZip.h"
+#include "format.h"
 #include "globals.h"
 #include "util.h"
 
 DatRepository::DatRepository(const std::vector<std::string>& directories) {
     for (auto const& directory : directories) {
         if (!std::filesystem::is_directory(directory)) {
-            output.error("Warning: dat directory '%s' doesn't exist", directory.c_str());
+            output.error("Warning: dat directory '{}' doesn't exist", directory);
             continue;
         }
 
@@ -112,20 +113,24 @@ DatDB::DatInfo DatRepository::find_dat(const std::string& name, bool allow_empty
 
     if (newest_empty_dat) {
         if (!newest_dat) {
-            throw Exception("only empty dats found for '" + name + "'");
+            throw Exception("only empty dats found for '{}'", name);
         }
         if (newest_empty_dat > *newest_dat) {
             if (newest_empty_dat->version != newest_dat->version) {
-                output.error("warning: newest dat for '%s' with version '%s' is empty, using older dat with version '%s'", name.c_str(),   newest_empty_dat->version.c_str(), newest_dat->version.c_str()); 
+                output.error(
+                    "warning: newest dat for '{}' with version '{}' is empty, using older dat with version '{}'", name,
+                    newest_empty_dat->version, newest_dat->version);
             }
             else {
-                output.error("warning: newest dat for '%s' with version '%s' is empty, using older dat with same version", name.c_str(), newest_empty_dat->version.c_str()); // TODO: include mtime in message
+                output.error(
+                    "warning: newest dat for '{}' with version '{}' is empty, using older dat with same version", name,
+                    newest_empty_dat->version); // TODO: include mtime in message
             }
         }
     }
 
     if (!newest_dat) {
-        throw Exception("can't find dat '" + name + "'");
+        throw Exception("can't find dat '{}'", name);
     }
 
     return *newest_dat;
@@ -184,7 +189,8 @@ void DatRepository::update_directory(const std::string& directory, const DatDBPt
                             auto entry_name = zip_get_name(zip_archive, index, 0);
                             auto source = std::make_shared<ParserSourceZip>(entry.path(), zip_archive, entry_name);
                             if (auto header = get_dat_info(source)) {
-                                entries.emplace_back(entry_name, header->name, header->version, header->crc, header->empty);
+                                entries.emplace_back(entry_name, header->name, header->version, header->crc,
+                                                     header->empty);
                             }
                         }
                         catch (Exception& ex) {
@@ -204,7 +210,7 @@ void DatRepository::update_directory(const std::string& directory, const DatDBPt
             db->insert_file(file, st.st_mtime, st.st_size, entries);
         }
         catch (Exception& ex) {
-            output.error("can't process '%s': %s", entry.path().c_str(), ex.what());
+            output.error("can't process '{}': {}", entry.path(), ex.what());
         }
     }
 

@@ -51,7 +51,7 @@ OutputContextXml::OutputContextXml(const std::string& fname_, int flags) : fname
     else {
         f = make_shared_file(fname, "w");
         if (!f) {
-            output.error("cannot create '%s': %s", fname.c_str(), strerror(errno));
+            output.error("cannot create '{}': {}", fname, strerror(errno));
             throw std::exception();
         }
     }
@@ -93,9 +93,7 @@ static void set_attribute(xmlNodePtr node, const std::string& name, const std::s
 }
 
 static void set_attribute_u64(xmlNodePtr node, const char* name, uint64_t value) {
-    char b[128];
-    snprintf(b, sizeof(b), "%" PRIu64, value);
-    set_attribute(node, name, b);
+    set_attribute(node, name, std::to_string(value));
 }
 
 static void set_attribute_hash(xmlNodePtr node, const char* name, int type, Hashes* hashes) {

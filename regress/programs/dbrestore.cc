@@ -38,6 +38,7 @@
 #include <cinttypes>
 #include <cstring>
 #include <filesystem>
+#include <iostream>
 #include <optional>
 #include <string>
 #include <vector>
@@ -94,8 +95,8 @@ int main(int argc, char* argv[]) {
                 }
             }
             catch (...) {
-                fprintf(stderr, "%s: invalid DB schema version '%s'\n", ProgramName::get().c_str(),
-                        option.argument.c_str());
+                std::cerr << ProgramName::get() << ": invalid DB schema version '" << option.argument << "'"
+                          << std::endl;
                 exit(1);
             }
         }
@@ -104,14 +105,14 @@ int main(int argc, char* argv[]) {
         }
         else if (option.name == "type") {
             if ((type = db_type(option.argument)) == DBTYPE_INVALID) {
-                fprintf(stderr, "%s: unknown db type '%s'\n", ProgramName::get().c_str(), option.argument.c_str());
+                std::cerr << ProgramName::get() << ": unknown db type '" << option.argument << "'" << std::endl;
                 exit(1);
             }
         }
     }
 
     if (arguments.arguments.size() != 2) {
-        commandline.usage(false, stderr);
+        commandline.usage(false, std::cerr);
         exit(1);
     }
 
@@ -122,7 +123,7 @@ int main(int argc, char* argv[]) {
 
     auto f = make_shared_file(dump_fname, "r");
     if (!f) {
-        output.error_system("can't open dump '%s'", dump_fname.c_str());
+        output.error_system("can't open dump '{}'", dump_fname);
         exit(1);
     }
 
@@ -179,7 +180,7 @@ int main(int argc, char* argv[]) {
         }
     }
     catch (std::exception& e) {
-        output.error_database("can't create database '%s': %s", db_fname.c_str(), e.what());
+        output.error_database("can't create database '{}': {}", db_fname, e.what());
         exit(1);
     }
 
@@ -301,26 +302,26 @@ static int restore_table(sqlite3* db, FILE* f) {
         size_t i = 0;
         while (stmt.step()) {
             if (i >= columns.size()) {
-                output.file_error("too few columns in dump for table %s", table_name.c_str());
+                output.file_error("too few columns in dump for table '{}'", table_name);
                 return -1;
             }
             if (columns[i] != stmt.get_string("name")) {
-                output.file_error("column '%s' in dump doesn't match column '%s' in db for table '%s'",
-                                  columns[i].c_str(), stmt.get_string("name").c_str(), table_name.c_str());
+                output.file_error("column '{}' in dump doesn't match column '{}' in db for table '{}'", columns[i],
+                                  stmt.get_string("name"), table_name);
                 return -1;
             }
 
             int coltype = column_type(string_lower(stmt.get_string("type")));
             if (coltype < 0) {
-                output.error_database("unsupported column type %s for column %s of table %s",
-                                      stmt.get_string("type").c_str(), columns[i].c_str(), table_name.c_str());
+                output.error_database("unsupported column type '{}' for column '{}' of table '{}'",
+                                      stmt.get_string("type"), columns[i], table_name);
                 return -1;
             }
             column_types.push_back(coltype);
             i += 1;
         }
         if (i != columns.size()) {
-            output.file_error("too many columns in dump for table %s", table_name.c_str());
+            output.file_error("too many columns in dump for table '{}'", table_name);
             return -1;
         }
     }
@@ -347,7 +348,7 @@ static int restore_table(sqlite3* db, FILE* f) {
         auto values = split(line, "|");
 
         if (values.size() < column_types.size()) {
-            output.file_error("too few columns in row for table %s", table_name.c_str());
+            output.file_error("too few columns in row for table '{}'", table_name);
             return -1;
         }
 
@@ -375,7 +376,7 @@ static int restore_table(sqlite3* db, FILE* f) {
                     size_t length = value.length();
 
                     if (value[0] != '<' || value[length - 1] != '>' || length % 2) {
-                        throw Exception("invalid binary value: %s", value.c_str());
+                        throw Exception("invalid binary value: '{}'", value);
                     }
 
                     blobs.push_back(hex2bin(value.substr(1, length - 2)));

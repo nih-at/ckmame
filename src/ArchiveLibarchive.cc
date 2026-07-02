@@ -64,7 +64,7 @@ bool ArchiveLibarchive::ensure_la() {
 
     auto error = archive_read_open_filename(la, name.c_str(), 10240);
     if (error < ARCHIVE_WARN) {
-        output.error("error %s archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(),
+        output.error("error {} archive '{}': {}", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name,
                      archive_error_string(la));
         archive_read_free(la);
         la = nullptr;
@@ -90,7 +90,7 @@ bool ArchiveLibarchive::close_xxx() {
 
     if (error < ARCHIVE_WARN) {
         /* error closing, is la still valid? */
-        output.archive_error("error closing zip: %s", archive_error_string(la));
+        output.archive_error("error closing zip: {}", archive_error_string(la));
         return false;
     }
 
@@ -126,16 +126,16 @@ bool ArchiveLibarchive::commit_xxx() {
     struct archive_entry* entry = nullptr;
 
     if (writer == nullptr) {
-        output.archive_error("can't create archive: %s", strerror(ENOMEM));
+        output.archive_error("can't create archive: {}", strerror(ENOMEM));
         return false;
     }
 
     try {
         if (archive_write_set_format_7zip(writer) < 0) {
-            throw Exception("can't create archive: %s", strerror(ENOMEM));
+            throw Exception("can't create archive: {}", strerror(ENOMEM));
         }
         if (archive_write_open_filename(writer, tmpfile.c_str()) < 0) {
-            throw Exception("can't create archive: %s", strerror(errno));
+            throw Exception("can't create archive: {}", strerror(errno));
         }
 
         time_t now = time(nullptr);
@@ -167,7 +167,7 @@ bool ArchiveLibarchive::commit_xxx() {
 
             entry = archive_entry_new();
             if (entry == nullptr) {
-                throw Exception("can't write file header: %s", strerror(ENOMEM));
+                throw Exception("can't write file header: {}", strerror(ENOMEM));
             }
             archive_entry_set_pathname(entry, file.name.c_str());
             archive_entry_set_size(entry, static_cast<int64_t>(file.hashes.size));
@@ -176,7 +176,7 @@ bool ArchiveLibarchive::commit_xxx() {
             archive_entry_set_mtime(entry, mtime, 0);
 
             if (archive_write_header(writer, entry) < 0) {
-                throw Exception("can't write file header: %s", strerror(errno));
+                throw Exception("can't write file header: {}", strerror(errno));
             }
             archive_entry_free(entry);
             entry = nullptr;
@@ -187,7 +187,7 @@ bool ArchiveLibarchive::commit_xxx() {
         output.set_error_archive(name, "");
 
         if (archive_write_close(writer) < 0) {
-            throw Exception("can't write archive: %s", strerror(errno));
+            throw Exception("can't write archive: {}", strerror(errno));
         }
         archive_write_free(writer);
         writer = nullptr;
@@ -196,7 +196,7 @@ bool ArchiveLibarchive::commit_xxx() {
             std::error_code error;
             std::filesystem::rename(tmpfile, name, error);
             if (error) {
-                throw Exception("renaming temporary file failed: %s", error.message().c_str());
+                throw Exception("renaming temporary file failed: {}", error.message());
             }
         }
     }
@@ -212,7 +212,7 @@ bool ArchiveLibarchive::commit_xxx() {
             std::filesystem::remove(tmpfile, ec);
         }
         mtimes.clear();
-        output.archive_file_error("%s", e.what());
+        output.archive_file_error("{}", e.what());
         return false;
     }
 
@@ -225,7 +225,7 @@ void ArchiveLibarchive::write_file(struct archive* writer, const ZipSourcePtr& s
         source->open();
     }
     catch (Exception& e) {
-        throw Exception("can't open file: %s", e.what());
+        throw Exception("can't open file: {}", e.what());
     }
 
     uint8_t buffer[BUFSIZ];
@@ -238,7 +238,7 @@ void ArchiveLibarchive::write_file(struct archive* writer, const ZipSourcePtr& s
         }
         catch (Exception& e) {
             source->close();
-            throw Exception("can't read file: %s", e.what());
+            throw Exception("can't read file: {}", e.what());
         }
 
         if (n == 0) {
@@ -248,7 +248,7 @@ void ArchiveLibarchive::write_file(struct archive* writer, const ZipSourcePtr& s
         auto ret = archive_write_data(writer, buffer, n);
         if (ret < 0) {
             source->close();
-            throw Exception("can't write file: %s", strerror(errno));
+            throw Exception("can't write file: {}", strerror(errno));
         }
     }
 
@@ -265,7 +265,7 @@ void ArchiveLibarchive::commit_cleanup() {
 
 bool ArchiveLibarchive::Source::open() {
     if (archive->have_open_file) {
-        output.archive_error("cannot open '%s': archive busy", archive->files[index].name.c_str());
+        output.archive_error("cannot open '{}': archive busy", archive->files[index].name);
         return false;
     }
 
@@ -291,7 +291,7 @@ bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
         if (!header_read) {
             if (archive_read_next_header(la, &entry) != ARCHIVE_OK) {
                 output.set_error_archive(name);
-                output.archive_error("cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
+                output.archive_error("cannot open '{}': {}", files[index].name, archive_error_string(la));
                 return false;
             }
             header_read = true;
@@ -303,7 +303,7 @@ bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
 
         if (archive_read_data_skip(la) != ARCHIVE_OK) {
             output.set_error_archive(name);
-            output.archive_error("cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
+            output.archive_error("cannot open '{}': {}", files[index].name, archive_error_string(la));
             return false;
         }
         header_read = false;
@@ -345,7 +345,7 @@ bool ArchiveLibarchive::read_infos_xxx() {
 #endif
     }
     if (ret != ARCHIVE_EOF) {
-        output.archive_error("can't list contents: %s", archive_error_string(la));
+        output.archive_error("can't list contents: {}", archive_error_string(la));
         return false;
     }
 

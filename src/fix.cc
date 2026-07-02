@@ -73,14 +73,14 @@ int fix_game(Game* game, const GameArchives archives, Result* result) {
                 if (configuration.delete_unknown_pattern.length() > 0 &&
                     fnmatch(configuration.delete_unknown_pattern.c_str(), archive->files[i].filename().c_str(), 0) ==
                         0) {
-                    output.message_verbose("delete unknown file '%s' (matching delete-unknown-pattern)",
-                                           archive->files[i].filename().c_str());
+                    output.message_verbose("delete unknown file '{}' (matching delete-unknown-pattern)",
+                                           archive->files[i].filename());
 
                     /* TODO: handle error (how?) */
                     archive->file_delete(i);
                 }
                 else {
-                    output.message_verbose("move unknown file '%s'", archive->files[i].filename().c_str());
+                    output.message_verbose("move unknown file '{}'", archive->files[i].filename());
 
                     if (configuration.fix_romset) {
                         garbage->add(i, false); /* TODO: check return value */
@@ -91,7 +91,7 @@ int fix_game(Game* game, const GameArchives archives, Result* result) {
 
             case FS_DUPLICATE:
                 if (!configuration.keep_old_duplicate && archive->is_writable()) {
-                    output.message_verbose("delete duplicate file '%s'", archive->files[i].filename().c_str());
+                    output.message_verbose("delete duplicate file '{}'", archive->files[i].filename());
 
                     /* TODO: handle error (how?) */
                     archive->file_delete(i);
@@ -100,7 +100,7 @@ int fix_game(Game* game, const GameArchives archives, Result* result) {
 
             case FS_SUPERFLUOUS:
                 if (archive->is_writable()) {
-                    output.message_verbose("delete unused file '%s'", archive->files[i].filename().c_str());
+                    output.message_verbose("delete unused file '{}'", archive->files[i].filename());
 
                     /* TODO: handle error (how?) */
                     archive->file_delete(i);
@@ -208,7 +208,7 @@ static int make_space(Archive* a, const std::string& name, std::vector<std::stri
     }
 
     if (a->files[index].broken) {
-        output.message_verbose("delete broken '%s'", name.c_str());
+        output.message_verbose("delete broken '{}'", name);
         return a->file_delete(index) ? 0 : -1;
     }
 
@@ -244,7 +244,7 @@ static int fix_files(Game* game, filetype_t filetype, Archive* archive, Result* 
         case Match::UNCHECKED:
             if (game_file.hashes.size == 0) {
                 /* create missing empty file */
-                output.message_verbose("create empty file '%s'", game_file.filename(filetype).c_str());
+                output.message_verbose("create empty file '{}'", game_file.filename(filetype));
 
                 /* TODO: handle error (how?) */
                 archive->file_add_empty(game_file.name);
@@ -253,15 +253,15 @@ static int fix_files(Game* game, filetype_t filetype, Archive* archive, Result* 
 
         case Match::LONG: {
             if (archive == archive_from && !archive_from->is_file_deleted(match->index)) {
-                output.message_verbose("move long file '%s'", REAL_NAME(archive_from, match->index));
+                output.message_verbose("move long file '{}'", REAL_NAME(archive_from, match->index));
                 if (!garbage->add(match->index, true)) {
                     break;
                 }
             }
 
-            output.message_verbose("extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to '%s'", match->offset,
+            output.message_verbose("extract (offset {}, size {}) from '{}' to '{}'", match->offset,
                                    game_file.hashes.size, REAL_NAME(archive_from, match->index),
-                                   game_file.filename(filetype).c_str());
+                                   game_file.filename(filetype));
 
             if (make_space(archive, game_file.name, &original_names, num_names) < 0) {
                 break;
@@ -288,8 +288,8 @@ static int fix_files(Game* game, filetype_t filetype, Archive* archive, Result* 
                 }
             }
 
-            output.message_verbose("rename '%s' to '%s'", REAL_NAME(archive, match->index),
-                                   game_file.filename(filetype).c_str());
+            output.message_verbose("rename '{}' to '{}'", REAL_NAME(archive, match->index),
+                                   game_file.filename(filetype));
 
             /* TODO: handle errors (how?) */
             if (make_space(archive, game_file.name, &original_names, num_names) < 0)
@@ -304,8 +304,8 @@ static int fix_files(Game* game, filetype_t filetype, Archive* archive, Result* 
                  * cross copying */
                 break;
             }
-            output.message_verbose("add '%s/%s' as '%s'", archive_from->name.c_str(),
-                                   REAL_NAME(archive_from, match->index), game_file.filename(filetype).c_str());
+            output.message_verbose("add '{}/{}' as '{}'", archive_from->name, REAL_NAME(archive_from, match->index),
+                                   game_file.filename(filetype));
 
             if (make_space(archive, game_file.name, &original_names, num_names) < 0) {
                 /* TODO: if (idx >= 0) undo deletion of broken file */
@@ -316,8 +316,8 @@ static int fix_files(Game* game, filetype_t filetype, Archive* archive, Result* 
                 ckmame_cache->used(archive_from, match->index);
             }
             else {
-                output.error("copying '%s' from '%s' to '%s' failed, not deleting",
-                             game_file.filename(filetype).c_str(), archive_from->name.c_str(), archive->name.c_str());
+                output.error("copying '{}' from '{}' to '{}' failed, not deleting", game_file.filename(filetype),
+                             archive_from->name, archive->name);
                 /* TODO: if (idx >= 0) undo deletion of broken file */
             }
             break;

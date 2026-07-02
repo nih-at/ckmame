@@ -33,6 +33,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "TomlSchema.h"
 
+#include <iostream>
+
 
 bool TomlSchema::validate(const toml::node& node, const std::string& file_name_) {
     file_name = file_name_;
@@ -53,7 +55,7 @@ std::string TomlSchema::path_append(const std::string& path, const std::string& 
 
 void TomlSchema::print(const std::string& path, const std::string& message, bool quiet) {
     if (!quiet) {
-        fprintf(stderr, "%s:%s%s %s\n", file_name.c_str(), path.c_str(), path.empty() ? "" : ":", message.c_str());
+        std::cerr << file_name << ":" << path << (path.empty() ? "" : ":") << " " << message << std::endl;
         warned = true;
     }
 }
