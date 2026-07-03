@@ -34,6 +34,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <format>
 #include <string>
 #include <vector>
 
@@ -42,6 +43,10 @@ class Progress {
     class Message {
       public:
         explicit Message(std::string message) { Progress::push_message(std::move(message)); }
+
+        template <typename... Args>
+        Message(std::format_string<Args...> format, Args&&... args)
+            : Message(std::format(format, std::forward<Args>(args)...)) {}
         ~Message() { Progress::pop_message(); }
     };
     static void enable();

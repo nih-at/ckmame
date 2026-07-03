@@ -373,9 +373,7 @@ std::string Hashes::to_string(int type) const {
 
     switch (type) {
     case Hashes::TYPE_CRC: {
-        char str[10];
-        snprintf(str, sizeof(str), "%.8" PRIx32, crc);
-        return str;
+        return std::format("{:08x}", crc);
     }
 
     case Hashes::TYPE_MD5:

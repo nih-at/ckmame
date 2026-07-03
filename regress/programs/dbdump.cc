@@ -43,7 +43,7 @@
 #include "util.h"
 
 
-const char* usage = "usage: %s [--ignore table.column] db-file\n";
+constexpr const char usage[] = "usage: {} [--ignore table.column] db-file\n";
 
 static void dump_db(sqlite3*);
 static void dump_table(sqlite3*, const std::string& table_name);
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
         auto ignore_spec = argv[index + 1];
         auto sep = strchr(ignore_spec, '.');
         if (sep == nullptr) {
-            fprintf(stderr, usage, ProgramName::get().c_str());
+            std::cerr << std::format(usage, ProgramName::get());
             exit(1);
         }
         auto table_name = std::string(ignore_spec, sep - ignore_spec);
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (index != argc - 1) {
-        fprintf(stderr, usage, ProgramName::get().c_str());
+        std::cerr << std::format(usage, ProgramName::get());
         exit(1);
     }
 

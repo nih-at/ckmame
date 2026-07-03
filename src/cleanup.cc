@@ -65,7 +65,7 @@ void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
         what = "unknown";
         break;
     }
-    auto progress = Progress::Message(std::string("cleaning up ") + what + " files");
+    auto progress = Progress::Message(std::format("cleaning up {} files", what));
     list->sort_archives();
     list->sort_entries();
     size_t di = 0;

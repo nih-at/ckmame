@@ -38,7 +38,7 @@
 
 class ProgramName {
   public:
-    static void set(const char* name) { program_name = name; }
+    static void set(std::string_view name) { program_name = name; }
     static const std::string& get() { return program_name; }
 
   private:

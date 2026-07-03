@@ -39,8 +39,6 @@
 #include <string>
 #include <system_error>
 
-#include "printf_like.h"
-
 class Exception : public std::exception {
   public:
     Exception() = default;
