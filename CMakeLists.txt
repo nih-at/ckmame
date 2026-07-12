@@ -9,7 +9,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_compile_options(-include "format")
     add_compile_options(-fpermissive)
 endif()
 
@@ -72,13 +71,13 @@ check_function_exists(SHA256Init HAVE_SHA256INIT)
 check_function_exists(fnmatch HAVE_FNMATCH)
 
 if(NOT ZLIB_FOUND)
-  message(FATAL_ERROR "-- zlib library not found (required)")
+  message(ERROR "-- zlib library not found (required)")
 endif()
 
 find_package(libzip 1.10 REQUIRED)
 
 if(NOT SQLite3_FOUND)
-  message(FATAL_ERROR "-- sqlite3 library not found (required)")
+  message(ERROR "-- sqlite3 library not found (required)")
 endif()
 
 if(LibXml2_FOUND)
