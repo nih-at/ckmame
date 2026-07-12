@@ -72,13 +72,13 @@ check_function_exists(SHA256Init HAVE_SHA256INIT)
 check_function_exists(fnmatch HAVE_FNMATCH)
 
 if(NOT ZLIB_FOUND)
-  message(ERROR "-- zlib library not found (required)")
+  message(FATAL_ERROR "-- zlib library not found (required)")
 endif()
 
 find_package(libzip 1.10 REQUIRED)
 
 if(NOT SQLite3_FOUND)
-  message(ERROR "-- sqlite3 library not found (required)")
+  message(FATAL_ERROR "-- sqlite3 library not found (required)")
 endif()
 
 if(LibXml2_FOUND)
@@ -104,7 +104,7 @@ endif()
 if(MSVC)
   add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
   add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
-endif(MSVC)
+endif()
 
 if (NOT PYTHONBIN)
   find_package (Python COMPONENTS Interpreter)
