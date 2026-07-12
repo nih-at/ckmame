@@ -99,7 +99,7 @@ endif()
 if(MSVC)
   add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
   add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
-endif()
+endif(MSVC)
 
 if (NOT PYTHONBIN)
   find_package (Python COMPONENTS Interpreter)
