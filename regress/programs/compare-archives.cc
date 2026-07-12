@@ -38,6 +38,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <format>
 
 #ifndef HAVE_LIBARCHIVE
 

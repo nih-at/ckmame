@@ -35,6 +35,7 @@
 */
 
 #include <string>
+#include <cstdint>
 
 class DatEntry {
   public:
