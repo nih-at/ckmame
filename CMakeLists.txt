@@ -8,6 +8,11 @@ project(ckmame
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(-include "format")
+    add_compile_options(-fpermissive)
+endif()
+
 option(RUN_REGRESS "Run regression tests" ON)
 option(ENABLE_COVERAGE "Enable code coverage reporting of test suite" OFF)
 
