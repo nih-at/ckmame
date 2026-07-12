@@ -9,7 +9,11 @@
 OutputContextFile::OutputContextFile(const std::optional<std::filesystem::path>& file_name, bool binary)
     : file_name(file_name), stream(is_stdout() ? std::cout : file_stream) {
     if (!is_stdout()) {
-        file_stream.open(*file_name, std::ios::out | (binary ? std::ios::binary : std::ios_base::openmode(0)));
+        auto mode = std::ios::out | std::ios::trunc;
+        if (binary) {
+            mode |= std::ios::binary;
+        }
+        file_stream.open(*file_name, mode);
         if (!file_stream.is_open()) {
             throw Exception("cannot create '{}': {}", *file_name, strerror(errno));
         }
