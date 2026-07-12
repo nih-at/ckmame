@@ -34,6 +34,7 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
+#include <format>
 #include <string>
 #include <system_error>
 

@@ -33,11 +33,8 @@
 
 #include "config.h"
 
-#include <cinttypes>
 #include <cstdlib>
 #include <iostream>
-#include <map>
-#include <string>
 
 #ifndef HAVE_LIBARCHIVE
 
@@ -47,6 +44,11 @@ int main(int argc, char* argv[]) {
 }
 
 #else
+
+#include <cinttypes>
+#include <format>
+#include <map>
+#include <string>
 
 #include <archive.h>
 #include <archive_entry.h>
