@@ -155,6 +155,7 @@ set(XFAIL_TESTS
   ckmamedb-keep-unzipped.zip.test
   ckmamedb-file-removed.dir.test
   ckmamedb-file-removed.zip.test
+  diskfull-zip.zip.test
   doublezip-fix.dir.test
   doublezip-fix.zip.test
   extra-file-zip.zip.test
@@ -164,7 +165,7 @@ set(XFAIL_TESTS
 )
 
 set(COVERAGE_SKIP_TESTS
-  diskfull-zip.zip.test
+#  diskfull-zip.zip.test
 )
 
 if(RUN_REGRESS)
